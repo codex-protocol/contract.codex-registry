@@ -1,11 +1,26 @@
 {
-  "parser": "babel-eslint",
+  "extends": ["eslint:recommended", "prettier"],
+  "plugins": ["prettier"],
   "env": {
     "es6": true,
     "node": true,
     "mocha": true
   },
+  "globals": {
+    "web3": false,
+    "artifacts": false,
+    "contract": false
+  },
   "rules": {
-    "semi": 0
+    "prettier/prettier": ["error", {
+      "printWidth": 80, "singleQuote": true, "semi": false
+    }],
+    "quotes": ["error", "single"],
+    "semi": 0,
+    "no-unused-vars": ["error", {
+      "vars": "all",
+      "args": "none",
+      "ignoreRestSiblings": false
+    }]
   }
 }
