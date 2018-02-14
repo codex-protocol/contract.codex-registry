@@ -2,12 +2,8 @@
   "name": "codex-title",
   "version": "1.0.0",
   "description": "Contracts for Codex Protocol's Codex Title",
-  "main": "truffle-config.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
-    "test": "test"
+    "test": "node_modules/.bin/truffle test"
   },
   "repository": {
     "type": "git",
@@ -17,7 +13,7 @@
     "codex"
   ],
   "author": "Codex Protocol <contact@codexprotocol.com>",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/johnhforrest/codex-title/issues"
   },
@@ -28,5 +24,8 @@
     "chai-bignumber": "^2.0.2",
     "truffle": "^4.0.6",
     "web3": "^1.0.0-beta.30"
+  },
+  "dependencies": {
+    "zeppelin-solidity": "^1.6.0"
   }
 }
