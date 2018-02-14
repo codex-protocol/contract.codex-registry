@@ -1,0 +1,1039 @@
+{
+  "contractName": "ERC721",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_interfaceID",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "name": "_deedId",
+          "type": "uint256"
+        }
+      ],
+      "name": "approve",
+      "outputs": [],
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "name": "_index",
+          "type": "uint256"
+        }
+      ],
+      "name": "deedOfOwnerByIndex",
+      "outputs": [
+        {
+          "name": "_deedId",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_deedId",
+          "type": "uint256"
+        }
+      ],
+      "name": "ownerOf",
+      "outputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "name": "countOfDeedsByOwner",
+      "outputs": [
+        {
+          "name": "_count",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_deedId",
+          "type": "uint256"
+        }
+      ],
+      "name": "takeOwnership",
+      "outputs": [],
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "countOfDeeds",
+      "outputs": [
+        {
+          "name": "_count",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "deedId",
+          "type": "uint256"
+        }
+      ],
+      "name": "Transfer",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "approved",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "deedId",
+          "type": "uint256"
+        }
+      ],
+      "name": "Approval",
+      "type": "event"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.4.18;\n\n/// @title Interface for contracts conforming to ERC-721: Deed Standard\n/// @author William Entriken (https://phor.net), et. al.\n/// @dev Specification at https://github.com/ethereum/eips/XXXFinalUrlXXX\ninterface ERC721 {\n\n    // COMPLIANCE WITH ERC-165 (DRAFT) /////////////////////////////////////////\n\n    /// @dev ERC-165 (draft) interface signature for itself\n    // bytes4 internal constant INTERFACE_SIGNATURE_ERC165 = // 0x01ffc9a7\n    //     bytes4(keccak256('supportsInterface(bytes4)'));\n\n    /// @dev ERC-165 (draft) interface signature for ERC721\n    // bytes4 internal constant INTERFACE_SIGNATURE_ERC721 = // 0xda671b9b\n    //     bytes4(keccak256('ownerOf(uint256)')) ^\n    //     bytes4(keccak256('countOfDeeds()')) ^\n    //     bytes4(keccak256('countOfDeedsByOwner(address)')) ^\n    //     bytes4(keccak256('deedOfOwnerByIndex(address,uint256)')) ^\n    //     bytes4(keccak256('approve(address,uint256)')) ^\n    //     bytes4(keccak256('takeOwnership(uint256)'));\n\n    /// @notice Query a contract to see if it supports a certain interface\n    /// @dev Returns `true` the interface is supported and `false` otherwise,\n    ///  returns `true` for INTERFACE_SIGNATURE_ERC165 and\n    ///  INTERFACE_SIGNATURE_ERC721, see ERC-165 for other interface signatures.\n    function supportsInterface(bytes4 _interfaceID) external pure returns (bool);\n\n    // PUBLIC QUERY FUNCTIONS //////////////////////////////////////////////////\n\n    /// @notice Find the owner of a deed\n    /// @param _deedId The identifier for a deed we are inspecting\n    /// @dev Deeds assigned to zero address are considered invalid, and\n    ///  queries about them do throw.\n    /// @return The non-zero address of the owner of deed `_deedId`, or `throw`\n    ///  if deed `_deedId` is not tracked by this contract\n    function ownerOf(uint256 _deedId) external view returns (address _owner);\n\n    /// @notice Count deeds tracked by this contract\n    /// @return A count of valid deeds tracked by this contract, where each one of\n    ///  them has an assigned and queryable owner not equal to the zero address\n    function countOfDeeds() external view returns (uint256 _count);\n\n    /// @notice Count all deeds assigned to an owner\n    /// @dev Throws if `_owner` is the zero address, representing invalid deeds.\n    /// @param _owner An address where we are interested in deeds owned by them\n    /// @return The number of deeds owned by `_owner`, possibly zero\n    function countOfDeedsByOwner(address _owner) external view returns (uint256 _count);\n\n    /// @notice Enumerate deeds assigned to an owner\n    /// @dev Throws if `_index` >= `countOfDeedsByOwner(_owner)` or if\n    ///  `_owner` is the zero address, representing invalid deeds.\n    /// @param _owner An address where we are interested in deeds owned by them\n    /// @param _index A counter less than `countOfDeedsByOwner(_owner)`\n    /// @return The identifier for the `_index`th deed assigned to `_owner`,\n    ///   (sort order not specified)\n    function deedOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256 _deedId);\n\n    // TRANSFER MECHANISM //////////////////////////////////////////////////////\n\n    /// @dev This event emits when ownership of any deed changes by any\n    ///  mechanism. This event emits when deeds are created (`from` == 0) and\n    ///  destroyed (`to` == 0). Exception: during contract creation, any\n    ///  transfers may occur without emitting `Transfer`. At the time of any transfer,\n    ///  the \"approved taker\" is implicitly reset to the zero address.\n    event Transfer(address indexed from, address indexed to, uint256 indexed deedId);\n\n    /// @dev The Approve event emits to log the \"approved taker\" for a deed -- whether\n    ///  set for the first time, reaffirmed by setting the same value, or setting to  \n    ///  a new value. The \"approved taker\" is the zero address if nobody can take the\n    ///  deed now or it is an address if that address can call `takeOwnership` to attempt\n    ///  taking the deed. Any change to the \"approved taker\" for a deed SHALL cause\n    ///  Approve to emit. However, an exception, the Approve event will not emit when\n    ///  Transfer emits, this is because Transfer implicitly denotes the \"approved taker\"\n    ///  is reset to the zero address.\n    event Approval(address indexed owner, address indexed approved, uint256 indexed deedId);\n\n    /// @notice Set the \"approved taker\" for your deed, or revoke approval by\n    ///  setting the zero address. You may `approve` any number of times while\n    ///  the deed is assigned to you, only the most recent approval matters. Emits\n    ///  an Approval event.\n    /// @dev Throws if `msg.sender` does not own deed `_deedId` or if `_to` ==\n    ///  `msg.sender` or if `_deedId` is not a valid deed.\n    /// @param _deedId The deed for which you are granting approval\n    function approve(address _to, uint256 _deedId) external payable;\n\n    /// @notice Become owner of a deed for which you are currently approved\n    /// @dev Throws if `msg.sender` is not approved to become the owner of\n    ///  `deedId` or if `msg.sender` currently owns `_deedId` or if `_deedId is not a\n    ///  valid deed.\n    /// @param _deedId The deed that is being transferred\n    function takeOwnership(uint256 _deedId) external payable;\n}",
+  "sourcePath": "/Users/johnforrest/Programming/blockchain/codex-title/contracts/ERC721.sol",
+  "ast": {
+    "attributes": {
+      "absolutePath": "/Users/johnforrest/Programming/blockchain/codex-title/contracts/ERC721.sol",
+      "exportedSymbols": {
+        "ERC721": [
+          304
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            "^",
+            "0.4",
+            ".18"
+          ]
+        },
+        "id": 240,
+        "name": "PragmaDirective",
+        "src": "0:24:1"
+      },
+      {
+        "attributes": {
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "interface",
+          "documentation": "@title Interface for contracts conforming to ERC-721: Deed Standard\n @author William Entriken (https://phor.net), et. al.\n @dev Specification at https://github.com/ethereum/eips/XXXFinalUrlXXX",
+          "fullyImplemented": false,
+          "linearizedBaseContracts": [
+            304
+          ],
+          "name": "ERC721",
+          "scope": 305
+        },
+        "children": [
+          {
+            "attributes": {
+              "body": null,
+              "constant": true,
+              "implemented": false,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "supportsInterface",
+              "payable": false,
+              "scope": 304,
+              "stateMutability": "pure",
+              "superFunction": null,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_interfaceID",
+                      "scope": 247,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bytes4",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bytes4",
+                          "type": "bytes4"
+                        },
+                        "id": 241,
+                        "name": "ElementaryTypeName",
+                        "src": "1334:6:1"
+                      }
+                    ],
+                    "id": 242,
+                    "name": "VariableDeclaration",
+                    "src": "1334:19:1"
+                  }
+                ],
+                "id": 243,
+                "name": "ParameterList",
+                "src": "1333:21:1"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "",
+                      "scope": 247,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bool",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bool",
+                          "type": "bool"
+                        },
+                        "id": 244,
+                        "name": "ElementaryTypeName",
+                        "src": "1378:4:1"
+                      }
+                    ],
+                    "id": 245,
+                    "name": "VariableDeclaration",
+                    "src": "1378:4:1"
+                  }
+                ],
+                "id": 246,
+                "name": "ParameterList",
+                "src": "1377:6:1"
+              }
+            ],
+            "id": 247,
+            "name": "FunctionDefinition",
+            "src": "1307:77:1"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "constant": true,
+              "implemented": false,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "ownerOf",
+              "payable": false,
+              "scope": 304,
+              "stateMutability": "view",
+              "superFunction": null,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_deedId",
+                      "scope": 254,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 248,
+                        "name": "ElementaryTypeName",
+                        "src": "1846:7:1"
+                      }
+                    ],
+                    "id": 249,
+                    "name": "VariableDeclaration",
+                    "src": "1846:15:1"
+                  }
+                ],
+                "id": 250,
+                "name": "ParameterList",
+                "src": "1845:17:1"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_owner",
+                      "scope": 254,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "type": "address"
+                        },
+                        "id": 251,
+                        "name": "ElementaryTypeName",
+                        "src": "1886:7:1"
+                      }
+                    ],
+                    "id": 252,
+                    "name": "VariableDeclaration",
+                    "src": "1886:14:1"
+                  }
+                ],
+                "id": 253,
+                "name": "ParameterList",
+                "src": "1885:16:1"
+              }
+            ],
+            "id": 254,
+            "name": "FunctionDefinition",
+            "src": "1829:73:1"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "constant": true,
+              "implemented": false,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "countOfDeeds",
+              "payable": false,
+              "scope": 304,
+              "stateMutability": "view",
+              "superFunction": null,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 255,
+                "name": "ParameterList",
+                "src": "2145:2:1"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_count",
+                      "scope": 259,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 256,
+                        "name": "ElementaryTypeName",
+                        "src": "2171:7:1"
+                      }
+                    ],
+                    "id": 257,
+                    "name": "VariableDeclaration",
+                    "src": "2171:14:1"
+                  }
+                ],
+                "id": 258,
+                "name": "ParameterList",
+                "src": "2170:16:1"
+              }
+            ],
+            "id": 259,
+            "name": "FunctionDefinition",
+            "src": "2124:63:1"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "constant": true,
+              "implemented": false,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "countOfDeedsByOwner",
+              "payable": false,
+              "scope": 304,
+              "stateMutability": "view",
+              "superFunction": null,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_owner",
+                      "scope": 266,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "type": "address"
+                        },
+                        "id": 260,
+                        "name": "ElementaryTypeName",
+                        "src": "2505:7:1"
+                      }
+                    ],
+                    "id": 261,
+                    "name": "VariableDeclaration",
+                    "src": "2505:14:1"
+                  }
+                ],
+                "id": 262,
+                "name": "ParameterList",
+                "src": "2504:16:1"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_count",
+                      "scope": 266,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 263,
+                        "name": "ElementaryTypeName",
+                        "src": "2544:7:1"
+                      }
+                    ],
+                    "id": 264,
+                    "name": "VariableDeclaration",
+                    "src": "2544:14:1"
+                  }
+                ],
+                "id": 265,
+                "name": "ParameterList",
+                "src": "2543:16:1"
+              }
+            ],
+            "id": 266,
+            "name": "FunctionDefinition",
+            "src": "2476:84:1"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "constant": true,
+              "implemented": false,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "deedOfOwnerByIndex",
+              "payable": false,
+              "scope": 304,
+              "stateMutability": "view",
+              "superFunction": null,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_owner",
+                      "scope": 275,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "type": "address"
+                        },
+                        "id": 267,
+                        "name": "ElementaryTypeName",
+                        "src": "3051:7:1"
+                      }
+                    ],
+                    "id": 268,
+                    "name": "VariableDeclaration",
+                    "src": "3051:14:1"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_index",
+                      "scope": 275,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 269,
+                        "name": "ElementaryTypeName",
+                        "src": "3067:7:1"
+                      }
+                    ],
+                    "id": 270,
+                    "name": "VariableDeclaration",
+                    "src": "3067:14:1"
+                  }
+                ],
+                "id": 271,
+                "name": "ParameterList",
+                "src": "3050:32:1"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_deedId",
+                      "scope": 275,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 272,
+                        "name": "ElementaryTypeName",
+                        "src": "3106:7:1"
+                      }
+                    ],
+                    "id": 273,
+                    "name": "VariableDeclaration",
+                    "src": "3106:15:1"
+                  }
+                ],
+                "id": 274,
+                "name": "ParameterList",
+                "src": "3105:17:1"
+              }
+            ],
+            "id": 275,
+            "name": "FunctionDefinition",
+            "src": "3023:100:1"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "Transfer"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": true,
+                      "name": "from",
+                      "scope": 283,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "type": "address"
+                        },
+                        "id": 276,
+                        "name": "ElementaryTypeName",
+                        "src": "3607:7:1"
+                      }
+                    ],
+                    "id": 277,
+                    "name": "VariableDeclaration",
+                    "src": "3607:20:1"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": true,
+                      "name": "to",
+                      "scope": 283,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "type": "address"
+                        },
+                        "id": 278,
+                        "name": "ElementaryTypeName",
+                        "src": "3629:7:1"
+                      }
+                    ],
+                    "id": 279,
+                    "name": "VariableDeclaration",
+                    "src": "3629:18:1"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": true,
+                      "name": "deedId",
+                      "scope": 283,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 280,
+                        "name": "ElementaryTypeName",
+                        "src": "3649:7:1"
+                      }
+                    ],
+                    "id": 281,
+                    "name": "VariableDeclaration",
+                    "src": "3649:22:1"
+                  }
+                ],
+                "id": 282,
+                "name": "ParameterList",
+                "src": "3606:66:1"
+              }
+            ],
+            "id": 283,
+            "name": "EventDefinition",
+            "src": "3592:81:1"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "Approval"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": true,
+                      "name": "owner",
+                      "scope": 291,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "type": "address"
+                        },
+                        "id": 284,
+                        "name": "ElementaryTypeName",
+                        "src": "4343:7:1"
+                      }
+                    ],
+                    "id": 285,
+                    "name": "VariableDeclaration",
+                    "src": "4343:21:1"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": true,
+                      "name": "approved",
+                      "scope": 291,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "type": "address"
+                        },
+                        "id": 286,
+                        "name": "ElementaryTypeName",
+                        "src": "4366:7:1"
+                      }
+                    ],
+                    "id": 287,
+                    "name": "VariableDeclaration",
+                    "src": "4366:24:1"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": true,
+                      "name": "deedId",
+                      "scope": 291,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 288,
+                        "name": "ElementaryTypeName",
+                        "src": "4392:7:1"
+                      }
+                    ],
+                    "id": 289,
+                    "name": "VariableDeclaration",
+                    "src": "4392:22:1"
+                  }
+                ],
+                "id": 290,
+                "name": "ParameterList",
+                "src": "4342:73:1"
+              }
+            ],
+            "id": 291,
+            "name": "EventDefinition",
+            "src": "4328:88:1"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "constant": false,
+              "implemented": false,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "approve",
+              "payable": true,
+              "scope": 304,
+              "stateMutability": "payable",
+              "superFunction": null,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_to",
+                      "scope": 298,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "type": "address"
+                        },
+                        "id": 292,
+                        "name": "ElementaryTypeName",
+                        "src": "4913:7:1"
+                      }
+                    ],
+                    "id": 293,
+                    "name": "VariableDeclaration",
+                    "src": "4913:11:1"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_deedId",
+                      "scope": 298,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 294,
+                        "name": "ElementaryTypeName",
+                        "src": "4926:7:1"
+                      }
+                    ],
+                    "id": 295,
+                    "name": "VariableDeclaration",
+                    "src": "4926:15:1"
+                  }
+                ],
+                "id": 296,
+                "name": "ParameterList",
+                "src": "4912:30:1"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 297,
+                "name": "ParameterList",
+                "src": "4959:0:1"
+              }
+            ],
+            "id": 298,
+            "name": "FunctionDefinition",
+            "src": "4896:64:1"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "constant": false,
+              "implemented": false,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "takeOwnership",
+              "payable": true,
+              "scope": 304,
+              "stateMutability": "payable",
+              "superFunction": null,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_deedId",
+                      "scope": 303,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 299,
+                        "name": "ElementaryTypeName",
+                        "src": "5305:7:1"
+                      }
+                    ],
+                    "id": 300,
+                    "name": "VariableDeclaration",
+                    "src": "5305:15:1"
+                  }
+                ],
+                "id": 301,
+                "name": "ParameterList",
+                "src": "5304:17:1"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 302,
+                "name": "ParameterList",
+                "src": "5338:0:1"
+              }
+            ],
+            "id": 303,
+            "name": "FunctionDefinition",
+            "src": "5282:57:1"
+          }
+        ],
+        "id": 304,
+        "name": "ContractDefinition",
+        "src": "229:5112:1"
+      }
+    ],
+    "id": 305,
+    "name": "SourceUnit",
+    "src": "0:5341:1"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.18+commit.9cf6e910.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "1.0.1",
+  "updatedAt": "2018-02-14T01:11:50.904Z"
+}

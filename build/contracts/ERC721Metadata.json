@@ -1,0 +1,443 @@
+{
+  "contractName": "ERC721Metadata",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "name": "_name",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_deedId",
+          "type": "uint256"
+        }
+      ],
+      "name": "deedName",
+      "outputs": [
+        {
+          "name": "_deedName",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+        {
+          "name": "_symbol",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_deedId",
+          "type": "uint256"
+        }
+      ],
+      "name": "deedUri",
+      "outputs": [
+        {
+          "name": "_deedUri",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.4.18;\n\n/// @title Metadata extension to ERC-721 interface\n/// @author William Entriken (https://phor.net)\n/// @dev Specification at https://github.com/ethereum/eips/issues/XXXX\ninterface ERC721Metadata {\n\n    /// @dev ERC-165 (draft) interface signature for ERC721\n    // bytes4 internal constant INTERFACE_SIGNATURE_ERC721Metadata = // 0x2a786f11\n    //     bytes4(keccak256('name()')) ^\n    //     bytes4(keccak256('symbol()')) ^\n    //     bytes4(keccak256('deedUri(uint256)'));\n\n    /// @notice A descriptive name for a collection of deeds managed by this\n    ///  contract\n    /// @dev Wallets and exchanges MAY display this to the end user.\n    function name() public pure returns (string _name);\n\n    /// @notice An abbreviated name for deeds managed by this contract\n    /// @dev Wallets and exchanges MAY display this to the end user.\n    function symbol() public pure returns (string _symbol);\n\n    /// @notice A distinct name for a deed managed by this contract\n    /// @dev Wallets and exchanges MAY display this to the end user.\n    function deedName(uint256 _deedId) public pure returns (string _deedName);\n\n    /// @notice A distinct URI (RFC 3986) for a given token.\n    /// @dev If:\n    ///  * The URI is a URL\n    ///  * The URL is accessible\n    ///  * The URL points to a valid JSON file format (ECMA-404 2nd ed.)\n    ///  * The JSON base element is an object\n    ///  then these names of the base element SHALL have special meaning:\n    ///  * \"name\": A string identifying the item to which `_deedId` grants\n    ///    ownership\n    ///  * \"description\": A string detailing the item to which `_deedId` grants\n    ///    ownership\n    ///  * \"image\": A URI pointing to a file of image/* mime type representing\n    ///    the item to which `_deedId` grants ownership\n    ///  Wallets and exchanges MAY display this to the end user.\n    ///  Consider making any images at a width between 320 and 1080 pixels and\n    ///  aspect ratio between 1.91:1 and 4:5 inclusive.\n    function deedUri(uint256 _deedId) external view returns (string _deedUri);\n}",
+  "sourcePath": "/Users/johnforrest/Programming/blockchain/codex-title/contracts/ERC721Metadata.sol",
+  "ast": {
+    "attributes": {
+      "absolutePath": "/Users/johnforrest/Programming/blockchain/codex-title/contracts/ERC721Metadata.sol",
+      "exportedSymbols": {
+        "ERC721Metadata": [
+          353
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            "^",
+            "0.4",
+            ".18"
+          ]
+        },
+        "id": 328,
+        "name": "PragmaDirective",
+        "src": "0:24:3"
+      },
+      {
+        "attributes": {
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "interface",
+          "documentation": "@title Metadata extension to ERC-721 interface\n @author William Entriken (https://phor.net)\n @dev Specification at https://github.com/ethereum/eips/issues/XXXX",
+          "fullyImplemented": false,
+          "linearizedBaseContracts": [
+            353
+          ],
+          "name": "ERC721Metadata",
+          "scope": 354
+        },
+        "children": [
+          {
+            "attributes": {
+              "body": null,
+              "constant": true,
+              "implemented": false,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "name",
+              "payable": false,
+              "scope": 353,
+              "stateMutability": "pure",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 329,
+                "name": "ParameterList",
+                "src": "683:2:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_name",
+                      "scope": 333,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "string memory",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "string",
+                          "type": "string storage pointer"
+                        },
+                        "id": 330,
+                        "name": "ElementaryTypeName",
+                        "src": "707:6:3"
+                      }
+                    ],
+                    "id": 331,
+                    "name": "VariableDeclaration",
+                    "src": "707:12:3"
+                  }
+                ],
+                "id": 332,
+                "name": "ParameterList",
+                "src": "706:14:3"
+              }
+            ],
+            "id": 333,
+            "name": "FunctionDefinition",
+            "src": "670:51:3"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "constant": true,
+              "implemented": false,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "symbol",
+              "payable": false,
+              "scope": 353,
+              "stateMutability": "pure",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 334,
+                "name": "ParameterList",
+                "src": "882:2:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_symbol",
+                      "scope": 338,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "string memory",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "string",
+                          "type": "string storage pointer"
+                        },
+                        "id": 335,
+                        "name": "ElementaryTypeName",
+                        "src": "906:6:3"
+                      }
+                    ],
+                    "id": 336,
+                    "name": "VariableDeclaration",
+                    "src": "906:14:3"
+                  }
+                ],
+                "id": 337,
+                "name": "ParameterList",
+                "src": "905:16:3"
+              }
+            ],
+            "id": 338,
+            "name": "FunctionDefinition",
+            "src": "867:55:3"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "constant": true,
+              "implemented": false,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "deedName",
+              "payable": false,
+              "scope": 353,
+              "stateMutability": "pure",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_deedId",
+                      "scope": 345,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 339,
+                        "name": "ElementaryTypeName",
+                        "src": "1083:7:3"
+                      }
+                    ],
+                    "id": 340,
+                    "name": "VariableDeclaration",
+                    "src": "1083:15:3"
+                  }
+                ],
+                "id": 341,
+                "name": "ParameterList",
+                "src": "1082:17:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_deedName",
+                      "scope": 345,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "string memory",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "string",
+                          "type": "string storage pointer"
+                        },
+                        "id": 342,
+                        "name": "ElementaryTypeName",
+                        "src": "1121:6:3"
+                      }
+                    ],
+                    "id": 343,
+                    "name": "VariableDeclaration",
+                    "src": "1121:16:3"
+                  }
+                ],
+                "id": 344,
+                "name": "ParameterList",
+                "src": "1120:18:3"
+              }
+            ],
+            "id": 345,
+            "name": "FunctionDefinition",
+            "src": "1065:74:3"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "constant": true,
+              "implemented": false,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "deedUri",
+              "payable": false,
+              "scope": 353,
+              "stateMutability": "view",
+              "superFunction": null,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_deedId",
+                      "scope": 352,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 346,
+                        "name": "ElementaryTypeName",
+                        "src": "2026:7:3"
+                      }
+                    ],
+                    "id": 347,
+                    "name": "VariableDeclaration",
+                    "src": "2026:15:3"
+                  }
+                ],
+                "id": 348,
+                "name": "ParameterList",
+                "src": "2025:17:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_deedUri",
+                      "scope": 352,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "string memory",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "string",
+                          "type": "string storage pointer"
+                        },
+                        "id": 349,
+                        "name": "ElementaryTypeName",
+                        "src": "2066:6:3"
+                      }
+                    ],
+                    "id": 350,
+                    "name": "VariableDeclaration",
+                    "src": "2066:15:3"
+                  }
+                ],
+                "id": 351,
+                "name": "ParameterList",
+                "src": "2065:17:3"
+              }
+            ],
+            "id": 352,
+            "name": "FunctionDefinition",
+            "src": "2009:74:3"
+          }
+        ],
+        "id": 353,
+        "name": "ContractDefinition",
+        "src": "196:1889:3"
+      }
+    ],
+    "id": 354,
+    "name": "SourceUnit",
+    "src": "0:2085:3"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.18+commit.9cf6e910.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "1.0.1",
+  "updatedAt": "2018-02-14T01:11:50.905Z"
+}
