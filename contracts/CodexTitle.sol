@@ -1,9 +1,9 @@
 pragma solidity ^0.4.18;
 
-import "./ERC721.sol";
-import "./ERC721Metadata.sol";
+//import "./ERC721.sol";
+//import "./ERC721Metadata.sol";
 
-contract CodexTitle is ERC721, ERC721Metadata {
+contract CodexTitle {
 
     struct Deed {
         string name;
@@ -44,7 +44,7 @@ contract CodexTitle is ERC721, ERC721Metadata {
     ///  Wallets and exchanges MAY display this to the end user.
     ///  Consider making any images at a width between 320 and 1080 pixels and
     ///  aspect ratio between 1.91:1 and 4:5 inclusive.
-    function deedUri(uint256 _deedId) external view returns (string _deedUri);
+    //function deedUri(uint256 _deedId) external view returns (string _deedUri);
 
     /// @notice Find the owner of a deed
     /// @param _deedId The identifier for a deed we are inspecting
