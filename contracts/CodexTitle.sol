@@ -3,6 +3,8 @@ pragma solidity ^0.4.18;
 //import "./ERC721.sol";
 //import "./ERC721Metadata.sol";
 
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
+
 /*
 
 TODO:
@@ -19,6 +21,8 @@ TODO:
 */
 
 contract CodexTitle {
+
+    using SafeMath for uint256;
 
     struct Deed {
         string name;
@@ -183,5 +187,12 @@ contract CodexTitle {
 
     function createNewDeed(string _name, string _description) external payable {
         _mint(_name, _description);
+    }
+
+    // UTILITY //////////////////////////////////////////////////////
+
+    function getDeedData(uint256 _deedId) external view returns(string, string) {
+        Deed storage deed = deeds[_deedId];
+        return (deed.name, deed.description);
     }
 }
