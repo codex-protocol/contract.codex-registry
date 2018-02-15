@@ -3,16 +3,32 @@ pragma solidity ^0.4.18;
 //import "./ERC721.sol";
 //import "./ERC721Metadata.sol";
 
+/*
+
+TODO:
+- Have an interface definition for BDX
+- Have a pointer to the address where BDX is deployed
+- Update payable operations to take a fee in BDX
+
+- Allow minting capabilities
+- Allow updating capabilities
+- Getter functions
+
+- Optimize for gas cost later. Focus on functionality for now!
+
+*/
+
 contract CodexTitle {
 
     struct Deed {
         string name;
+        string description;
     }
 
     Deed[] deeds;
 
-    mapping (uint256 => address) deedToOwner;
-    mapping (uint256 => address) deedToApproved;
+    mapping (uint256 => address) deedIdToOwner;
+    mapping (uint256 => address) deedIdToApproved;
     mapping (address => uint256) ownerToDeedCount;
 
     /// @notice A descriptive name for a collection of deeds managed by this
@@ -53,7 +69,7 @@ contract CodexTitle {
     /// @return The non-zero address of the owner of deed `_deedId`, or `throw`
     ///  if deed `_deedId` is not tracked by this contract
     function ownerOf(uint256 _deedId) external view returns (address _owner) {
-        return deedToOwner[_deedId];
+        return deedIdToOwner[_deedId];
     }
 
     /// @notice Count deeds tracked by this contract
@@ -87,7 +103,7 @@ contract CodexTitle {
 
         uint256 counter = 0;
         for (uint256 i = 0; i < deeds.length; i++) {
-            if (deedToOwner[i] == _owner) {
+            if (deedIdToOwner[i] == _owner) {
                 if (counter == _index) {
                     return i;
                 }
@@ -126,9 +142,9 @@ contract CodexTitle {
     function approve(address _to, uint256 _deedId) external payable {
         require(msg.sender != _to);
 
-        require(msg.sender == deedToOwner[_deedId]);
+        require(msg.sender == deedIdToOwner[_deedId]);
 
-        deedToApproved[_deedId] = _to;
+        deedIdToApproved[_deedId] = _to;
 
         Approval(msg.sender, _to, _deedId);
     }
@@ -139,15 +155,33 @@ contract CodexTitle {
     ///  valid deed.
     /// @param _deedId The deed that is being transferred
     function takeOwnership(uint256 _deedId) external payable {
-        address owner = deedToOwner[_deedId];
+        address owner = deedIdToOwner[_deedId];
 
         require(msg.sender != owner);
 
-        require(msg.sender == deedToApproved[_deedId]);
+        require(msg.sender == deedIdToApproved[_deedId]);
 
         ownerToDeedCount[owner]--;
-        deedToOwner[_deedId] = msg.sender;
+        deedIdToOwner[_deedId] = msg.sender;
 
         Transfer(owner, msg.sender, _deedId);
+    }
+
+    // CREATION AND UPDATING MECHANISMS //////////////////////////////////////////////////////
+
+    event Minted(address indexed owner, uint256 indexed deedId);
+
+    function _mint(string _name, string _description) internal {
+        // TODO: any require protections needed?
+
+        uint256 id = deeds.push(Deed(_name, _description)) - 1;
+        deedIdToOwner[id] = msg.sender;
+        ownerToDeedCount[msg.sender]++;
+
+        Minted(msg.sender, id);
+    }
+
+    function createNewDeed(string _name, string _description) external payable {
+        _mint(_name, _description);
     }
 }
