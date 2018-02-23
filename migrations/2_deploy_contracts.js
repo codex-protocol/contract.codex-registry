@@ -1,5 +1,5 @@
-const CodexTitle = artifacts.require("./CodexTitle.sol");
+const CodexTitle = artifacts.require('./CodexTitle.sol')
 
 module.exports = function(deployer) {
-  deployer.deploy(CodexTitle);
-};
+  deployer.deploy(CodexTitle)
+}
