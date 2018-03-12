@@ -1,9 +1,11 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
-//import "./ERC721.sol";
-//import "./ERC721Metadata.sol";
+// TODO: Known issue where relative paths make VSCode complain:
+// https://github.com/juanfranblanco/vscode-solidity/issues/31
+// import \"../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol\";
 
-import "zeppelin-solidity/contracts/math/SafeMath.sol";
+// For now, these are copied over directly from node_modules so solidity-coverage works
+import "./zeppelin-solidity/Ownable.sol";
 
 /*
 
@@ -29,16 +31,16 @@ contract CodexTitle {
         string description;
     }
 
-    Deed[] deeds;
+    Deed[] public deeds;
 
-    mapping (uint256 => address) deedIdToOwner;
-    mapping (uint256 => address) deedIdToApproved;
-    mapping (address => uint256) ownerToDeedCount;
+    mapping (uint256 => address) public deedIdToOwner;
+    mapping (uint256 => address) public deedIdToApproved;
+    mapping (address => uint256) public ownerToDeedCount;
 
     /// @notice A descriptive name for a collection of deeds managed by this
     ///  contract
     /// @dev Wallets and exchanges MAY display this to the end user.
-    function name() public pure returns (string _name) {
+    function name() external pure returns (string _name) {
         return "Codex Title";
     }
 
@@ -127,7 +129,7 @@ contract CodexTitle {
     event Transfer(address indexed from, address indexed to, uint256 indexed deedId);
 
     /// @dev The Approve event emits to log the "approved taker" for a deed -- whether
-    ///  set for the first time, reaffirmed by setting the same value, or setting to  
+    ///  set for the first time, reaffirmed by setting the same value, or setting to
     ///  a new value. The "approved taker" is the zero address if nobody can take the
     ///  deed now or it is an address if that address can call `takeOwnership` to attempt
     ///  taking the deed. Any change to the "approved taker" for a deed SHALL cause

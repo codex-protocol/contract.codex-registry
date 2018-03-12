@@ -28,14 +28,14 @@
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "chai-bignumber": "^2.0.2",
-    "eslint": "^4.17.0",
+    "eslint": "^4.18.2",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-prettier": "^2.6.0",
-    "prettier": "^1.10.2",
-    "truffle": "^4.0.6",
-    "web3": "^1.0.0-beta.30"
+    "prettier": "^1.11.1",
+    "truffle": "^4.1.3",
+    "web3": "^1.0.0-beta2"
   },
   "dependencies": {
-    "zeppelin-solidity": "1.6.0"
+    "zeppelin-solidity": "1.7.0"
   }
 }
