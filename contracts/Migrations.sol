@@ -1,3 +1,4 @@
+/* solhint-disable */
 pragma solidity ^0.4.17;
 
 contract Migrations {
@@ -21,3 +22,4 @@ contract Migrations {
     upgraded.setCompleted(last_completed_migration);
   }
 }
+/* solhint-enable */

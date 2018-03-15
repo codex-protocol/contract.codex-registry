@@ -1,93 +1,111 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
-/// @title Interface for contracts conforming to ERC-721: Deed Standard
-/// @author William Entriken (https://phor.net), et. al.
-/// @dev Specification at https://github.com/ethereum/eips/XXXFinalUrlXXX
-interface ERC721 {
 
-    // COMPLIANCE WITH ERC-165 (DRAFT) /////////////////////////////////////////
+interface ERC165 {
+    /// @notice Query if a contract implements an interface
+    /// @param interfaceID The interface identifier, as specified in ERC-165
+    /// @dev Interface identification is specified in ERC-165. This function
+    ///  uses less than 30,000 gas.
+    /// @return `true` if the contract implements `interfaceID` and
+    ///  `interfaceID` is not 0xffffffff, `false` otherwise
+    function supportsInterface(bytes4 interfaceID) external view returns (bool);
+}
 
-    /// @dev ERC-165 (draft) interface signature for itself
-    // bytes4 internal constant INTERFACE_SIGNATURE_ERC165 = // 0x01ffc9a7
-    //     bytes4(keccak256('supportsInterface(bytes4)'));
 
-    /// @dev ERC-165 (draft) interface signature for ERC721
-    // bytes4 internal constant INTERFACE_SIGNATURE_ERC721 = // 0xda671b9b
-    //     bytes4(keccak256('ownerOf(uint256)')) ^
-    //     bytes4(keccak256('countOfDeeds()')) ^
-    //     bytes4(keccak256('countOfDeedsByOwner(address)')) ^
-    //     bytes4(keccak256('deedOfOwnerByIndex(address,uint256)')) ^
-    //     bytes4(keccak256('approve(address,uint256)')) ^
-    //     bytes4(keccak256('takeOwnership(uint256)'));
+/// @title ERC-721 Non-Fungible Token Standard
+/// @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
+///  Note: the ERC-165 identifier for this interface is 0x6466353c
+contract ERC721 is ERC165 {
+    /// @dev This emits when ownership of any NFT changes by any mechanism.
+    ///  This event emits when NFTs are created (`from` == 0) and destroyed
+    ///  (`to` == 0). Exception: during contract creation, any number of NFTs
+    ///  may be created and assigned without emitting Transfer. At the time of
+    ///  any transfer, the approved address for that NFT (if any) is reset to none.
+    event Transfer(address indexed _from, address indexed _to, uint256 _tokenId);
 
-    /// @notice Query a contract to see if it supports a certain interface
-    /// @dev Returns `true` the interface is supported and `false` otherwise,
-    ///  returns `true` for INTERFACE_SIGNATURE_ERC165 and
-    ///  INTERFACE_SIGNATURE_ERC721, see ERC-165 for other interface signatures.
-    function supportsInterface(bytes4 _interfaceID) external pure returns (bool);
+    /// @dev This emits when the approved address for an NFT is changed or
+    ///  reaffirmed. The zero address indicates there is no approved address.
+    ///  When a Transfer event emits, this also indicates that the approved
+    ///  address for that NFT (if any) is reset to none.
+    event Approval(address indexed _owner, address indexed _approved, uint256 _tokenId);
 
-    // PUBLIC QUERY FUNCTIONS //////////////////////////////////////////////////
+    /// @dev This emits when an operator is enabled or disabled for an owner.
+    ///  The operator can manage all NFTs of the owner.
+    event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
 
-    /// @notice Find the owner of a deed
-    /// @param _deedId The identifier for a deed we are inspecting
-    /// @dev Deeds assigned to zero address are considered invalid, and
-    ///  queries about them do throw.
-    /// @return The non-zero address of the owner of deed `_deedId`, or `throw`
-    ///  if deed `_deedId` is not tracked by this contract
-    function ownerOf(uint256 _deedId) external view returns (address _owner);
+    /// @notice Transfers the ownership of an NFT from one address to another address
+    /// @dev Throws unless `msg.sender` is the current owner, an authorized
+    ///  operator, or the approved address for this NFT. Throws if `_from` is
+    ///  not the current owner. Throws if `_to` is the zero address. Throws if
+    ///  `_tokenId` is not a valid NFT. When transfer is complete, this function
+    ///  checks if `_to` is a smart contract (code size > 0). If so, it calls
+    ///  `onERC721Received` on `_to` and throws if the return value is not
+    ///  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`.
+    /// @param _from The current owner of the NFT
+    /// @param _to The new owner
+    /// @param _tokenId The NFT to transfer
+    /// @param data Additional data with no specified format, sent in call to `_to`
+    function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes data) external payable;
 
-    /// @notice Count deeds tracked by this contract
-    /// @return A count of valid deeds tracked by this contract, where each one of
-    ///  them has an assigned and queryable owner not equal to the zero address
-    function countOfDeeds() external view returns (uint256 _count);
+    /// @notice Transfers the ownership of an NFT from one address to another address
+    /// @dev This works identically to the other function with an extra data parameter,
+    ///  except this function just sets data to ""
+    /// @param _from The current owner of the NFT
+    /// @param _to The new owner
+    /// @param _tokenId The NFT to transfer
+    function safeTransferFrom(address _from, address _to, uint256 _tokenId) external payable;
 
-    /// @notice Count all deeds assigned to an owner
-    /// @dev Throws if `_owner` is the zero address, representing invalid deeds.
-    /// @param _owner An address where we are interested in deeds owned by them
-    /// @return The number of deeds owned by `_owner`, possibly zero
-    function countOfDeedsByOwner(address _owner) external view returns (uint256 _count);
+    /// @notice Transfer ownership of an NFT -- THE CALLER IS RESPONSIBLE
+    ///  TO CONFIRM THAT `_to` IS CAPABLE OF RECEIVING NFTS OR ELSE
+    ///  THEY MAY BE PERMANENTLY LOST
+    /// @dev Throws unless `msg.sender` is the current owner, an authorized
+    ///  operator, or the approved address for this NFT. Throws if `_from` is
+    ///  not the current owner. Throws if `_to` is the zero address. Throws if
+    ///  `_tokenId` is not a valid NFT.
+    /// @param _from The current owner of the NFT
+    /// @param _to The new owner
+    /// @param _tokenId The NFT to transfer
+    function transferFrom(address _from, address _to, uint256 _tokenId) external payable;
 
-    /// @notice Enumerate deeds assigned to an owner
-    /// @dev Throws if `_index` >= `countOfDeedsByOwner(_owner)` or if
-    ///  `_owner` is the zero address, representing invalid deeds.
-    /// @param _owner An address where we are interested in deeds owned by them
-    /// @param _index A counter less than `countOfDeedsByOwner(_owner)`
-    /// @return The identifier for the `_index`th deed assigned to `_owner`,
-    ///   (sort order not specified)
-    function deedOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256 _deedId);
+    /// @notice Set or reaffirm the approved address for an NFT
+    /// @dev The zero address indicates there is no approved address.
+    /// @dev Throws unless `msg.sender` is the current NFT owner, or an authorized
+    ///  operator of the current owner.
+    /// @param _approved The new approved NFT controller
+    /// @param _tokenId The NFT to approve
+    function approve(address _approved, uint256 _tokenId) external payable;
 
-    // TRANSFER MECHANISM //////////////////////////////////////////////////////
+    /// @notice Enable or disable approval for a third party ("operator") to manage
+    ///  all your assets.
+    /// @dev Throws unless `msg.sender` is the current NFT owner.
+    /// @dev Emits the ApprovalForAll event
+    /// @param _operator Address to add to the set of authorized operators.
+    /// @param _approved True if the operators is approved, false to revoke approval
+    function setApprovalForAll(address _operator, bool _approved) external;
 
-    /// @dev This event emits when ownership of any deed changes by any
-    ///  mechanism. This event emits when deeds are created (`from` == 0) and
-    ///  destroyed (`to` == 0). Exception: during contract creation, any
-    ///  transfers may occur without emitting `Transfer`. At the time of any transfer,
-    ///  the "approved taker" is implicitly reset to the zero address.
-    event Transfer(address indexed from, address indexed to, uint256 indexed deedId);
+    /// @notice Get the approved address for a single NFT
+    /// @dev Throws if `_tokenId` is not a valid NFT
+    /// @param _tokenId The NFT to find the approved address for
+    /// @return The approved address for this NFT, or the zero address if there is none
+    function getApproved(uint256 _tokenId) external view returns (address);
 
-    /// @dev The Approve event emits to log the "approved taker" for a deed -- whether
-    ///  set for the first time, reaffirmed by setting the same value, or setting to  
-    ///  a new value. The "approved taker" is the zero address if nobody can take the
-    ///  deed now or it is an address if that address can call `takeOwnership` to attempt
-    ///  taking the deed. Any change to the "approved taker" for a deed SHALL cause
-    ///  Approve to emit. However, an exception, the Approve event will not emit when
-    ///  Transfer emits, this is because Transfer implicitly denotes the "approved taker"
-    ///  is reset to the zero address.
-    event Approval(address indexed owner, address indexed approved, uint256 indexed deedId);
+    /// @notice Query if an address is an authorized operator for another address
+    /// @param _owner The address that owns the NFTs
+    /// @param _operator The address that acts on behalf of the owner
+    /// @return True if `_operator` is an approved operator for `_owner`, false otherwise
+    function isApprovedForAll(address _owner, address _operator) external view returns (bool);
 
-    /// @notice Set the "approved taker" for your deed, or revoke approval by
-    ///  setting the zero address. You may `approve` any number of times while
-    ///  the deed is assigned to you, only the most recent approval matters. Emits
-    ///  an Approval event.
-    /// @dev Throws if `msg.sender` does not own deed `_deedId` or if `_to` ==
-    ///  `msg.sender` or if `_deedId` is not a valid deed.
-    /// @param _deedId The deed for which you are granting approval
-    function approve(address _to, uint256 _deedId) external payable;
+    /// @notice Count all NFTs assigned to an owner
+    /// @dev NFTs assigned to the zero address are considered invalid, and this
+    ///  function throws for queries about the zero address.
+    /// @param _owner An address for whom to query the balance
+    /// @return The number of NFTs owned by `_owner`, possibly zero
+    function balanceOf(address _owner) external view returns (uint256);
 
-    /// @notice Become owner of a deed for which you are currently approved
-    /// @dev Throws if `msg.sender` is not approved to become the owner of
-    ///  `deedId` or if `msg.sender` currently owns `_deedId` or if `_deedId is not a
-    ///  valid deed.
-    /// @param _deedId The deed that is being transferred
-    function takeOwnership(uint256 _deedId) external payable;
+    /// @notice Find the owner of an NFT
+    /// @param _tokenId The identifier for an NFT
+    /// @dev NFTs assigned to zero address are considered invalid, and queries
+    ///  about them do throw.
+    /// @return The address of the owner of the NFT
+    function ownerOf(uint256 _tokenId) external view returns (address);
 }
