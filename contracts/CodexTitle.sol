@@ -75,7 +75,7 @@ contract CodexTitleCore is ERC721, Ownable {
     /// @param _tokenId The NFT to approve
     function approve(address _approved, uint256 _tokenId) external tokenIndexInSupply(_tokenId) payable {
         address owner = tokenIdToOwnerAddressMap[_tokenId];
-        require(msg.sender == owner || ownerAddressToOperatorAddressMap[msg.sender] == owner);
+        require(msg.sender == owner || ownerAddressToOperatorsMap[owner][msg.sender]);
 
         tokenIdToApprovedAddressMap[_tokenId] = _approved;
 
@@ -84,16 +84,11 @@ contract CodexTitleCore is ERC721, Ownable {
 
     /// @notice Enable or disable approval for a third party ("operator") to manage
     ///  all your assets.
-    /// @dev Throws unless `msg.sender` is the current NFT owner.
     /// @dev Emits the ApprovalForAll event
     /// @param _operator Address to add to the set of authorized operators.
-    /// @param _approved True if the operators is approved, false to revoke approval
+    /// @param _approved True if the operator is approved, false to revoke approval
     function setApprovalForAll(address _operator, bool _approved) external {
-        if (_approved) {
-            ownerAddressToOperatorAddressMap[msg.sender] = _operator;
-        } else {
-            ownerAddressToOperatorAddressMap[msg.sender] = address(0);
-        }
+        ownerAddressToOperatorsMap[msg.sender][_operator] = _approved;
 
         ApprovalForAll(msg.sender, _operator, _approved);
     }
@@ -111,7 +106,7 @@ contract CodexTitleCore is ERC721, Ownable {
     /// @param _operator The address that acts on behalf of the owner
     /// @return True if `_operator` is an approved operator for `_owner`, false otherwise
     function isApprovedForAll(address _owner, address _operator) external view returns (bool) {
-        return ownerAddressToOperatorAddressMap[_owner] == _operator;
+        return ownerAddressToOperatorsMap[_owner][_operator];
     }
 
     /// @notice Count all NFTs assigned to an owner
@@ -147,9 +142,10 @@ contract CodexTitleCore is ERC721, Ownable {
     }
 
     function _transferFrom(address _from, address _to, uint256 _tokenId) internal {
-        require(_from == tokenIdToOwnerAddressMap[_tokenId]
+        address owner = tokenIdToOwnerAddressMap[_tokenId];
+        require(_from == owner
             || _from == tokenIdToApprovedAddressMap[_tokenId]
-            || _from == ownerAddressToOperatorAddressMap[tokenIdToOwnerAddressMap[_tokenId]]);
+            || ownerAddressToOperatorsMap[owner][_from]);
 
         require(_to != address(0));
 
@@ -169,6 +165,5 @@ contract CodexTitleCore is ERC721, Ownable {
 
     mapping (uint256 => address) public tokenIdToApprovedAddressMap;
 
-    // TODO: Is the intention to allow multiple operators per user? In this case, this needs to be a 2d mapping
-    mapping (address => address) public ownerAddressToOperatorAddressMap;
+    mapping (address => mapping (address => bool)) public ownerAddressToOperatorsMap;
 }
