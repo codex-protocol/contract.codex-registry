@@ -2,12 +2,13 @@
 // TODO: this is why some projects use scripts/test.sh
 
 module.exports = {
-  /*
   networks: {
     development: {
       host: '127.0.0.1',
       port: 7545,
-      network_id: '*' // Match any network id
+      network_id: '*', // Match any network id
+      gasPrice: 1,
+      gasLimit: 4612388
     },
     rinkeby: {
       host: 'localhost', // Connect to geth on the specified
@@ -16,5 +17,4 @@ module.exports = {
       network_id: 4
     }
   }
-  */
 }
