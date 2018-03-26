@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "Contracts for Codex Protocol's Codex Title",
   "scripts": {
+    "copy": "echo ../service.eel/static/contracts ../service.codex-title-registry-api/static/contracts ../web.codex-title-viewer/src/util/constants | xargs -n 1 cp -r build/contracts/CodexTitle.json",
+    "migrate": "truffle migrate --network development && npm run copy",
     "test": "node_modules/.bin/truffle test",
     "lint": "node_modules/.bin/eslint test && node ./node_modules/solhint/solhint.js contracts/*.sol",
     "compile": "node_modules/.bin/truffle compile",
