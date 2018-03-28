@@ -11,7 +11,7 @@ contract CodexTitle is CodexTitleCore {
   }
 
   function getTokenById(uint256 _tokenId) external view tokenIndexInSupply(_tokenId)
-  returns (string _name, string _description, string _imageUri) {
+  returns (string name, string description, string imageUri) {
 
     CodexTitle storage codexTitle = codexTitles[_tokenId];
 
