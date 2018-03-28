@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/johnhforrest/codex-title.git"
+    "url": "https://github.com/codex-protocol/contract.codex-title"
   },
   "keywords": [
     "codex"
@@ -20,9 +20,9 @@
   "author": "Codex Protocol <contact@codexprotocol.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/johnhforrest/codex-title/issues"
+    "url": "https://github.com/codex-protocol/codex-title/issues"
   },
-  "homepage": "https://github.com/johnhforrest/codex-title#readme",
+  "homepage": "https://github.com/codex-protocol/contract.codex-title",
   "devDependencies": {
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
