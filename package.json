@@ -4,11 +4,13 @@
   "description": "Contracts for Codex Protocol's Codex Title",
   "scripts": {
     "copy": "echo ../service.eel/static/contracts ../service.codex-title-registry-api/static/contracts ../web.codex-title-viewer/src/util/constants | xargs -n 1 cp -r build/contracts/CodexTitle.json",
-    "migrate": "truffle migrate --network development && npm run copy",
+    "migrate": "npm run ganache && npm run copy",
     "test": "truffle test",
-    "lint": "eslint test && solhint contracts/*.sol",
+    "lint": "npm run lint:js && npm run lint:sol",
+    "lint:js": "eslint .",
+    "lint:sol": "solium -d .",
     "compile": "truffle compile",
-    "ganache": "truffle migrate --network development"
+    "ganache": "truffle migrate --network ganache"
   },
   "repository": {
     "type": "git",
@@ -29,12 +31,11 @@
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.10.0",
     "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-prettier": "^2.6.0",
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
-    "prettier": "^1.11.1",
     "solhint": "^1.1.10",
     "solidity-coverage": "^0.4.15",
+    "solium": "^1.1.6",
     "truffle": "^4.1.5"
   },
   "dependencies": {
