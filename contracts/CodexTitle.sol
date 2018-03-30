@@ -12,11 +12,13 @@ contract CodexTitle is ERC721Token {
 
   mapping(uint256 => CodexTitleData) internal tokenData;
 
-  function CodexTitle() public ERC721Token("Codex Title", "CT")
-  { }
+  function CodexTitle() public ERC721Token("Codex Title", "CT") {
+
+  }
 
   function mint(
-    address _to, string _name, string _description, string _imageUri) public {
+    address _to, string _name, string _description, string _imageUri) public
+  {
     uint256 tokenId = allTokens.length;
 
     super._mint(_to, tokenId);
@@ -25,7 +27,8 @@ contract CodexTitle is ERC721Token {
   }
 
   function getTokenById(uint256 _tokenId) external view
-    returns (string name, string description, string imageUri) {
+    returns (string name, string description, string imageUri)
+  {
     CodexTitleData storage codexTitle = tokenData[_tokenId];
 
     return (codexTitle.name, codexTitle.description, codexTitle.imageUri);
