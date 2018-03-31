@@ -10,7 +10,7 @@
     "lint:js": "eslint .",
     "lint:sol": "solium -d .",
     "compile": "truffle compile",
-    "ganache": "truffle migrate --network ganache"
+    "ganache": "truffle migrate --network ganache --reset"
   },
   "repository": {
     "type": "git",
