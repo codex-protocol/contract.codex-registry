@@ -4,13 +4,13 @@
   "description": "Contracts for Codex Protocol's Codex Title",
   "scripts": {
     "copy": "echo ../service.eel/static/contracts ../service.codex-title-registry-api/static/contracts ../web.codex-title-viewer/src/util/constants | xargs -n 1 cp -r build/contracts/CodexTitle.json",
-    "migrate": "npm run ganache && npm run copy",
+    "migrate": "truffle migrate --network ganache && npm run copy",
+    "migrate:reset": "rm -rf build && truffle migrate --reset --network ganache && npm run copy",
     "test": "truffle test --network ganache",
     "lint": "npm run lint:js && npm run lint:sol",
     "lint:js": "eslint .",
     "lint:sol": "solium -d .",
-    "compile": "truffle compile",
-    "ganache": "truffle migrate --network ganache --reset"
+    "compile": "truffle compile"
   },
   "repository": {
     "type": "git",
