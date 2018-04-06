@@ -152,12 +152,8 @@ contract('ERC721Token', function (accounts) {
           const count = await this.token.totalSupply();
           count.toNumber().should.be.equal(4);
 
-          // TODO: this logic is busted
-          const tokensListed = await Promise.all(_.range(3).map(i => this.token.tokenByIndex(i)));
-          const expectedTokens = _.filter(
-            [firstTokenId, secondTokenId, newTokenId, anotherNewTokenId],
-            x => (x !== tokenId)
-          );
+          const tokensListed = await Promise.all(_.range(4).map(i => this.token.tokenByIndex(i)));
+          const expectedTokens = [firstTokenId, secondTokenId, newTokenId, anotherNewTokenId];
           tokensListed.map(t => t.toNumber()).should.have.members(expectedTokens);
         });
       });
