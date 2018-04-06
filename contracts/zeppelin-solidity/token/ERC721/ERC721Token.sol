@@ -1,8 +1,9 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 import "./ERC721.sol";
-import "./DeprecatedERC721.sol";
 import "./ERC721BasicToken.sol";
+
+// TODO: Needs to implement ERC165 to be standards compliant
 
 
 /**
@@ -30,7 +31,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   // Mapping from token id to position in the allTokens array
   mapping(uint256 => uint256) internal allTokensIndex;
 
-  // Optional mapping for token URIs 
+  // Optional mapping for token URIs
   mapping(uint256 => string) internal tokenURIs;
 
   /**
@@ -151,36 +152,8 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   */
   function _mint(address _to, uint256 _tokenId) internal {
     super._mint(_to, _tokenId);
-    
+
     allTokensIndex[_tokenId] = allTokens.length;
     allTokens.push(_tokenId);
   }
-
-  /**
-  * @dev Internal function to burn a specific token
-  * @dev Reverts if the token does not exist
-  * @param _owner owner of the token to burn
-  * @param _tokenId uint256 ID of the token being burned by the msg.sender
-  */
-  function _burn(address _owner, uint256 _tokenId) internal {
-    super._burn(_owner, _tokenId);
-
-    // Clear metadata (if any)
-    if (bytes(tokenURIs[_tokenId]).length != 0) {
-      delete tokenURIs[_tokenId];
-    }
-
-    // Reorg all tokens array
-    uint256 tokenIndex = allTokensIndex[_tokenId];
-    uint256 lastTokenIndex = allTokens.length.sub(1);
-    uint256 lastToken = allTokens[lastTokenIndex];
-
-    allTokens[tokenIndex] = lastToken;
-    allTokens[lastTokenIndex] = 0;
-
-    allTokens.length--;
-    allTokensIndex[_tokenId] = 0;
-    allTokensIndex[lastToken] = tokenIndex;
-  }
-
 }

@@ -1,6 +1,6 @@
 import assertRevert from '../../helpers/assertRevert';
 import shouldBehaveLikeERC721BasicToken from './ERC721BasicToken.behaviour';
-import shouldMintAndBurnERC721Token from './ERC721MintBurn.behaviour';
+import shouldMintERC721Token from './ERC721Mint.behaviour';
 import _ from 'lodash';
 
 const BigNumber = web3.BigNumber;
@@ -23,7 +23,7 @@ contract('ERC721Token', function (accounts) {
   });
 
   shouldBehaveLikeERC721BasicToken(accounts);
-  shouldMintAndBurnERC721Token(accounts);
+  shouldMintERC721Token(accounts);
 
   describe('like a full ERC721', function () {
     beforeEach(async function () {
@@ -50,32 +50,6 @@ contract('ERC721Token', function (accounts) {
       });
     });
 
-    describe('burn', function () {
-      const tokenId = firstTokenId;
-      const sender = creator;
-
-      beforeEach(async function () {
-        await this.token.burn(tokenId, { from: sender });
-      });
-
-      it('removes that token from the token list of the owner', async function () {
-        const token = await this.token.tokenOfOwnerByIndex(sender, 0);
-        token.toNumber().should.be.equal(secondTokenId);
-      });
-
-      it('adjusts all tokens list', async function () {
-        const token = await this.token.tokenByIndex(0);
-        token.toNumber().should.be.equal(secondTokenId);
-      });
-
-      it('burns all tokens', async function () {
-        await this.token.burn(secondTokenId, { from: sender });
-        const total = await this.token.totalSupply();
-        total.toNumber().should.be.equal(0);
-        await assertRevert(this.token.tokenByIndex(0));
-      });
-    });
-    
     describe('metadata', function () {
       const sampleUri = 'mock://mytoken';
 
@@ -93,13 +67,6 @@ contract('ERC721Token', function (accounts) {
         await this.token.setTokenURI(firstTokenId, sampleUri);
         const uri = await this.token.tokenURI(firstTokenId);
         uri.should.be.equal(sampleUri);
-      });
-
-      it('can burn token with metadata', async function () {
-        await this.token.setTokenURI(firstTokenId, sampleUri);
-        await this.token.burn(firstTokenId);
-        const exists = await this.token.exists(firstTokenId);
-        exists.should.be.false;
       });
 
       it('returns empty metadata for token', async function () {
@@ -122,7 +89,7 @@ contract('ERC721Token', function (accounts) {
     describe('tokenOfOwnerByIndex', function () {
       const owner = creator;
       const another = accounts[1];
-        
+
       describe('when the given index is lower than the amount of tokens owned by the given address', function () {
         it('returns the token ID placed at the given index', async function () {
           const tokenId = await this.token.tokenOfOwnerByIndex(owner, 0);
@@ -174,18 +141,18 @@ contract('ERC721Token', function (accounts) {
       });
 
       [firstTokenId, secondTokenId].forEach(function (tokenId) {
-        it(`should return all tokens after burning token ${tokenId} and minting new tokens`, async function () {
+        it('should return all tokens after minting new tokens', async function () {
           const owner = accounts[0];
           const newTokenId = 300;
           const anotherNewTokenId = 400;
-          
-          await this.token.burn(tokenId, { from: owner });
+
           await this.token.mint(owner, newTokenId, { from: owner });
           await this.token.mint(owner, anotherNewTokenId, { from: owner });
-  
+
           const count = await this.token.totalSupply();
-          count.toNumber().should.be.equal(3);
-          
+          count.toNumber().should.be.equal(4);
+
+          // TODO: this logic is busted
           const tokensListed = await Promise.all(_.range(3).map(i => this.token.tokenByIndex(i)));
           const expectedTokens = _.filter(
             [firstTokenId, secondTokenId, newTokenId, anotherNewTokenId],
