@@ -2,6 +2,7 @@ pragma solidity ^0.4.21;
 
 import "../token/ERC721/ERC721Token.sol";
 
+
 /**
  * @title ERC721TokenMock
  * This mock just provides a public mint function for testing purposes,

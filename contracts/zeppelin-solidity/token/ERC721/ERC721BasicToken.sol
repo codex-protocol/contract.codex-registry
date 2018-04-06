@@ -5,6 +5,7 @@ import "./ERC721Receiver.sol";
 import "../../math/SafeMath.sol";
 import "../../AddressUtils.sol";
 
+
 /**
  * @title ERC721 Non-Fungible Token Standard basic implementation
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
@@ -106,7 +107,6 @@ contract ERC721BasicToken is ERC721Basic {
     return tokenApprovals[_tokenId];
   }
 
-
   /**
   * @dev Sets or unsets the approval of a given operator
   * @dev An operator is allowed to transfer all tokens of the sender on their behalf
@@ -160,7 +160,11 @@ contract ERC721BasicToken is ERC721Basic {
   * @param _tokenId uint256 ID of the token to be transferred
   */
   function safeTransferFrom(address _from, address _to, uint256 _tokenId) public canTransfer(_tokenId) {
-    safeTransferFrom(_from, _to, _tokenId, "");
+    safeTransferFrom(
+      _from,
+      _to,
+      _tokenId,
+      "");
   }
 
   /**
@@ -175,9 +179,22 @@ contract ERC721BasicToken is ERC721Basic {
   * @param _tokenId uint256 ID of the token to be transferred
   * @param _data bytes data to send along with a safe transfer check
   */
-  function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes _data) public canTransfer(_tokenId) {
-    transferFrom(_from, _to, _tokenId);
-    require(checkAndCallSafeTransfer(_from, _to, _tokenId, _data));
+  function safeTransferFrom(
+    address _from, address _to, uint256 _tokenId, bytes _data) public canTransfer(_tokenId)
+  {
+
+    transferFrom(
+      _from,
+      _to,
+      _tokenId);
+
+    require(
+      checkAndCallSafeTransfer(
+        _from,
+        _to,
+        _tokenId,
+        _data)
+    );
   }
 
   /**
@@ -249,7 +266,9 @@ contract ERC721BasicToken is ERC721Basic {
   * @param _data bytes optional data to send along with the call
   * @return whether the call correctly returned the expected magic value
   */
-  function checkAndCallSafeTransfer(address _from, address _to, uint256 _tokenId, bytes _data) internal returns (bool) {
+  function checkAndCallSafeTransfer(
+    address _from, address _to, uint256 _tokenId, bytes _data) internal returns (bool)
+  {
     if (!_to.isContract()) {
       return true;
     }

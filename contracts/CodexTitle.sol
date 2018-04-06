@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.21;
 
 import "./zeppelin-solidity/token/ERC721/ERC721Token.sol";
 
@@ -16,6 +16,14 @@ contract CodexTitle is ERC721Token {
 
   }
 
+  function getTokenById(uint256 _tokenId) external view
+    returns (string name, string description, string imageUri)
+  {
+    CodexTitleData storage codexTitle = tokenData[_tokenId];
+
+    return (codexTitle.name, codexTitle.description, codexTitle.imageUri);
+  }
+
   function mint(
     address _to, string _name, string _description, string _imageUri) public
   {
@@ -24,13 +32,5 @@ contract CodexTitle is ERC721Token {
     super._mint(_to, tokenId);
 
     tokenData[tokenId] = CodexTitleData(_name, _description, _imageUri);
-  }
-
-  function getTokenById(uint256 _tokenId) external view
-    returns (string name, string description, string imageUri)
-  {
-    CodexTitleData storage codexTitle = tokenData[_tokenId];
-
-    return (codexTitle.name, codexTitle.description, codexTitle.imageUri);
   }
 }

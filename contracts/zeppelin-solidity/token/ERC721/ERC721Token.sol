@@ -69,17 +69,6 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   }
 
   /**
-  * @dev Internal function to set the token URI for a given token
-  * @dev Reverts if the token ID does not exist
-  * @param _tokenId uint256 ID of the token to set its URI
-  * @param _uri string URI to assign
-  */
-  function _setTokenURI(uint256 _tokenId, string _uri) internal {
-    require(exists(_tokenId));
-    tokenURIs[_tokenId] = _uri;
-  }
-
-  /**
   * @dev Gets the token ID at a given index of the tokens list of the requested owner
   * @param _owner address owning the tokens list to be accessed
   * @param _index uint256 representing the index to be accessed of the requested tokens list
@@ -107,6 +96,17 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   function tokenByIndex(uint256 _index) public view returns (uint256) {
     require(_index < totalSupply());
     return allTokens[_index];
+  }
+
+  /**
+  * @dev Internal function to set the token URI for a given token
+  * @dev Reverts if the token ID does not exist
+  * @param _tokenId uint256 ID of the token to set its URI
+  * @param _uri string URI to assign
+  */
+  function _setTokenURI(uint256 _tokenId, string _uri) internal {
+    require(exists(_tokenId));
+    tokenURIs[_tokenId] = _uri;
   }
 
   /**

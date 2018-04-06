@@ -1,5 +1,6 @@
 pragma solidity ^0.4.21;
 
+
 /**
  * @title ERC721 Non-Fungible Token Standard basic interface
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
@@ -21,5 +22,6 @@ contract ERC721Basic {
 
   function transferFrom(address _from, address _to, uint256 _tokenId) public;
   function safeTransferFrom(address _from, address _to, uint256 _tokenId) public;
-  function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes _data) public;
+  function safeTransferFrom(
+    address _from, address _to, uint256 _tokenId, bytes _data) public;
 }
