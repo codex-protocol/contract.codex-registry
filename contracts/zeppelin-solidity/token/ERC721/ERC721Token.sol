@@ -28,9 +28,6 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
-  // Mapping from token id to position in the allTokens array
-  mapping(uint256 => uint256) internal allTokensIndex;
-
   /**
   * @dev Constructor function
   */
@@ -129,7 +126,6 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   function _mint(address _to, uint256 _tokenId) internal {
     super._mint(_to, _tokenId);
 
-    allTokensIndex[_tokenId] = allTokens.length;
     allTokens.push(_tokenId);
   }
 }

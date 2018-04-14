@@ -182,7 +182,6 @@ contract ERC721BasicToken is ERC721Basic {
   function safeTransferFrom(
     address _from, address _to, uint256 _tokenId, bytes _data) public canTransfer(_tokenId)
   {
-
     transferFrom(
       _from,
       _to,
@@ -272,6 +271,7 @@ contract ERC721BasicToken is ERC721Basic {
     if (!_to.isContract()) {
       return true;
     }
+
     bytes4 retval = ERC721Receiver(_to).onERC721Received(_from, _tokenId, _data);
     return (retval == ERC721_RECEIVED);
   }
