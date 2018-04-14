@@ -1,34 +1,20 @@
 pragma solidity ^0.4.21;
 
 import "./ERC721Basic.sol";
+import "./ERC721BasicTokenStorage.sol";
 import "./ERC721Receiver.sol";
-import "../../math/SafeMath.sol";
-import "../../AddressUtils.sol";
+
+import "../zeppelin-solidity/SafeMath.sol";
+import "../zeppelin-solidity/AddressUtils.sol";
 
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic implementation
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
-contract ERC721BasicToken is ERC721Basic {
+contract ERC721BasicToken is ERC721BasicTokenStorage, ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
-
-  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
-  // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
-  bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
-
-  // Mapping from token ID to owner
-  mapping (uint256 => address) internal tokenOwner;
-
-  // Mapping from token ID to approved address
-  mapping (uint256 => address) internal tokenApprovals;
-
-  // Mapping from owner to number of owned token
-  mapping (address => uint256) internal ownedTokensCount;
-
-  // Mapping from owner to operator approvals
-  mapping (address => mapping (address => bool)) internal operatorApprovals;
 
   /**
   * @dev Guarantees msg.sender is owner of the given token

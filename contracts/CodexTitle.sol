@@ -1,6 +1,6 @@
 pragma solidity ^0.4.21;
 
-import "./zeppelin-solidity/token/ERC721/ERC721Token.sol";
+import "./ERC721/ERC721Token.sol";
 
 
 contract CodexTitle is ERC721Token {

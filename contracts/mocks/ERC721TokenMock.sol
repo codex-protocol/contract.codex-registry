@@ -1,6 +1,6 @@
 pragma solidity ^0.4.21;
 
-import "../token/ERC721/ERC721Token.sol";
+import "../ERC721/ERC721Token.sol";
 
 
 /**
