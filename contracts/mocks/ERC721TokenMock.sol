@@ -5,8 +5,7 @@ import "../ERC721/ERC721Token.sol";
 
 /**
  * @title ERC721TokenMock
- * This mock just provides a public mint function for testing purposes,
- * and a public setter for metadata URI
+ * This mock just provides a public mint function for testing purposes
  */
 contract ERC721TokenMock is ERC721Token {
   function ERC721TokenMock(string name, string symbol) public

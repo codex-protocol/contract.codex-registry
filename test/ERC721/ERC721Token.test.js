@@ -1,4 +1,4 @@
-import assertRevert from '../../helpers/assertRevert';
+import assertRevert from '../helpers/assertRevert';
 import shouldBehaveLikeERC721BasicToken from './ERC721BasicToken.behaviour';
 import shouldMintERC721Token from './ERC721Mint.behaviour';
 import _ from 'lodash';

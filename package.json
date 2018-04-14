@@ -6,7 +6,7 @@
     "copy": "echo ../service.eel/static/contracts ../service.codex-title-registry-api/static/contracts ../web.codex-title-viewer/src/util/constants | xargs -n 1 cp -r build/contracts/CodexTitle.json",
     "migrate": "truffle migrate --network ganache && npm run copy",
     "migrate:reset": "rm -rf build && truffle migrate --reset --network ganache && npm run copy",
-    "test": "truffle test --network ganache",
+    "test": "truffle test --network ganache ./test/ERC721/ERC721BasicToken.test.js",
     "lint": "npm run lint:js && npm run lint:sol",
     "lint:js": "eslint .",
     "lint:sol": "solium -d .",
@@ -39,6 +39,7 @@
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
+    "ethereumjs-abi": "^0.6.5",
     "solidity-coverage": "^0.4.15",
     "solium": "^1.1.6"
   },
