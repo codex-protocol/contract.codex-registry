@@ -2,8 +2,6 @@ pragma solidity ^0.4.21;
 
 
 contract Proxy {
-  function implementation() public view returns (address);
-
   function () payable public {
     address _impl = implementation();
     require(_impl != address(0));
@@ -19,4 +17,6 @@ contract Proxy {
       default { return(ptr, size) }
     }
   }
+
+  function implementation() public view returns (address);
 }
