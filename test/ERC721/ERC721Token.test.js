@@ -1,9 +1,10 @@
 import shouldBehaveLikeERC721BasicToken from './behaviors/ERC721BasicToken.behaviour';
-import shouldBehaveLikeERC721Token from './behaviors/ERC721Token.bheavior';
+import shouldBehaveLikeERC721Token from './behaviors/ERC721Token.behavior';
 import shouldMintERC721Token from './behaviors/ERC721Mint.behaviour';
 
 const BigNumber = web3.BigNumber;
 const ERC721Token = artifacts.require('ERC721TokenMock.sol');
+const TokenProxy = artifacts.require('TokenProxy.sol');
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -16,7 +17,11 @@ contract('ERC721Token', function (accounts) {
   const creator = accounts[0];
 
   beforeEach(async function () {
-    this.token = await ERC721Token.new(name, symbol, { from: creator });
+    const token = await ERC721Token.new(name, symbol, { from: creator });
+    const proxy = await TokenProxy.new({ from: creator });
+    await proxy.upgradeTo('1', token.address);
+
+    this.token = ERC721Token.at(proxy.address);
   });
 
   shouldBehaveLikeERC721BasicToken(accounts);
