@@ -2,17 +2,18 @@ pragma solidity ^0.4.21;
 
 import "./ERC721Basic.sol";
 import "./ERC721Receiver.sol";
-import "../UpgradeabilityStorage.sol";
 
 import "../zeppelin-solidity/SafeMath.sol";
 import "../zeppelin-solidity/AddressUtils.sol";
+
+// TODO: Needs to implement ERC165 to be standards compliant
 
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic implementation
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
-contract ERC721BasicToken is UpgradeabilityStorage, ERC721Basic {
+contract ERC721BasicToken is ERC721Basic {
   using SafeMath for uint256;
   using AddressUtils for address;
 

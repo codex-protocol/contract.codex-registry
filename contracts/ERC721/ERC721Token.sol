@@ -3,8 +3,6 @@ pragma solidity ^0.4.21;
 import "./ERC721.sol";
 import "./ERC721BasicToken.sol";
 
-// TODO: Needs to implement ERC165 to be standards compliant
-
 
 /**
  * @title Full ERC721 Token
