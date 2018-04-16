@@ -11,7 +11,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('ERC721Token via TokenProxy should behave', function (accounts) {
+contract('ERC721Token should behave', function (accounts) {
   const name = 'Non Fungible Token';
   const symbol = 'NFT';
   const creator = accounts[0];

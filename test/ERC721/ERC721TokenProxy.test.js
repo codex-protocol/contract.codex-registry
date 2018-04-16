@@ -1,6 +1,11 @@
+import assertRevert from '../helpers/assertRevert';
+import shouldBehaveLikeERC721BasicToken from './behaviors/ERC721BasicToken.behavior';
+import shouldBehaveLikeERC721Token from './behaviors/ERC721Token.behavior';
+import shouldMintERC721Token from './behaviors/ERC721Mint.behavior';
+
 const BigNumber = web3.BigNumber;
-const ERC721BasicToken = artifacts.require('ERC721BasicTokenMock.sol');
 const ERC721Token = artifacts.require('ERC721TokenMock.sol');
+const UpgradedToken = artifacts.require('UpgradedTokenMock.sol');
 const TokenProxy = artifacts.require('TokenProxy.sol');
 
 require('chai')
@@ -8,49 +13,44 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('TokenProxy', async function (accounts) {
+contract('ERC721Token via TokenProxy', async function (accounts) {
   const firstTokenId = 1;
-  const secondTokenId = 2;
+  // const secondTokenId = 2;
   const creator = accounts[0];
   const name = 'Non Fungible Token';
   const symbol = 'NFT';
 
   beforeEach(async function () {
-    const basicToken = await ERC721BasicToken.new({ from: creator });
+    const token = await ERC721Token.new(name, symbol, { from: creator });
     this.proxy = await TokenProxy.new({ from: creator });
-    await this.proxy.upgradeTo('1', basicToken.address);
+    await this.proxy.upgradeTo('1', token.address);
 
-    this.token = ERC721BasicToken.at(this.proxy.address);
-    await this.token.mint(creator, firstTokenId, { from: creator });
+    this.token = ERC721Token.at(this.proxy.address);
   });
 
-  it('returns the amount of tokens owned by the given address', async function () {
-    const balance = await this.token.balanceOf(creator);
-    balance.should.be.bignumber.equal(1);
-  });
-
-  describe('upgrading to ERC721Token', function () {
+  describe('when upgraded', function () {
     beforeEach(async function () {
-      const token = await ERC721Token.new(name, symbol, { from: creator });
+      const token = await UpgradedToken.new(name, symbol, { from: creator });
       await this.proxy.upgradeTo('1.1', token.address);
 
-      this.token = ERC721Token.at(this.proxy.address);
-      // await this.token.mint(creator, secondTokenId, { from: creator });
+      this.token = UpgradedToken.at(this.proxy.address);
     });
 
-    it('should be able to mint some tokens', async function () {
-      let token = await this.token.tokenOfOwnerByIndex(creator, 0);
-      token.toNumber().should.be.equal(firstTokenId);
-      console.log('here2');
+    describe('mint', function () {
+      it('should fail without a fee', async function () {
+        await assertRevert(this.token.mint(creator, firstTokenId));
+      });
 
-      token = await this.token.tokenOfOwnerByIndex(creator, 1);
-      token.toNumber().should.be.equal(secondTokenId);
-      console.log('here2');
+      it('should succeed with the correct fee', async function () {
+        const requiredFee = await this.token.MINTING_FEE();
+        await this.token.mint(creator, firstTokenId, { value: requiredFee });
+      });
     });
+  });
 
-    it('returns the amount of tokens owned by the given address', async function () {
-      const balance = await this.token.balanceOf(creator);
-      balance.should.be.bignumber.equal(2);
-    });
+  describe('should behave', function () {
+    shouldBehaveLikeERC721BasicToken(accounts);
+    shouldMintERC721Token(accounts);
+    shouldBehaveLikeERC721Token(name, symbol, creator, accounts);
   });
 });

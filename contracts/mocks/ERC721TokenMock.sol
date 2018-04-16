@@ -12,7 +12,7 @@ contract ERC721TokenMock is ERC721Token {
     ERC721Token(name, symbol)
   { }
 
-  function mint(address _to, uint256 _tokenId) public {
+  function mint(address _to, uint256 _tokenId) payable public {
     super._mint(_to, _tokenId);
   }
 }

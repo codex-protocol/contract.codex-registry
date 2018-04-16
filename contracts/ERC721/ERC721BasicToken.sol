@@ -5,6 +5,7 @@ import "./ERC721Receiver.sol";
 
 import "../zeppelin-solidity/SafeMath.sol";
 import "../zeppelin-solidity/AddressUtils.sol";
+import "../zeppelin-solidity/Pausable.sol";
 
 // TODO: Needs to implement ERC165 to be standards compliant
 
@@ -13,7 +14,7 @@ import "../zeppelin-solidity/AddressUtils.sol";
  * @title ERC721 Non-Fungible Token Standard basic implementation
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
-contract ERC721BasicToken is ERC721Basic {
+contract ERC721BasicToken is ERC721Basic, Pausable {
   using SafeMath for uint256;
   using AddressUtils for address;
 
