@@ -1,6 +1,6 @@
-import shouldBehaveLikeERC721BasicToken from './behaviors/ERC721BasicToken.behaviour';
+import shouldBehaveLikeERC721BasicToken from './behaviors/ERC721BasicToken.behavior';
 import shouldBehaveLikeERC721Token from './behaviors/ERC721Token.behavior';
-import shouldMintERC721Token from './behaviors/ERC721Mint.behaviour';
+import shouldMintERC721Token from './behaviors/ERC721Mint.behavior';
 
 const BigNumber = web3.BigNumber;
 const ERC721Token = artifacts.require('ERC721TokenMock.sol');
@@ -11,7 +11,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('ERC721Token', function (accounts) {
+contract('ERC721Token via TokenProxy should behave', function (accounts) {
   const name = 'Non Fungible Token';
   const symbol = 'NFT';
   const creator = accounts[0];

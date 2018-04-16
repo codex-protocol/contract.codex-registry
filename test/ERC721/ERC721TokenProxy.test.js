@@ -22,7 +22,6 @@ contract('TokenProxy', async function (accounts) {
 
     this.token = ERC721BasicToken.at(this.proxy.address);
     await this.token.mint(creator, firstTokenId, { from: creator });
-    console.log('here1');
   });
 
   it('returns the amount of tokens owned by the given address', async function () {
@@ -36,16 +35,17 @@ contract('TokenProxy', async function (accounts) {
       await this.proxy.upgradeTo('1.1', token.address);
 
       this.token = ERC721Token.at(this.proxy.address);
-      await this.token.mint(creator, secondTokenId, { from: creator });
-      console.log('here2');
+      // await this.token.mint(creator, secondTokenId, { from: creator });
     });
 
     it('should be able to mint some tokens', async function () {
-      let token = await this.token.tokenOfOwnerByIndex(creator, 1);
+      let token = await this.token.tokenOfOwnerByIndex(creator, 0);
       token.toNumber().should.be.equal(firstTokenId);
+      console.log('here2');
 
-      token = await this.token.tokenOfOwnerByIndex(creator, 0);
+      token = await this.token.tokenOfOwnerByIndex(creator, 1);
       token.toNumber().should.be.equal(secondTokenId);
+      console.log('here2');
     });
 
     it('returns the amount of tokens owned by the given address', async function () {

@@ -6,7 +6,7 @@
     "copy": "echo ../service.eel/static/contracts ../service.codex-title-registry-api/static/contracts ../web.codex-title-viewer/src/util/constants | xargs -n 1 cp -r build/contracts/CodexTitle.json",
     "migrate": "truffle migrate --network ganache && npm run copy",
     "migrate:reset": "rm -rf build && truffle migrate --reset --network ganache && npm run copy",
-    "test": "truffle test --network ganache ./test/ERC721/ERC721Token.test.js",
+    "test": "truffle test --network ganache",
     "lint": "npm run lint:js && npm run lint:sol",
     "lint:js": "eslint .",
     "lint:sol": "solium -d .",
