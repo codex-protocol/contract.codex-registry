@@ -1,14 +1,21 @@
-const CodexTitle = artifacts.require('./CodexTitle.sol');
-// const Delegation = artifacts.require('./Delegation.sol');
+// const TokenProxy = artifacts.require('./TokenProxy.sol');
+// const CodexTitle = artifacts.require('./CodexTitle.sol');
 
 module.exports = function (deployer) {
   /*
-  deployer.deploy(CodexTitle).then(() => {
-    return deployer.deploy(Delegation, CodexTitle.address);
+  let codexTitle;
+  let tokenProxy;
+
+  deployer.deploy().then(() => {
+    return CodexTitle.new();
+  }).then((codexTitleInstance) => {
+    codexTitle = codexTitleInstance;
+    return TokenProxy.new();
+  }).then((tokenProxyInstance) => {
+    tokenProxy = tokenProxyInstance;
+    return tokenProxy.upgradeTo('1', codexTitle.address);
   }).catch((error) => {
     console.log(error);
   });
   */
-
-  deployer.deploy(CodexTitle);
 };

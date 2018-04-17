@@ -141,7 +141,12 @@ contract ERC721BasicToken is ERC721Basic, Pausable {
   * @param _to address to receive the ownership of the given token ID
   * @param _tokenId uint256 ID of the token to be transferred
   */
-  function transferFrom(address _from, address _to, uint256 _tokenId) public canTransfer(_tokenId) {
+  function transferFrom(
+    address _from,
+    address _to,
+    uint256 _tokenId)
+    public canTransfer(_tokenId)
+  {
     require(_from != address(0));
     require(_to != address(0));
 
@@ -163,7 +168,12 @@ contract ERC721BasicToken is ERC721Basic, Pausable {
   * @param _to address to receive the ownership of the given token ID
   * @param _tokenId uint256 ID of the token to be transferred
   */
-  function safeTransferFrom(address _from, address _to, uint256 _tokenId) public canTransfer(_tokenId) {
+  function safeTransferFrom(
+    address _from,
+    address _to,
+    uint256 _tokenId)
+    public canTransfer(_tokenId)
+  {
     safeTransferFrom(
       _from,
       _to,
@@ -184,7 +194,11 @@ contract ERC721BasicToken is ERC721Basic, Pausable {
   * @param _data bytes data to send along with a safe transfer check
   */
   function safeTransferFrom(
-    address _from, address _to, uint256 _tokenId, bytes _data) public canTransfer(_tokenId)
+    address _from,
+    address _to,
+    uint256 _tokenId,
+    bytes _data)
+    public canTransfer(_tokenId)
   {
     transferFrom(
       _from,
