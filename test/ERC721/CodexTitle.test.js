@@ -1,4 +1,4 @@
-// import assertRevert from '../helpers/assertRevert';
+import assertRevert from '../helpers/assertRevert';
 
 const BigNumber = web3.BigNumber;
 const CodexTitle = artifacts.require('CodexTitle.sol');
@@ -10,6 +10,7 @@ require('chai')
 
 contract('CodexTitle', async function (accounts) {
   const creator = accounts[0];
+  const unauthorized = accounts[9];
 
   const firstTokenMetadata = {
     name: 'First token',
@@ -34,26 +35,54 @@ contract('CodexTitle', async function (accounts) {
   });
 
   describe('mint', function () {
-    it('should create new tokens at the end of the allTokens array', async function () {
-      const numTokens = await this.token.totalSupply();
-      const tokenId = await this.token.tokenByIndex(numTokens - 1);
-      tokenId.should.be.bignumber.equal(numTokens - 1);
-    });
+    describe('when successful', function () {
+      it('should create new tokens at the end of the allTokens array', async function () {
+        const numTokens = await this.token.totalSupply();
+        const tokenId = await this.token.tokenByIndex(numTokens - 1);
+        tokenId.should.be.bignumber.equal(numTokens - 1);
+      });
 
-    it('should store the hashes at the minted tokens identifier', async function () {
-      const tokenData = await this.token.getTokenById(0);
-      tokenData[0].should.be.equal(hashedMetadata.name);
+      it('should store the hashes at the minted tokens identifier', async function () {
+        const tokenData = await this.token.getTokenById(0);
+        tokenData[0].should.be.equal(hashedMetadata.name);
+      });
     });
   });
 
-  describe('modify', function () {
-    it('should allow the owner to add new image hashes to the token', async function () {
-      const newImageHash = web3.sha3('abc123');
-      await this.token.addNewImageHash(0, newImageHash);
+  describe('addNewImageHash', function () {
+    const newImageHash = web3.sha3('abc123');
 
-      const tokenData = await this.token.getTokenById(0);
-      tokenData[2][1].should.be.equal(newImageHash);
-      tokenData[2].length.should.be.equal(2);
+    describe('when called by the owner', function () {
+      beforeEach(async function () {
+        await this.token.addNewImageHash(0, newImageHash);
+      });
+
+      it('should add the new hash to the imageHashes array', async function () {
+        const tokenData = await this.token.getTokenById(0);
+        tokenData[2][1].should.be.equal(newImageHash);
+        tokenData[2].length.should.be.equal(2);
+      });
+    });
+
+    describe('when the sender is not authorized', function () {
+      it('should revert', async function () {
+        await assertRevert(this.token.addNewImageHash(0, newImageHash, { from: unauthorized }));
+      });
+    });
+  });
+
+  describe('modifyNameHash', function () {
+    const newNameHash = web3.sha3('New name');
+
+    describe('when called by the owner', function () {
+      beforeEach(async function () {
+        await this.token.modifyNameHash(0, newNameHash);
+      });
+
+      it('should succeed', async function () {
+        const tokenData = await this.token.getTokenById(0);
+        tokenData[0].should.be.equal(newNameHash);
+      });
     });
   });
 });
