@@ -2,8 +2,9 @@ const CodexTitle = artifacts.require('./CodexTitle.sol');
 const TokenProxy = artifacts.require('./TokenProxy.sol');
 
 module.exports = async function (deployer, network, accounts) {
-  // TODO: Come up with a better place to define this. Maybe .env?
-  let newOwner = '';
+  let newOwner;
+
+  // The owner key should be stored securely in cold storage.
   switch (network) {
   case 'ganache':
     newOwner = accounts[1];
@@ -20,6 +21,8 @@ module.exports = async function (deployer, network, accounts) {
   // TODO: Should we transfer the ownership of CodexTItle itself too? Right now we are just transferring the proxy
   const tokenProxy = await TokenProxy.deployed();
   const codexTitle = CodexTitle.at(tokenProxy.address);
+
+  console.log('Transferring ownership of CodexTitle via TokenProxy to: ', newOwner);
 
   codexTitle.transferOwnership(newOwner);
 };
