@@ -26,6 +26,9 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   // Array with all token ids, used for enumeration
   uint256[] internal allTokens;
 
+  // Optional mapping for token URIs
+  mapping(uint256 => string) internal tokenURIs;
+
   /**
   * @dev Constructor function
   */
@@ -48,6 +51,16 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   */
   function symbol() public view returns (string) {
     return symbol_;
+  }
+
+  /**
+  * @dev Returns an URI for a given token ID
+  * @dev Throws if the token ID does not exist. May return an empty string.
+  * @param _tokenId uint256 ID of the token to query
+  */
+  function tokenURI(uint256 _tokenId) public view returns (string) {
+    require(exists(_tokenId));
+    return tokenURIs[_tokenId];
   }
 
   /**
@@ -78,6 +91,17 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   function tokenByIndex(uint256 _index) public view returns (uint256) {
     require(_index < totalSupply());
     return allTokens[_index];
+  }
+
+  /**
+  * @dev Internal function to set the token URI for a given token
+  * @dev Reverts if the token ID does not exist
+  * @param _tokenId uint256 ID of the token to set its URI
+  * @param _uri string URI to assign
+  */
+  function _setTokenURI(uint256 _tokenId, string _uri) internal {
+    require(exists(_tokenId));
+    tokenURIs[_tokenId] = _uri;
   }
 
   /**

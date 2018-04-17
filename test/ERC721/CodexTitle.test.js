@@ -71,6 +71,7 @@ contract('CodexTitle', async function (accounts) {
     });
   });
 
+  // TODO: Abstract this out into a generic pattern so it can also be used for description
   describe('modifyNameHash', function () {
     const newNameHash = web3.sha3('New name');
 
@@ -82,6 +83,12 @@ contract('CodexTitle', async function (accounts) {
       it('should succeed', async function () {
         const tokenData = await this.token.getTokenById(0);
         tokenData[0].should.be.equal(newNameHash);
+      });
+    });
+
+    describe('when the sender is not authorized', function () {
+      it('should revert', async function () {
+        await assertRevert(this.token.modifyNameHash(0, newNameHash, { from: unauthorized }));
       });
     });
   });

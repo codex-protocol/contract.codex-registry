@@ -37,6 +37,35 @@ export default function shouldBehaveLikeERC721Token (name, symbol, creator, acco
       });
     });
 
+    describe('metadata', function () {
+      const sampleUri = 'mock://mytoken';
+
+      it('has a name', async function () {
+        const name = await this.token.name();
+        name.should.be.equal(name);
+      });
+
+      it('has a symbol', async function () {
+        const symbol = await this.token.symbol();
+        symbol.should.be.equal(symbol);
+      });
+
+      it('sets and returns metadata for a token id', async function () {
+        await this.token.setTokenURI(firstTokenId, sampleUri);
+        const uri = await this.token.tokenURI(firstTokenId);
+        uri.should.be.equal(sampleUri);
+      });
+
+      it('returns empty metadata for token', async function () {
+        const uri = await this.token.tokenURI(firstTokenId);
+        uri.should.be.equal('');
+      });
+
+      it('reverts when querying metadata for non existant token id', async function () {
+        await assertRevert(this.token.tokenURI(500));
+      });
+    });
+
     describe('totalSupply', function () {
       it('returns total token supply', async function () {
         const totalSupply = await this.token.totalSupply();
