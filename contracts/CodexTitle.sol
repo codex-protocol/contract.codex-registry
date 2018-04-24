@@ -26,6 +26,14 @@ contract CodexTitle is ERC721Token {
 
   event Modified(address indexed _from, uint256 _tokenId, ModifiedType _type);
 
+  /**
+  * @dev This event is emitted when a new token is minted and allows providers
+  *  to discern which Minted events came from transactions they submitted vs
+  *  transactions submitted by other platforms, as well as providing information
+  *  about what metadata record the newly minted token should be associated with
+  */
+  event Minted(uint256 _tokenId, string _providerId, string _providerMetadataId);
+
   mapping(uint256 => CodexTitleData) internal tokenData;
 
   /**
@@ -84,6 +92,25 @@ contract CodexTitle is ERC721Token {
     bytes32 _imageHash)
     public
   {
+    this.mint(_to, _nameHash, _descriptionHash, _imageHash, '', '');
+  }
+
+  /**
+  * @dev Creates a new token
+  * @param _providerId (optional) An ID that identifies which provider is
+  *  minting this token
+  * @param _providerMetadataId (optional) An arbitrary provider-defined ID that
+  *  identifies the metadata record sotred by the provider
+  */
+  function mint(
+    address _to,
+    bytes32 _nameHash,
+    bytes32 _descriptionHash,
+    bytes32 _imageHash,
+    string _providerId,
+    string _providerMetadataId)
+    public
+  {
     // For now, all new tokens will be the last entry in the array
     uint256 newTokenId = allTokens.length;
 
@@ -95,5 +122,9 @@ contract CodexTitle is ERC721Token {
     tokenData[newTokenId].nameHash = _nameHash;
     tokenData[newTokenId].descriptionHash = _descriptionHash;
     tokenData[newTokenId].imageHashes.push(_imageHash);
+
+    if (bytes(_providerId).length != 0 && bytes(_providerMetadataId).length != 0) {
+      emit Minted(newTokenId, _providerId, _providerMetadataId);
+    }
   }
 }
