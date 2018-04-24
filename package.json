@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "Contracts for Codex Protocol's Codex Title",
   "scripts": {
-    "copy": "cp build/contracts/CodexTitle.json build/contracts/TokenProxy.json ../npm.ethereum-service/static/contracts-source/5777",
-    "copy:staging": "cp build/contracts/CodexTitle.json build/contracts/TokenProxy.json ../npm.ethereum-service/static/contracts-source/4",
-    "copy:production": "cp build/contracts/CodexTitle.json build/contracts/TokenProxy.json ../npm.ethereum-service/static/contracts-source/1",
+    "build-ethereum-service": "cd $PWD/../npm.ethereum-service && npm run build",
+    "copy": "cp build/contracts/CodexTitle.json build/contracts/TokenProxy.json ../npm.ethereum-service/static/contracts-source/5777 && npm run build-ethereum-service",
+    "copy:staging": "cp build/contracts/CodexTitle.json build/contracts/TokenProxy.json ../npm.ethereum-service/static/contracts-source/4 && npm run build-ethereum-service",
+    "copy:production": "cp build/contracts/CodexTitle.json build/contracts/TokenProxy.json ../npm.ethereum-service/static/contracts-source/1 && npm run build-ethereum-service",
     "migrate": "truffle migrate --network ganache && npm run copy",
     "migrate:reset": "rm -rf build && truffle migrate --reset --network ganache && npm run copy",
     "migrate:staging": "truffle migrate --network rinkeby && npm run copy:staging",
