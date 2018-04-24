@@ -3,16 +3,17 @@
   "version": "1.0.0",
   "description": "Contracts for Codex Protocol's Codex Title",
   "scripts": {
-    "copy": "cp build/contracts/CodexTitle.json ../npm.ethereum-service/static/contracts-source/5777",
-    "copy:staging": "cp build/contracts/CodexTitle.json ../npm.ethereum-service/static/contracts-source/4",
-    "copy:production": "cp build/contracts/CodexTitle.json ../npm.ethereum-service/static/contracts-source/1",
+    "copy": "cp build/contracts/CodexTitle.json build/contracts/TokenProxy.json ../npm.ethereum-service/static/contracts-source/5777",
+    "copy:staging": "cp build/contracts/CodexTitle.json build/contracts/TokenProxy.json ../npm.ethereum-service/static/contracts-source/4",
+    "copy:production": "cp build/contracts/CodexTitle.json build/contracts/TokenProxy.json ../npm.ethereum-service/static/contracts-source/1",
     "migrate": "truffle migrate --network ganache && npm run copy",
     "migrate:reset": "rm -rf build && truffle migrate --reset --network ganache && npm run copy",
-    "migrate:staging": "truffle migrate --network rinkeby && npm run copy",
-    "migrate:reset:staging": "rm -rf build && truffle migrate --reset --network rinkeby && npm run copy",
-    "migrate:production": "truffle migrate --network mainnet && npm run copy",
-    "migrate:reset:production": "rm -rf build && truffle migrate --reset --network mainnet && npm run copy",
-    "test": "truffle test --network ganache",
+    "migrate:staging": "truffle migrate --network rinkeby && npm run copy:staging",
+    "migrate:reset:staging": "rm -rf build && truffle migrate --reset --network rinkeby && npm run copy:staging",
+    "migrate:production": "truffle migrate --network mainnet && npm run copy:production",
+    "migrate:reset:production": "rm -rf build && truffle migrate --reset --network mainnet && npm run copy:production",
+    "test": "truffle test --network ganache ./test/ERC721/CodexTitle.test.js",
+    "test:full": "truffle test --network ganache",
     "lint": "npm run lint:js && npm run lint:sol",
     "lint:js": "eslint .",
     "lint:sol": "solium -d .",
@@ -41,7 +42,7 @@
     "eslint": "^4.19.1",
     "eslint-config-prettier": "^2.9.0",
     "eslint-config-standard": "^11.0.0",
-    "eslint-plugin-import": "^2.10.0",
+    "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
@@ -49,7 +50,9 @@
     "solium": "^1.1.6"
   },
   "dependencies": {
-    "truffle": "^4.1.5",
+    "dotenv": "^5.0.1",
+    "truffle": "^4.1.7",
+    "truffle-hdwallet-provider": "0.0.3",
     "zeppelin-solidity": "^1.8.0"
   }
 }

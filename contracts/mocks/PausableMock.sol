@@ -1,7 +1,7 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 
-import "../lifecycle/Pausable.sol";
+import "../zeppelin-solidity/Pausable.sol";
 
 
 // mock class using Pausable
@@ -9,7 +9,7 @@ contract PausableMock is Pausable {
   bool public drasticMeasureTaken;
   uint256 public count;
 
-  function PausableMock() public {
+  constructor() public {
     drasticMeasureTaken = false;
     count = 0;
   }

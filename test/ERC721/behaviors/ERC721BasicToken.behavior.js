@@ -93,7 +93,7 @@ export default function shouldBehaveLikeERC721BasicToken (accounts) {
       const unauthorized = accounts[4];
       const tokenId = firstTokenId;
       const data = '0x42';
-      
+
       let logs = null;
 
       beforeEach(async function () {
@@ -120,7 +120,7 @@ export default function shouldBehaveLikeERC721BasicToken (accounts) {
             logs[0].args._owner.should.be.equal(owner);
             logs[0].args._approved.should.be.equal(ZERO_ADDRESS);
             logs[0].args._tokenId.should.be.bignumber.equal(tokenId);
-  
+
             logs[1].event.should.be.eq('Transfer');
             logs[1].args._from.should.be.equal(owner);
             logs[1].args._to.should.be.equal(this.to);
@@ -149,7 +149,7 @@ export default function shouldBehaveLikeERC721BasicToken (accounts) {
 
           const newOwnerToken = await this.token.tokenOfOwnerByIndex(this.to, 0);
           newOwnerToken.toNumber().should.be.equal(tokenId);
-          
+
           const previousOwnerToken = await this.token.tokenOfOwnerByIndex(owner, 0);
           previousOwnerToken.toNumber().should.not.be.equal(tokenId);
         });
@@ -194,37 +194,37 @@ export default function shouldBehaveLikeERC721BasicToken (accounts) {
             const newOwner = await this.token.ownerOf(tokenId);
             newOwner.should.be.equal(owner);
           });
-  
+
           it('clears the approval for the token ID', async function () {
             const approvedAccount = await this.token.getApproved(tokenId);
             approvedAccount.should.be.equal(ZERO_ADDRESS);
           });
-  
+
           it('emits an approval and transfer events', async function () {
             logs.length.should.be.equal(2);
             logs[0].event.should.be.eq('Approval');
             logs[0].args._owner.should.be.equal(owner);
             logs[0].args._approved.should.be.equal(ZERO_ADDRESS);
             logs[0].args._tokenId.should.be.bignumber.equal(tokenId);
-  
+
             logs[1].event.should.be.eq('Transfer');
             logs[1].args._from.should.be.equal(owner);
             logs[1].args._to.should.be.equal(owner);
             logs[1].args._tokenId.should.be.bignumber.equal(tokenId);
           });
-  
+
           it('keeps the owner balance', async function () {
             const ownerBalance = await this.token.balanceOf(owner);
             ownerBalance.should.be.bignumber.equal(2);
           });
-  
+
           it('keeps same tokens by index', async function () {
             if (!this.token.tokenOfOwnerByIndex) return;
             const tokensListed = await Promise.all(_.range(2).map(i => this.token.tokenOfOwnerByIndex(owner, i)));
             tokensListed.map(t => t.toNumber()).should.have.members([firstTokenId, secondTokenId]);
           });
         });
-        
+
         describe('when the address of the previous owner is incorrect', function () {
           it('reverts', async function () {
             await assertRevert(transferFunction.call(this, unauthorized, this.to, tokenId, { from: owner }));
@@ -275,15 +275,15 @@ export default function shouldBehaveLikeERC721BasicToken (accounts) {
           describe('to a user account', function () {
             shouldTransferTokensByUsers(transferFun);
           });
-  
+
           describe('to a valid receiver contract', function () {
             beforeEach(async function () {
               this.receiver = await ERC721Receiver.new(RECEIVER_MAGIC_VALUE, false);
               this.to = this.receiver.address;
             });
-  
+
             shouldTransferTokensByUsers(transferFun);
-  
+
             it('should call onERC721Received', async function () {
               const result = await transferFun.call(this, owner, this.to, tokenId, { from: owner });
               result.receipt.logs.length.should.be.equal(3);
@@ -357,7 +357,7 @@ export default function shouldBehaveLikeERC721BasicToken (accounts) {
           logs[0].args._tokenId.should.be.bignumber.equal(tokenId);
         });
       };
-      
+
       describe('when clearing approval', function () {
         describe('when there was no prior approval', function () {
           beforeEach(async function () {
@@ -370,7 +370,7 @@ export default function shouldBehaveLikeERC721BasicToken (accounts) {
             logs.length.should.be.equal(0);
           });
         });
-    
+
         describe('when there was a prior approval', function () {
           beforeEach(async function () {
             await this.token.approve(to, tokenId, { from: sender });
@@ -418,7 +418,7 @@ export default function shouldBehaveLikeERC721BasicToken (accounts) {
           await assertRevert(this.token.approve(sender, tokenId, { from: sender }));
         });
       });
-      
+
       describe('when the sender does not own the given token ID', function () {
         it('reverts', async function () {
           await assertRevert(this.token.approve(to, tokenId, { from: accounts[2] }));

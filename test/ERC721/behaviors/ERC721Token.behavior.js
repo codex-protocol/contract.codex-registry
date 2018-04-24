@@ -1,29 +1,16 @@
 import assertRevert from '../../helpers/assertRevert';
-import shouldBehaveLikeERC721BasicToken from './ERC721BasicToken.behaviour';
-import shouldMintERC721Token from './ERC721Mint.behaviour';
 import _ from 'lodash';
 
 const BigNumber = web3.BigNumber;
-const ERC721Token = artifacts.require('ERC721TokenMock.sol');
 
 require('chai')
   .use(require('chai-as-promised'))
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('ERC721Token', function (accounts) {
-  const name = 'Non Fungible Token';
-  const symbol = 'NFT';
+export default function shouldBehaveLikeERC721Token (name, symbol, creator, accounts) {
   const firstTokenId = 100;
   const secondTokenId = 200;
-  const creator = accounts[0];
-
-  beforeEach(async function () {
-    this.token = await ERC721Token.new(name, symbol, { from: creator });
-  });
-
-  shouldBehaveLikeERC721BasicToken(accounts);
-  shouldMintERC721Token(accounts);
 
   describe('like a full ERC721', function () {
     beforeEach(async function () {
@@ -47,6 +34,35 @@ contract('ERC721Token', function (accounts) {
       it('adjusts all tokens list', async function () {
         const newToken = await this.token.tokenByIndex(2);
         newToken.toNumber().should.be.equal(tokenId);
+      });
+    });
+
+    describe('metadata', function () {
+      const sampleUri = 'mock://mytoken';
+
+      it('has a name', async function () {
+        const name = await this.token.name();
+        name.should.be.equal(name);
+      });
+
+      it('has a symbol', async function () {
+        const symbol = await this.token.symbol();
+        symbol.should.be.equal(symbol);
+      });
+
+      it('sets and returns metadata for a token id', async function () {
+        await this.token.setTokenURI(firstTokenId, sampleUri);
+        const uri = await this.token.tokenURI(firstTokenId);
+        uri.should.be.equal(sampleUri);
+      });
+
+      it('returns empty metadata for token', async function () {
+        const uri = await this.token.tokenURI(firstTokenId);
+        uri.should.be.equal('');
+      });
+
+      it('reverts when querying metadata for non existant token id', async function () {
+        await assertRevert(this.token.tokenURI(500));
       });
     });
 
@@ -130,4 +146,4 @@ contract('ERC721Token', function (accounts) {
       });
     });
   });
-});
+};

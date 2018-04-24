@@ -1,16 +1,20 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "./ERC721Basic.sol";
 import "./ERC721Receiver.sol";
-import "../../math/SafeMath.sol";
-import "../../AddressUtils.sol";
+
+import "../zeppelin-solidity/SafeMath.sol";
+import "../zeppelin-solidity/AddressUtils.sol";
+import "../zeppelin-solidity/Pausable.sol";
+
+// TODO: Needs to implement ERC165 to be standards compliant
 
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic implementation
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
-contract ERC721BasicToken is ERC721Basic {
+contract ERC721BasicToken is ERC721Basic, Pausable {
   using SafeMath for uint256;
   using AddressUtils for address;
 
@@ -137,7 +141,12 @@ contract ERC721BasicToken is ERC721Basic {
   * @param _to address to receive the ownership of the given token ID
   * @param _tokenId uint256 ID of the token to be transferred
   */
-  function transferFrom(address _from, address _to, uint256 _tokenId) public canTransfer(_tokenId) {
+  function transferFrom(
+    address _from,
+    address _to,
+    uint256 _tokenId)
+    public canTransfer(_tokenId)
+  {
     require(_from != address(0));
     require(_to != address(0));
 
@@ -159,7 +168,12 @@ contract ERC721BasicToken is ERC721Basic {
   * @param _to address to receive the ownership of the given token ID
   * @param _tokenId uint256 ID of the token to be transferred
   */
-  function safeTransferFrom(address _from, address _to, uint256 _tokenId) public canTransfer(_tokenId) {
+  function safeTransferFrom(
+    address _from,
+    address _to,
+    uint256 _tokenId)
+    public canTransfer(_tokenId)
+  {
     safeTransferFrom(
       _from,
       _to,
@@ -180,7 +194,11 @@ contract ERC721BasicToken is ERC721Basic {
   * @param _data bytes data to send along with a safe transfer check
   */
   function safeTransferFrom(
-    address _from, address _to, uint256 _tokenId, bytes _data) public canTransfer(_tokenId)
+    address _from,
+    address _to,
+    uint256 _tokenId,
+    bytes _data)
+    public canTransfer(_tokenId)
   {
     transferFrom(
       _from,
