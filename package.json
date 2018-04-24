@@ -17,7 +17,8 @@
     "lint": "npm run lint:js && npm run lint:sol",
     "lint:js": "eslint .",
     "lint:sol": "solium -d .",
-    "compile": "truffle compile"
+    "compile": "truffle compile",
+    "mint": "truffle exec scripts/mintTokens.js --network ganache"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
   },
   "homepage": "https://github.com/codex-protocol/contract.codex-title",
   "devDependencies": {
+    "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-register": "^6.26.0",
@@ -46,6 +48,7 @@
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
+    "ethereumjs-util": "^5.1.5",
     "solidity-coverage": "^0.4.15",
     "solium": "^1.1.6"
   },
