@@ -70,7 +70,8 @@ contract CodexTitle is ERC721Token {
   * @param _tokenId token ID
   * @return CodexTitleData token data for the given token ID
   */
-  function getTokenById(uint256 _tokenId) public view returns (bytes32, bytes32, bytes32[]) {
+  function getTokenById(uint256 _tokenId) public view
+  returns (bytes32 nameHash, bytes32 descriptionHash, bytes32[] imageHashes) {
     CodexTitleData storage codexTitle = tokenData[_tokenId];
 
     return (codexTitle.nameHash, codexTitle.descriptionHash, codexTitle.imageHashes);
