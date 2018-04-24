@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../ERC721/ERC721Token.sol";
 
@@ -8,7 +8,7 @@ import "../ERC721/ERC721Token.sol";
  * This mock just provides a public mint function for testing purposes
  */
 contract ERC721TokenMock is ERC721Token {
-  function ERC721TokenMock(string name, string symbol) public
+  constructor(string name, string symbol) public
     ERC721Token(name, symbol)
   { }
 

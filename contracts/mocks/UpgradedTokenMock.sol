@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "./ERC721TokenMock.sol";
 
@@ -19,7 +19,7 @@ contract UpgradedTokenMock is ERC721TokenMock {
   uint256 public mintingFeesAccumulated = 0;
   uint256 public constant MINTING_FEE = 100000;
 
-  function UpgradedTokenMock(string name, string symbol) public
+  constructor(string name, string symbol) public
     ERC721TokenMock(name, symbol)
   { }
 

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "./ERC721/ERC721Token.sol";
 
@@ -37,7 +37,7 @@ contract CodexTitle is ERC721Token {
     _;
   }
 
-  function CodexTitle() public ERC721Token("Codex Title", "CT") { }
+  constructor() public ERC721Token("Codex Title", "CT") { }
 
   function modifyDescriptionHash(uint256 _tokenId, bytes32 _newDescriptionHash) external canModify(_tokenId) {
     tokenData[_tokenId].descriptionHash = _newDescriptionHash;
