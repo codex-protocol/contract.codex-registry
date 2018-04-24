@@ -107,8 +107,8 @@ contract CodexTitle is ERC721Token {
     bytes32 _nameHash,
     bytes32 _descriptionHash,
     bytes32 _imageHash,
-    string _providerId,
-    string _providerMetadataId)
+    string _providerId, // TODO: convert to bytes32
+    string _providerMetadataId) // TODO: convert to bytes32
     public
   {
     // For now, all new tokens will be the last entry in the array
