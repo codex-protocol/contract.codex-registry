@@ -18,7 +18,7 @@ module.exports = async function (deployer, network, accounts) {
     throw new Error('No ownership transfer defined for this network');
   }
 
-  // TODO: Should we transfer the ownership of CodexTItle itself too? Right now we are just transferring the proxy
+  // TODO: Should we transfer the ownership of CodexTitle itself too? Right now we are just transferring the proxy
   const tokenProxy = await TokenProxy.deployed();
   const codexTitle = CodexTitle.at(tokenProxy.address);
 

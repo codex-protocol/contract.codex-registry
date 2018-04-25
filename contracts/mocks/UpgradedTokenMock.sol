@@ -30,6 +30,6 @@ contract UpgradedTokenMock is ERC721TokenMock {
   function mint(address _to, uint256 _tokenId) payable public onlyOwner {
     require(msg.value == MINTING_FEE);
 
-    super._mint(_to, _tokenId);
+    super.mint(_to, _tokenId);
   }
 }

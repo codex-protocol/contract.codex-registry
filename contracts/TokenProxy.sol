@@ -13,8 +13,12 @@ import "./zeppelin-solidity/Ownable.sol";
 contract TokenProxy is Ownable {
   event Upgraded(string version, address indexed implementation);
 
-  string internal version;
-  address internal implementation;
+  string public version;
+  address public implementation;
+
+  constructor(address _implementation) public {
+    upgradeTo('1', _implementation);
+  }
 
   /**
   * @dev Fallback function. Any transaction sent to this contract that doesn't match the
@@ -22,13 +26,12 @@ contract TokenProxy is Ownable {
   *  DELEGATECALL to delegate the transaction data to the implementation.
   */
   function () payable public {
-    address _impl = implementation;
-    require(_impl != address(0));
+    address _implementation = implementation;
 
     assembly {
       let ptr := mload(0x40)
       calldatacopy(ptr, 0, calldatasize)
-      let result := delegatecall(gas, _impl, ptr, calldatasize, 0, 0)
+      let result := delegatecall(gas, _implementation, ptr, calldatasize, 0, 0)
       let size := returndatasize
       returndatacopy(ptr, 0, size)
 
@@ -45,8 +48,12 @@ contract TokenProxy is Ownable {
   * @param _version The version of the token
   * @param _implementation The address at which the implementation is available
   */
-  function upgradeTo(string _version, address _implementation) external onlyOwner {
+  function upgradeTo(string _version, address _implementation) public onlyOwner {
+
+    // TODO: Add error messages for these
+    require(keccak256(_version) != keccak256(version));
     require(_implementation != implementation);
+    require(_implementation != address(0));
 
     version = _version;
     implementation = _implementation;

@@ -6,6 +6,7 @@ import shouldMintERC721Token from './behaviors/ERC721Mint.behavior';
 const BigNumber = web3.BigNumber;
 const ERC721Token = artifacts.require('ERC721TokenMock.sol');
 const UpgradedToken = artifacts.require('UpgradedTokenMock.sol');
+const UpgradedTokenV2 = artifacts.require('UpgradedTokenMockV2.sol');
 const TokenProxy = artifacts.require('TokenProxy.sol');
 
 require('chai')
@@ -14,43 +15,50 @@ require('chai')
   .should();
 
 contract('ERC721Token via TokenProxy', async function (accounts) {
-  const firstTokenId = 1;
-  // const secondTokenId = 2;
+  const firstTokenId = 100;
   const creator = accounts[0];
   const name = 'Non Fungible Token';
   const symbol = 'NFT';
+  const transferEvent = 'Transfer';
 
   beforeEach(async function () {
     const token = await ERC721Token.new(name, symbol, { from: creator });
-    this.proxy = await TokenProxy.new({ from: creator });
-    await this.proxy.upgradeTo('1', token.address);
+    this.proxy = await TokenProxy.new(token.address, { from: creator });
 
-    this.token = ERC721Token.at(this.proxy.address);
+    const upgradedToken = await UpgradedToken.new(name, symbol, { from: creator });
+    await this.proxy.upgradeTo('1.1', upgradedToken.address);
+
+    this.token = UpgradedToken.at(this.proxy.address);
   });
 
-  describe('when upgraded', function () {
-    beforeEach(async function () {
-      const token = await UpgradedToken.new(name, symbol, { from: creator });
-      await this.proxy.upgradeTo('1.1', token.address);
-
-      this.token = UpgradedToken.at(this.proxy.address);
-    });
-
-    describe('mint', function () {
-      it('should fail without a fee', async function () {
+  describe('minting UpgradedTokenMock', function () {
+    describe('when called with no fee', function () {
+      it('should fail', async function () {
         await assertRevert(this.token.mint(creator, firstTokenId));
       });
+    });
 
-      it('should succeed with the correct fee', async function () {
+    describe('when called with the correct fee', function () {
+      it('should emit the Transfer event', async function () {
         const requiredFee = await this.token.MINTING_FEE();
-        await this.token.mint(creator, firstTokenId, { value: requiredFee });
+        const tx = await this.token.mint(creator, firstTokenId, { value: requiredFee });
+        tx.logs[0].event.should.equal(transferEvent);
       });
     });
   });
 
-  describe('should behave', function () {
-    shouldBehaveLikeERC721BasicToken(accounts);
-    shouldMintERC721Token(accounts);
-    shouldBehaveLikeERC721Token(name, symbol, creator, accounts);
+  describe('UpgradedTokenMockv2', function () {
+    beforeEach(async function () {
+      const upgradedTokenV2 = await UpgradedTokenV2.new(name, symbol, { from: creator });
+      await this.proxy.upgradeTo('1.2', upgradedTokenV2.address);
+
+      this.token = UpgradedTokenV2.at(this.proxy.address);
+    });
+
+    describe('should behave', function () {
+      shouldBehaveLikeERC721BasicToken(accounts);
+      shouldMintERC721Token(accounts);
+      shouldBehaveLikeERC721Token(name, symbol, creator, accounts);
+    });
   });
 });
