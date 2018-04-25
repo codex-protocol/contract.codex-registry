@@ -1,12 +1,13 @@
 # Codex Protocol | Codex Title
 
 ## To do
-- Extensive testing on TokenProxy and upgrade strategies
+- ~~Extensive testing on TokenProxy~~
+- Extensive testing on proxy upgrade strategies
 - Extensive testing on CodexTitle
-- Documentation hashes array for CodexTItle (i.e., in addition to images)
+- Documentation hashes array for CodexTitle (i.e., in addition to images)
 - Add a version field to the tokens themselves so we can track if they've been upgraded or not. This is useful for cases where storage state in the new implementation needs to be migrated over.
 - Consider adding the burn functionality back in, but maybe restricting it to onlyOwner for now.
-- Look into the inheritance model and see if implementation upgrades can change the modifiers of a function.
+- ~~Look into the inheritance model and see if implementation upgrades can change the modifiers of a function.~~
 - Add the metadata extension back in. For now just hardcode it so some generic CodexTitle name, description, and image. In the future perhaps this can be used to identify the Provider that is storing the metadata for the token.
 
 ## Notes
