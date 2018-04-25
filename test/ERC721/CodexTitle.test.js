@@ -31,7 +31,9 @@ contract('CodexTitle', async function (accounts) {
       creator,
       hashedMetadata.name,
       hashedMetadata.description,
-      hashedMetadata.imageBytes);
+      hashedMetadata.imageBytes,
+      '1',
+      'metadataId');
   });
 
   describe('mint', function () {
