@@ -24,7 +24,7 @@ module.exports = async function (callback) {
     authTokens.push(responses[i].data.result.token);
   }
 
-  const imageRecords = await fetchImageRecords(authTokens[0]);
+  const imageRecords = await fetchImageRecords();
 
   await mintTokens(codexTitle, authTokens, imageRecords);
 
@@ -52,11 +52,11 @@ function fetchAuthTokens () {
   return Promise.all(authTokenRequests);
 }
 
-function fetchImageRecords (authToken) {
+function fetchImageRecords () {
   console.log('Grabbing images for minting');
 
   return axios
-    .post(`/test/create-images/${tokensToMint}`, {}, { headers: { 'Authorization': authToken } })
+    .post(`/test/create-images/${tokensToMint}`)
     .then((response) => {
       return response.data.result;
     });
