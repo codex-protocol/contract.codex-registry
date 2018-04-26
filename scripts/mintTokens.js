@@ -74,7 +74,7 @@ function mintTokens (contract, authTokens, imageRecords) {
     metadataRequests.push(axios.post('/users/titles/metadata', {
       name: getTokenName(tokenIndex),
       description: `Description of ${getTokenName(tokenIndex)}`,
-      files: [imageRecords[tokenIndex]] || undefined,
+      files: imageRecords[tokenIndex],
     }, { headers: { 'Authorization': authTokens[accountIndex] },
     }).then((response) => {
       const result = response.data.result;
