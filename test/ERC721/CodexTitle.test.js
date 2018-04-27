@@ -11,6 +11,7 @@ require('chai')
 contract('CodexTitle', async function (accounts) {
   const creator = accounts[0];
   const unauthorized = accounts[9];
+  const firstTokenId = 0;
 
   const firstTokenMetadata = {
     name: 'First token',
@@ -91,6 +92,51 @@ contract('CodexTitle', async function (accounts) {
     describe('when the sender is not authorized', function () {
       it('should revert', async function () {
         await assertRevert(this.token.modifyNameHash(0, newNameHash, { from: unauthorized }));
+      });
+    });
+  });
+
+  describe('metadata', function () {
+    it('should have the correct name', async function () {
+      const name = await this.token.name();
+      name.should.be.equal('Codex Title');
+    });
+
+    it('should have the correct symbol', async function () {
+      const symbol = await this.token.symbol();
+      symbol.should.be.equal('CT');
+    });
+
+    describe('tokenURI', function () {
+      it('should be empty by default', async function () {
+        const tokenURI = await this.token.tokenURI(firstTokenId);
+        tokenURI.should.be.equal('');
+      });
+
+      describe('tokenURIPrefix', function () {
+        const tokenURIPrefix = 'https://codexprotocol.com/token/';
+
+        it('should be empty by default', async function () {
+          const tokenURIPrefix = await this.token.tokenURIPrefix();
+          tokenURIPrefix.should.be.equal('');
+        });
+
+        describe('when set by an address that is not the owner', function () {
+          it('should fail', async function () {
+            await assertRevert(this.token.setTokenURIPrefix(tokenURIPrefix, { from: unauthorized }));
+          });
+        });
+
+        describe('when called by the owner', function () {
+          beforeEach(async function () {
+            await this.token.setTokenURIPrefix(tokenURIPrefix);
+          });
+
+          it('should update the URI for all tokens', async function () {
+            const tokenURI = await this.token.tokenURI(firstTokenId);
+            tokenURI.should.be.equal(`${tokenURIPrefix}${firstTokenId}`);
+          });
+        });
       });
     });
   });

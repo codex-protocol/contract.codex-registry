@@ -15,8 +15,4 @@ contract ERC721TokenMock is ERC721Token {
   function mint(address _to, uint256 _tokenId) payable public {
     super._mint(_to, _tokenId);
   }
-
-  function setTokenURI(uint256 _tokenId, string _uri) public {
-    super._setTokenURI(_tokenId, _uri);
-  }
 }
