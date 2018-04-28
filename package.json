@@ -21,7 +21,8 @@
     "lint:js": "eslint .",
     "lint:sol": "solium -d .",
     "compile": "truffle compile",
-    "mint": "truffle exec scripts/mintTokens.js --network ganache"
+    "mint": "truffle exec scripts/mintTokens.js --network ganache",
+    "provenance": "truffle exec scripts/addProvenance.js --network ganache"
   },
   "repository": {
     "type": "git",

@@ -4,7 +4,12 @@ const util = require('ethereumjs-util');
 const CodexTitle = artifacts.require('./CodexTitle.sol');
 const TokenProxy = artifacts.require('./TokenProxy.sol');
 
+// NOTE: If you change this you also need to change the pre-defined images
+//  and the addProvenance script
 const tokensToMint = 20;
+
+// Using this mnemonic (DON'T USE IN PRODUCTION!):
+// candy maple cake sugar pudding cream honey rich smooth crumble sweet treat
 const ganachePrivateKeys = [
   'c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3',
   'ae6ae8e5ccbfb04590405997ee2d52d2b330726137b875053c36d94e974d162f',
