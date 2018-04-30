@@ -51,15 +51,15 @@
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "ethereumjs-util": "^5.1.5",
+    "eslint-plugin-standard": "^3.1.0",
+    "ethereumjs-util": "^5.2.0",
     "solidity-coverage": "^0.4.15",
-    "solium": "^1.1.6"
+    "solium": "^1.1.7"
   },
   "dependencies": {
     "dotenv": "^5.0.1",
     "truffle": "^4.1.7",
     "truffle-hdwallet-provider": "0.0.3",
-    "zeppelin-solidity": "^1.8.0"
+    "zeppelin-solidity": "^1.9.0"
   }
 }

@@ -17,7 +17,7 @@ contract TokenProxy is Ownable {
   address public implementation;
 
   constructor(address _implementation) public {
-    upgradeTo('1', _implementation);
+    upgradeTo("1", _implementation);
   }
 
   /**

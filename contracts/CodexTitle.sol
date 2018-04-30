@@ -79,12 +79,38 @@ contract CodexTitle is ERC721Token {
   }
 
   /**
+  * @dev Sets the global tokenURIPrefix for use when returning token metadata.
+  *  Only callable by the owner.
+  * @param _tokenURIPrefix The new tokenURIPrefix
+  */
+  function setTokenURIPrefix(string _tokenURIPrefix) external onlyOwner {
+    tokenURIPrefix = _tokenURIPrefix;
+  }
+
+  function mint(
+    address _to,
+    bytes32 _nameHash,
+    bytes32 _descriptionHash,
+    bytes32 _imageHash)
+    public
+  {
+    this.mint(
+      _to,
+      _nameHash,
+      _descriptionHash,
+      _imageHash,
+      "",
+      "");
+  }
+
+  /**
   * @dev Gets the token given a token ID.
   * @param _tokenId token ID
   * @return CodexTitleData token data for the given token ID
   */
   function getTokenById(uint256 _tokenId) public view
-  returns (bytes32 nameHash, bytes32 descriptionHash, bytes32[] imageHashes) {
+    returns (bytes32 nameHash, bytes32 descriptionHash, bytes32[] imageHashes)
+  {
     CodexTitleData storage codexTitle = tokenData[_tokenId];
 
     return (codexTitle.nameHash, codexTitle.descriptionHash, codexTitle.imageHashes);
@@ -111,7 +137,7 @@ contract CodexTitle is ERC721Token {
 
     bytes memory prefix = bytes(tokenURIPrefix);
     if (prefix.length == 0) {
-      return '';
+      return "";
     }
 
     // Rather than store a string representation of _tokenId, we just convert it on the fly
@@ -134,25 +160,6 @@ contract CodexTitle is ERC721Token {
     }
 
     return string(output);
-  }
-
-  /**
-  * @dev Sets the global tokenURIPrefix for use when returning token metadata.
-  *  Only callable by the owner.
-  * @param _tokenURIPrefix The new tokenURIPrefix
-  */
-  function setTokenURIPrefix(string _tokenURIPrefix) external onlyOwner {
-    tokenURIPrefix = _tokenURIPrefix;
-  }
-
-  function mint(
-    address _to,
-    bytes32 _nameHash,
-    bytes32 _descriptionHash,
-    bytes32 _imageHash)
-    public
-  {
-    this.mint(_to, _nameHash, _descriptionHash, _imageHash, '', '');
   }
 
   /**
@@ -199,16 +206,17 @@ contract CodexTitle is ERC721Token {
 
     uint256 j = i;
     uint256 length;
-    while (j != 0){
+    while (j != 0) {
       length++;
       j /= 10;
     }
 
     bytes memory bstr = new bytes(length);
     uint256 k = length - 1;
-    while (i != 0) {
-      bstr[k--] = byte(48 + i % 10);
-      i /= 10;
+    j = i;
+    while (j != 0) {
+      bstr[k--] = byte(48 + j % 10);
+      j /= 10;
     }
 
     return bstr;
