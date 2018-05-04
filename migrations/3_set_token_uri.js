@@ -7,7 +7,15 @@ module.exports = async function (deployer, network) {
 
     switch (network) {
     case 'ganache':
-      tokenURIPrefix = 'http://localhost:3001/token';
+      tokenURIPrefix = 'http://localhost:3001/token-metadata';
+      break;
+
+    case 'rinkeby':
+      tokenURIPrefix = 'http://codex-title-api.codexprotocol-staging.com/token-metadata';
+      break;
+
+    case 'mainnet':
+      tokenURIPrefix = 'http://codex-title-api.codexprotocol.com/token-metadata';
       break;
 
     default:
