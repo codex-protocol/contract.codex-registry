@@ -1,4 +1,4 @@
-# Codex Protocol | Codex Title
+# Codex Protocol | Codex Title Contract
 
 ## To do
 ### Testing
