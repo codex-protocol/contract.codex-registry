@@ -1,5 +1,5 @@
-import axios from 'axios'
-import util from 'ethereumjs-util'
+const axios = require('axios')
+const util = require('ethereumjs-util')
 
 const CodexTitle = artifacts.require('./CodexTitle.sol')
 const TokenProxy = artifacts.require('./TokenProxy.sol')
