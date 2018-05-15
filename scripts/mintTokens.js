@@ -97,7 +97,7 @@ const mintTokens = async (contract, authTokens, imageRecords) => {
 
     // eslint-disable-next-line no-await-in-loop
     await axios
-      .post('/users/titles/metadata', requestBody, requestOptions)
+      .post('/users/title-metadata', requestBody, requestOptions)
       .then((response) => {
 
         const { result } = response.data
