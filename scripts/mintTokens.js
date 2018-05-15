@@ -31,7 +31,7 @@ module.exports = async function (callback) {
 
   const imageRecords = await fetchImageRecords();
 
-  await mintTokens(codexTitle, authTokens, imageRecords);
+  mintTokens(codexTitle, authTokens, imageRecords);
 
   callback();
 };
@@ -67,16 +67,14 @@ function fetchImageRecords () {
     });
 }
 
-function mintTokens (contract, authTokens, imageRecords) {
+async function mintTokens (contract, authTokens, imageRecords) {
   console.log('Minting some tokens for testing purposes');
-
-  const metadataRequests = [];
 
   for (let tokenIndex = 0; tokenIndex < tokensToMint; tokenIndex++) {
     const accountIndex = tokenIndex % ganachePrivateKeys.length;
     const account = web3.eth.accounts[accountIndex];
 
-    metadataRequests.push(axios.post('/users/titles/metadata', {
+    await axios.post('/users/titles/metadata', {
       name: getTokenName(tokenIndex),
       description: `Description of ${getTokenName(tokenIndex)}`,
       files: imageRecords[tokenIndex],
@@ -97,10 +95,8 @@ function mintTokens (contract, authTokens, imageRecords) {
       }
     }).catch((error) => {
       console.log(error);
-    }));
+    });
   }
-
-  return Promise.all(metadataRequests);
 }
 
 // Not perfect, but good enough for testing purposes
