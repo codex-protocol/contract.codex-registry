@@ -33,7 +33,7 @@
     "codex"
   ],
   "author": "Codex Protocol <contact@codexprotocol.com>",
-  "license": "AGPLv3",
+  "license": "AGPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/codex-protocol/codex-title/issues"
   },
