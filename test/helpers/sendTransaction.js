@@ -8,6 +8,8 @@ export function findMethod(abi, name, args) {
       return abi[i]
     }
   }
+
+  throw new Error(`could not find method ${name}`)
 }
 
 export default function sendTransaction(target, name, argsTypes, argsValues, opts) {
