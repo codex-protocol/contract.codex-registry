@@ -1,5 +1,4 @@
 import _ from 'lodash'
-
 import assertRevert from '../../helpers/assertRevert'
 
 const { BigNumber } = web3
@@ -10,7 +9,6 @@ require('chai')
   .should()
 
 export default function shouldBehaveLikeERC721Token(name, symbol, creator, accounts) {
-
   const firstTokenId = 100
   const secondTokenId = 200
 
@@ -108,11 +106,7 @@ export default function shouldBehaveLikeERC721Token(name, symbol, creator, accou
           const count = await this.token.balanceOf(another)
           count.toNumber().should.be.equal(2)
           const tokensListed = await Promise.all(_.range(2).map((i) => { return this.token.tokenOfOwnerByIndex(another, i) }))
-          tokensListed
-            .map((t) => {
-              return t.toNumber()
-            })
-            .should.have.members([firstTokenId, secondTokenId])
+          tokensListed.map((t) => { return t.toNumber() }).should.have.members([firstTokenId, secondTokenId])
         })
 
         it('returns empty collection for original owner', async function () {
@@ -126,18 +120,13 @@ export default function shouldBehaveLikeERC721Token(name, symbol, creator, accou
     describe('tokenByIndex', function () {
       it('should return all tokens', async function () {
         const tokensListed = await Promise.all(_.range(2).map((i) => { return this.token.tokenByIndex(i) }))
-        tokensListed
-          .map((t) => { return t.toNumber() })
-          .should.have.members([firstTokenId, secondTokenId])
+        tokensListed.map((t) => { return t.toNumber() }).should.have.members([firstTokenId, secondTokenId])
       })
 
       it('should revert if index is greater than supply', async function () {
         await assertRevert(this.token.tokenByIndex(2))
       })
-
-      const tokenIds = [firstTokenId, secondTokenId]
-
-      tokenIds.forEach((tokenId) => {
+      ;[firstTokenId, secondTokenId].forEach(function (tokenId) {
         it('should return all tokens after minting new tokens', async function () {
           const owner = accounts[0]
           const newTokenId = 300
@@ -151,11 +140,7 @@ export default function shouldBehaveLikeERC721Token(name, symbol, creator, accou
 
           const tokensListed = await Promise.all(_.range(4).map((i) => { return this.token.tokenByIndex(i) }))
           const expectedTokens = [firstTokenId, secondTokenId, newTokenId, anotherNewTokenId]
-          tokensListed
-            .map((t) => {
-              return t.toNumber()
-            })
-            .should.have.members(expectedTokens)
+          tokensListed.map((t) => { return t.toNumber() }).should.have.members(expectedTokens)
         })
       })
     })

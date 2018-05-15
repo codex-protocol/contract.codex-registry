@@ -1,8 +1,7 @@
-import shouldMintERC721Token from './behaviors/ERC721Mint.behavior'
 import shouldBehaveLikeERC721BasicToken from './behaviors/ERC721BasicToken.behavior'
+import shouldMintERC721Token from './behaviors/ERC721Mint.behavior'
 
 const { BigNumber } = web3
-
 const ERC721BasicToken = artifacts.require('ERC721BasicTokenMock.sol')
 
 require('chai')

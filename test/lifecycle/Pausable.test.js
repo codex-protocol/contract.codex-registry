@@ -1,10 +1,10 @@
+
 import assertRevert from '../helpers/assertRevert'
 
 const PausableMock = artifacts.require('PausableMock')
 
-contract('Pausable', (accounts) => {
-
-  it('can perform normal process in non-pause', async () => {
+contract('Pausable', function (accounts) {
+  it('can perform normal process in non-pause', async function () {
     const Pausable = await PausableMock.new()
     const count0 = await Pausable.count()
     assert.equal(count0, 0)
@@ -14,7 +14,7 @@ contract('Pausable', (accounts) => {
     assert.equal(count1, 1)
   })
 
-  it('can not perform normal process in pause', async () => {
+  it('can not perform normal process in pause', async function () {
     const Pausable = await PausableMock.new()
     await Pausable.pause()
     const count0 = await Pausable.count()
@@ -25,14 +25,14 @@ contract('Pausable', (accounts) => {
     assert.equal(count1, 0)
   })
 
-  it('can not take drastic measure in non-pause', async () => {
+  it('can not take drastic measure in non-pause', async function () {
     const Pausable = await PausableMock.new()
     await assertRevert(Pausable.drasticMeasure())
     const drasticMeasureTaken = await Pausable.drasticMeasureTaken()
     assert.isFalse(drasticMeasureTaken)
   })
 
-  it('can take a drastic measure in a pause', async () => {
+  it('can take a drastic measure in a pause', async function () {
     const Pausable = await PausableMock.new()
     await Pausable.pause()
     await Pausable.drasticMeasure()
@@ -41,7 +41,7 @@ contract('Pausable', (accounts) => {
     assert.isTrue(drasticMeasureTaken)
   })
 
-  it('should resume allowing normal process after pause is over', async () => {
+  it('should resume allowing normal process after pause is over', async function () {
     const Pausable = await PausableMock.new()
     await Pausable.pause()
     await Pausable.unpause()
@@ -51,7 +51,7 @@ contract('Pausable', (accounts) => {
     assert.equal(count0, 1)
   })
 
-  it('should prevent drastic measure after pause is over', async () => {
+  it('should prevent drastic measure after pause is over', async function () {
     const Pausable = await PausableMock.new()
     await Pausable.pause()
     await Pausable.unpause()

@@ -7,7 +7,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-const shouldMintERC721Token = function (accounts) {
+export default function shouldMintERC721Token(accounts) {
   const firstTokenId = 1
   const secondTokenId = 2
   const unknownTokenId = 3
@@ -28,7 +28,9 @@ const shouldMintERC721Token = function (accounts) {
       describe('when successful', function () {
         beforeEach(async function () {
           const result = await this.token.mint(to, tokenId)
-          logs = result.logs // eslint-disable-line prefer-destructuring
+
+          // eslint-disable-next-line
+          logs = result.logs
         })
 
         it('assigns the token to the new owner', async function () {
@@ -64,5 +66,3 @@ const shouldMintERC721Token = function (accounts) {
     })
   })
 }
-
-export default shouldMintERC721Token

@@ -1,7 +1,6 @@
 import assertRevert from '../helpers/assertRevert'
 
 const { BigNumber } = web3
-
 const CodexTitle = artifacts.require('CodexTitle.sol')
 
 require('chai')
@@ -10,10 +9,9 @@ require('chai')
   .should()
 
 contract('CodexTitle', async function (accounts) {
-
-  const firstTokenId = 0
   const creator = accounts[0]
   const unauthorized = accounts[9]
+  const firstTokenId = 0
 
   const firstTokenMetadata = {
     name: 'First token',
@@ -36,7 +34,7 @@ contract('CodexTitle', async function (accounts) {
       hashedMetadata.description,
       hashedMetadata.imageBytes,
       '1',
-      'metadataId',
+      'metadataId'
     )
   })
 
@@ -117,28 +115,27 @@ contract('CodexTitle', async function (accounts) {
       })
 
       describe('tokenURIPrefix', function () {
-
-        const tokenURIPrefix = 'https://codexprotocol.com/token/'
+        const constantTokenURIPrefix = 'https://codexprotocol.com/token/'
 
         it('should be empty by default', async function () {
-          const emptyTokenURIPrefix = await this.token.tokenURIPrefix()
-          emptyTokenURIPrefix.should.be.equal('')
+          const tokenURIPrefix = await this.token.tokenURIPrefix()
+          tokenURIPrefix.should.be.equal('')
         })
 
         describe('when set by an address that is not the owner', function () {
           it('should fail', async function () {
-            await assertRevert(this.token.setTokenURIPrefix(tokenURIPrefix, { from: unauthorized }))
+            await assertRevert(this.token.setTokenURIPrefix(constantTokenURIPrefix, { from: unauthorized }))
           })
         })
 
         describe('when called by the owner', function () {
           beforeEach(async function () {
-            await this.token.setTokenURIPrefix(tokenURIPrefix)
+            await this.token.setTokenURIPrefix(constantTokenURIPrefix)
           })
 
           it('should update the URI for all tokens', async function () {
             const tokenURI = await this.token.tokenURI(firstTokenId)
-            tokenURI.should.be.equal(`${tokenURIPrefix}${firstTokenId}`)
+            tokenURI.should.be.equal(`${constantTokenURIPrefix}${firstTokenId}`)
           })
         })
       })

@@ -1,10 +1,9 @@
 import assertRevert from '../helpers/assertRevert'
 
 const { BigNumber } = web3
-
-const TokenProxy = artifacts.require('TokenProxy.sol')
 const ERC721Token = artifacts.require('ERC721TokenMock.sol')
 const UpgradedToken = artifacts.require('UpgradedTokenMock.sol')
+const TokenProxy = artifacts.require('TokenProxy.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -17,12 +16,11 @@ require('chai')
  * Test cases covering the logistics of upgrading tokens are covered in ERC721TokenProxy.test.js.
  */
 contract('TokenProxy', async function (accounts) {
-
-  const [creator, notTheCreator] = accounts
-
+  const creator = accounts[0]
+  const notTheCreator = accounts[1]
+  const name = 'Non Fungible Token'
   const symbol = 'NFT'
   const upgradedEvent = 'Upgraded'
-  const name = 'Non Fungible Token'
 
   beforeEach(async function () {
     this.token = await ERC721Token.new(name, symbol, { from: creator })
@@ -92,13 +90,13 @@ contract('TokenProxy', async function (accounts) {
           this.proxy.upgradeTo(
             newVersion,
             this.upgradedToken.address,
-            { from: notTheCreator },
-          ),
+            { from: notTheCreator }
+          )
         )
       })
     })
 
     // TODO: Add some basic tests here
-    describe('fallback function', function () {})
+    describe('fallback function', function () { })
   })
 })
