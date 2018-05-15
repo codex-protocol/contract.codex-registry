@@ -1,88 +1,112 @@
-const axios = require('axios');
-const util = require('ethereumjs-util');
+import axios from 'axios'
+import util from 'ethereumjs-util'
 
-const CodexTitle = artifacts.require('./CodexTitle.sol');
-const TokenProxy = artifacts.require('./TokenProxy.sol');
+const CodexTitle = artifacts.require('./CodexTitle.sol')
+const TokenProxy = artifacts.require('./TokenProxy.sol')
 
 // NOTE: If you change this you also need to change the pre-defined images
 //  and the addProvenance script
-const tokensToMint = 20;
+const tokensToMint = 20
 
 // Using this mnemonic (DON'T USE IN PRODUCTION!):
 // candy maple cake sugar pudding cream honey rich smooth crumble sweet treat
 const ganachePrivateKeys = [
   'c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3',
   'ae6ae8e5ccbfb04590405997ee2d52d2b330726137b875053c36d94e974d162f',
-];
+]
 
-module.exports = async function (callback) {
-  const tokenProxy = await TokenProxy.deployed();
-  const codexTitle = CodexTitle.at(tokenProxy.address);
+// Not perfect, but good enough for testing purposes
+const getTokenName = (tokenIndex) => {
+  let prefix
 
-  axios.defaults.baseURL = 'http://localhost:3001';
-  axios.defaults.headers.common['Content-Type'] = 'application/json';
+  switch (tokenIndex) {
+    case 0:
+      prefix = 'Genesis'
+      break
 
-  const authTokens = [];
-  const responses = await fetchAuthTokens();
+    case 1:
+      prefix = '1st'
+      break
 
-  for (let i = 0; i < responses.length; i++) {
-    authTokens.push(responses[i].data.result.token);
+    case 2:
+      prefix = '2nd'
+      break
+
+    case 3:
+      prefix = '3rd'
+      break
+
+    default:
+      prefix = `${tokenIndex}th`
+      break
   }
 
-  const imageRecords = await fetchImageRecords();
+  return `${prefix} Token`
+}
 
-  mintTokens(codexTitle, authTokens, imageRecords);
+const fetchAuthTokens = () => {
+  console.log('Grabbing auth tokens for minting')
 
-  callback();
-};
-
-function fetchAuthTokens () {
-  console.log('Grabbing auth tokens for minting');
-
-  const authTokenRequests = [];
-  const personalMessageToSign = 'Please sign this message to authenticate with the Codex Title Registry.';
+  const authTokenRequests = []
+  const personalMessageToSign = 'Please sign this message to authenticate with the Codex Title Registry.'
 
   for (let accountIndex = 0; accountIndex < ganachePrivateKeys.length; accountIndex++) {
-    const msgHash = util.hashPersonalMessage(Buffer.from(personalMessageToSign));
-    const signature = util.ecsign(msgHash, Buffer.from(ganachePrivateKeys[accountIndex], 'hex'));
-    const signedData = util.toRpcSig(signature.v, signature.r, signature.s);
-    const account = web3.eth.accounts[accountIndex];
+    const msgHash = util.hashPersonalMessage(Buffer.from(personalMessageToSign))
+    const signature = util.ecsign(msgHash, Buffer.from(ganachePrivateKeys[accountIndex], 'hex'))
+    const signedData = util.toRpcSig(signature.v, signature.r, signature.s)
+    const account = web3.eth.accounts[accountIndex]
 
     authTokenRequests.push(axios.post('/auth-token', {
       userAddress: account,
       signedData: signedData.substr(2),
-    }));
+    }))
   }
 
-  return Promise.all(authTokenRequests);
+  return Promise.all(authTokenRequests)
 }
 
-function fetchImageRecords () {
-  console.log('Grabbing images for minting');
+const fetchImageRecords = () => {
+  console.log('Grabbing images for minting')
 
   return axios
     .post(`/test/create-images/${tokensToMint}`)
     .then((response) => {
-      return response.data.result;
-    });
+      return response.data.result
+    })
 }
 
-async function mintTokens (contract, authTokens, imageRecords) {
-  console.log('Minting some tokens for testing purposes');
+const mintTokens = async (contract, authTokens, imageRecords) => {
+  console.log('Minting some tokens for testing purposes')
 
   for (let tokenIndex = 0; tokenIndex < tokensToMint; tokenIndex++) {
-    const accountIndex = tokenIndex % ganachePrivateKeys.length;
-    const account = web3.eth.accounts[accountIndex];
 
-    await axios.post('/users/titles/metadata', {
+    const accountIndex = tokenIndex % ganachePrivateKeys.length
+    const account = web3.eth.accounts[accountIndex]
+
+    const requestBody = {
       name: getTokenName(tokenIndex),
       description: `Description of ${getTokenName(tokenIndex)}`,
       files: imageRecords[tokenIndex],
-    }, { headers: { 'Authorization': authTokens[accountIndex] },
-    }).then((response) => {
-      const result = response.data.result;
-      if (result) {
-        console.log(`Minting ${result.name}`);
+    }
+
+    const requestOptions = {
+      headers: {
+        Authorization: authTokens[accountIndex],
+      },
+    }
+
+    // eslint-disable-next-line no-await-in-loop
+    await axios
+      .post('/users/titles/metadata', requestBody, requestOptions)
+      .then((response) => {
+
+        const { result } = response.data
+
+        if (!result) {
+          throw new Error(`could not create metadata: ${response}`)
+        }
+
+        console.log(`Minting ${result.name}`)
 
         return contract.mint(
           account,
@@ -91,39 +115,32 @@ async function mintTokens (contract, authTokens, imageRecords) {
           web3.sha3('image data'),
           '1',
           result.id,
-        );
-      }
-    }).catch((error) => {
-      console.log(error);
-    });
+        )
+
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 }
 
-// Not perfect, but good enough for testing purposes
-function getTokenName (tokenIndex) {
-  let prefix;
+module.exports = async (callback) => {
+  const tokenProxy = await TokenProxy.deployed()
+  const codexTitle = CodexTitle.at(tokenProxy.address)
 
-  switch (tokenIndex) {
-  case 0:
-    prefix = 'Genesis';
-    break;
+  axios.defaults.baseURL = 'http://localhost:3001'
+  axios.defaults.headers.common['Content-Type'] = 'application/json'
 
-  case 1:
-    prefix = '1st';
-    break;
+  const authTokens = []
+  const responses = await fetchAuthTokens()
 
-  case 2:
-    prefix = '2nd';
-    break;
-
-  case 3:
-    prefix = '3rd';
-    break;
-
-  default:
-    prefix = `${tokenIndex}th`;
-    break;
+  for (let i = 0; i < responses.length; i++) {
+    authTokens.push(responses[i].data.result.token)
   }
 
-  return `${prefix} Token`;
+  const imageRecords = await fetchImageRecords()
+
+  mintTokens(codexTitle, authTokens, imageRecords)
+
+  callback()
 }

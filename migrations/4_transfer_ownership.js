@@ -1,32 +1,35 @@
-const CodexTitle = artifacts.require('./CodexTitle.sol');
-const TokenProxy = artifacts.require('./TokenProxy.sol');
+const CodexTitle = artifacts.require('./CodexTitle.sol')
+const TokenProxy = artifacts.require('./TokenProxy.sol')
 
-module.exports = async function (deployer, network, accounts) {
-  deployer.then(async function () {
-    let newOwner;
+module.exports = async (deployer, network, accounts) => {
 
-    // The owner key should be stored securely in cold storage.
-    switch (network) {
-    case 'ganache':
-      newOwner = accounts[1];
-      break;
+  deployer
+    .then(async () => {
+      let newOwner
 
-    case 'rinkeby':
-      newOwner = '0xA7899114e93880A5790a68F9df66174FC038849a';
-      break;
+      // The owner key should be stored securely in cold storage.
+      switch (network) {
+        case 'ganache':
+          newOwner = accounts[1]
+          break
 
-    default:
-      throw new Error('No ownership transfer defined for this network');
-    }
+        case 'rinkeby':
+          newOwner = '0xA7899114e93880A5790a68F9df66174FC038849a'
+          break
 
-    // TODO: Should we transfer the ownership of CodexTitle itself too? Right now we are just transferring the proxy
-    const tokenProxy = await TokenProxy.deployed();
-    const codexTitle = CodexTitle.at(tokenProxy.address);
+        default:
+          throw new Error('No ownership transfer defined for this network')
+      }
 
-    console.log('Transferring ownership of CodexTitle via TokenProxy to: ', newOwner);
+      // TODO: Should we transfer the ownership of CodexTitle itself too? Right now we are just transferring the proxy
+      const tokenProxy = await TokenProxy.deployed()
+      const codexTitle = CodexTitle.at(tokenProxy.address)
 
-    codexTitle.transferOwnership(newOwner);
-  }).catch((error) => {
-    console.log(error);
-  });
-};
+      console.log('Transferring ownership of CodexTitle via TokenProxy to: ', newOwner)
+
+      codexTitle.transferOwnership(newOwner)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}

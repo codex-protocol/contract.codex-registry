@@ -1,34 +1,38 @@
-const CodexTitle = artifacts.require('./CodexTitle.sol');
-const TokenProxy = artifacts.require('./TokenProxy.sol');
+const CodexTitle = artifacts.require('./CodexTitle.sol')
+const TokenProxy = artifacts.require('./TokenProxy.sol')
 
-module.exports = async function (deployer, network) {
-  deployer.then(async function () {
-    let tokenURIPrefix;
+module.exports = async (deployer, network) => {
 
-    switch (network) {
-    case 'ganache':
-      tokenURIPrefix = 'http://localhost:3001/token-metadata';
-      break;
+  deployer
+    .then(async () => {
 
-    case 'rinkeby':
-      tokenURIPrefix = 'http://codex-title-api.codexprotocol-staging.com/token-metadata';
-      break;
+      let tokenURIPrefix
 
-    case 'mainnet':
-      tokenURIPrefix = 'http://codex-title-api.codexprotocol.com/token-metadata';
-      break;
+      switch (network) {
+        case 'ganache':
+          tokenURIPrefix = 'http://localhost:3001/token-metadata'
+          break
 
-    default:
-      throw new Error('No tokenURIPrefix defined for this network');
-    }
+        case 'rinkeby':
+          tokenURIPrefix = 'http://codex-title-api.codexprotocol-staging.com/token-metadata'
+          break
 
-    const tokenProxy = await TokenProxy.deployed();
-    const codexTitle = CodexTitle.at(tokenProxy.address);
+        case 'mainnet':
+          tokenURIPrefix = 'http://codex-title-api.codexprotocol.com/token-metadata'
+          break
 
-    console.log('Setting the tokenURIPrefix to:', tokenURIPrefix);
+        default:
+          throw new Error('No tokenURIPrefix defined for this network')
+      }
 
-    codexTitle.setTokenURIPrefix(tokenURIPrefix);
-  }).catch((error) => {
-    console.log(error);
-  });
-};
+      const tokenProxy = await TokenProxy.deployed()
+      const codexTitle = CodexTitle.at(tokenProxy.address)
+
+      console.log('Setting the tokenURIPrefix to:', tokenURIPrefix)
+
+      codexTitle.setTokenURIPrefix(tokenURIPrefix)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}

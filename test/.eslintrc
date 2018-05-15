@@ -1,5 +1,6 @@
 {
-    "rules": {
-        "no-unused-expressions": 0
-    }
+  "rules": {
+    "func-names": 0,
+    "prefer-arrow-callback": 0,
+  }
 }

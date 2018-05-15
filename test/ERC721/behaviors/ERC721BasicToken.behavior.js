@@ -1,541 +1,550 @@
-import assertRevert from '../../helpers/assertRevert';
-import decodeLogs from '../../helpers/decodeLogs';
-import sendTransaction from '../../helpers/sendTransaction';
-import _ from 'lodash';
+/* eslint-disable no-unused-expressions */
 
-const ERC721Receiver = artifacts.require('ERC721ReceiverMock.sol');
-const BigNumber = web3.BigNumber;
+import _ from 'lodash'
+
+import decodeLogs from '../../helpers/decodeLogs'
+import assertRevert from '../../helpers/assertRevert'
+import sendTransaction from '../../helpers/sendTransaction'
+
+const { BigNumber } = web3
+
+const ERC721Receiver = artifacts.require('ERC721ReceiverMock.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
   .use(require('chai-bignumber')(BigNumber))
-  .should();
+  .should()
 
-export default function shouldBehaveLikeERC721BasicToken (accounts) {
-  const firstTokenId = 1;
-  const secondTokenId = 2;
-  const unknownTokenId = 3;
-  const creator = accounts[0];
-  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-  const RECEIVER_MAGIC_VALUE = '0xf0b9e5ba';
+const shouldBehaveLikeERC721BasicToken = function (accounts) {
+
+  const firstTokenId = 1
+  const secondTokenId = 2
+  const unknownTokenId = 3
+  const creator = accounts[0]
+  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+  const RECEIVER_MAGIC_VALUE = '0xf0b9e5ba'
 
   describe('like a ERC721BasicToken', function () {
     beforeEach(async function () {
-      await this.token.mint(creator, firstTokenId, { from: creator });
-      await this.token.mint(creator, secondTokenId, { from: creator });
-    });
+      await this.token.mint(creator, firstTokenId, { from: creator })
+      await this.token.mint(creator, secondTokenId, { from: creator })
+    })
 
     describe('balanceOf', function () {
       describe('when the given address owns some tokens', function () {
         it('returns the amount of tokens owned by the given address', async function () {
-          const balance = await this.token.balanceOf(creator);
-          balance.should.be.bignumber.equal(2);
-        });
-      });
+          const balance = await this.token.balanceOf(creator)
+          balance.should.be.bignumber.equal(2)
+        })
+      })
 
       describe('when the given address does not own any tokens', function () {
         it('returns 0', async function () {
-          const balance = await this.token.balanceOf(accounts[1]);
-          balance.should.be.bignumber.equal(0);
-        });
-      });
+          const balance = await this.token.balanceOf(accounts[1])
+          balance.should.be.bignumber.equal(0)
+        })
+      })
 
       describe('when querying the zero address', function () {
         it('throws', async function () {
-          await assertRevert(this.token.balanceOf(0));
-        });
-      });
-    });
+          await assertRevert(this.token.balanceOf(0))
+        })
+      })
+    })
 
     describe('exists', function () {
       describe('when the token exists', function () {
-        const tokenId = firstTokenId;
+        const tokenId = firstTokenId
 
         it('should return true', async function () {
-          const result = await this.token.exists(tokenId);
-          result.should.be.true;
-        });
-      });
+          const result = await this.token.exists(tokenId)
+          result.should.be.true
+        })
+      })
 
       describe('when the token does not exist', function () {
-        const tokenId = unknownTokenId;
+        const tokenId = unknownTokenId
 
         it('should return false', async function () {
-          const result = await this.token.exists(tokenId);
-          result.should.be.false;
-        });
-      });
-    });
+          const result = await this.token.exists(tokenId)
+          result.should.be.false
+        })
+      })
+    })
 
     describe('ownerOf', function () {
       describe('when the given token ID was tracked by this token', function () {
-        const tokenId = firstTokenId;
+        const tokenId = firstTokenId
 
         it('returns the owner of the given token ID', async function () {
-          const owner = await this.token.ownerOf(tokenId);
-          owner.should.be.equal(creator);
-        });
-      });
+          const owner = await this.token.ownerOf(tokenId)
+          owner.should.be.equal(creator)
+        })
+      })
 
       describe('when the given token ID was not tracked by this token', function () {
-        const tokenId = unknownTokenId;
+        const tokenId = unknownTokenId
 
         it('reverts', async function () {
-          await assertRevert(this.token.ownerOf(tokenId));
-        });
-      });
-    });
+          await assertRevert(this.token.ownerOf(tokenId))
+        })
+      })
+    })
 
     describe('transfers', function () {
-      const owner = accounts[0];
-      const approved = accounts[2];
-      const operator = accounts[3];
-      const unauthorized = accounts[4];
-      const tokenId = firstTokenId;
-      const data = '0x42';
+      const owner = accounts[0]
+      const approved = accounts[2]
+      const operator = accounts[3]
+      const unauthorized = accounts[4]
+      const tokenId = firstTokenId
+      const data = '0x42'
 
-      let logs = null;
+      let logs = null
 
       beforeEach(async function () {
-        this.to = accounts[1];
-        await this.token.approve(approved, tokenId, { from: owner });
-        await this.token.setApprovalForAll(operator, true, { from: owner });
-      });
+        this.to = accounts[1]
+        await this.token.approve(approved, tokenId, { from: owner })
+        await this.token.setApprovalForAll(operator, true, { from: owner })
+      })
 
-      const transferWasSuccessful = function ({ owner, tokenId, approved }) {
+      const transferWasSuccessful = function ({ owner2, tokenId2, approved2 }) {
         it('transfers the ownership of the given token ID to the given address', async function () {
-          const newOwner = await this.token.ownerOf(tokenId);
-          newOwner.should.be.equal(this.to);
-        });
+          const newOwner = await this.token.ownerOf(tokenId2)
+          newOwner.should.be.equal(this.to)
+        })
 
         it('clears the approval for the token ID', async function () {
-          const approvedAccount = await this.token.getApproved(tokenId);
-          approvedAccount.should.be.equal(ZERO_ADDRESS);
-        });
+          const approvedAccount = await this.token.getApproved(tokenId2)
+          approvedAccount.should.be.equal(ZERO_ADDRESS)
+        })
 
-        if (approved) {
+        if (approved2) {
           it('emits an approval and transfer events', async function () {
-            logs.length.should.be.equal(2);
-            logs[0].event.should.be.eq('Approval');
-            logs[0].args._owner.should.be.equal(owner);
-            logs[0].args._approved.should.be.equal(ZERO_ADDRESS);
-            logs[0].args._tokenId.should.be.bignumber.equal(tokenId);
+            logs.length.should.be.equal(2)
+            logs[0].event.should.be.eq('Approval')
+            logs[0].args._owner.should.be.equal(owner2)
+            logs[0].args._approved.should.be.equal(ZERO_ADDRESS)
+            logs[0].args._tokenId.should.be.bignumber.equal(tokenId2)
 
-            logs[1].event.should.be.eq('Transfer');
-            logs[1].args._from.should.be.equal(owner);
-            logs[1].args._to.should.be.equal(this.to);
-            logs[1].args._tokenId.should.be.bignumber.equal(tokenId);
-          });
+            logs[1].event.should.be.eq('Transfer')
+            logs[1].args._from.should.be.equal(owner2)
+            logs[1].args._to.should.be.equal(this.to)
+            logs[1].args._tokenId.should.be.bignumber.equal(tokenId2)
+          })
         } else {
           it('emits only a transfer event', async function () {
-            logs.length.should.be.equal(1);
-            logs[0].event.should.be.eq('Transfer');
-            logs[0].args._from.should.be.equal(owner);
-            logs[0].args._to.should.be.equal(this.to);
-            logs[0].args._tokenId.should.be.bignumber.equal(tokenId);
-          });
+            logs.length.should.be.equal(1)
+            logs[0].event.should.be.eq('Transfer')
+            logs[0].args._from.should.be.equal(owner2)
+            logs[0].args._to.should.be.equal(this.to)
+            logs[0].args._tokenId.should.be.bignumber.equal(tokenId2)
+          })
         }
 
         it('adjusts owners balances', async function () {
-          const newOwnerBalance = await this.token.balanceOf(this.to);
-          newOwnerBalance.should.be.bignumber.equal(1);
+          const newOwnerBalance = await this.token.balanceOf(this.to)
+          newOwnerBalance.should.be.bignumber.equal(1)
 
-          const previousOwnerBalance = await this.token.balanceOf(owner);
-          previousOwnerBalance.should.be.bignumber.equal(1);
-        });
+          const previousOwnerBalance = await this.token.balanceOf(owner2)
+          previousOwnerBalance.should.be.bignumber.equal(1)
+        })
 
         it('adjusts owners tokens by index', async function () {
-          if (!this.token.tokenOfOwnerByIndex) return;
+          if (!this.token.tokenOfOwnerByIndex) return
 
-          const newOwnerToken = await this.token.tokenOfOwnerByIndex(this.to, 0);
-          newOwnerToken.toNumber().should.be.equal(tokenId);
+          const newOwnerToken = await this.token.tokenOfOwnerByIndex(this.to, 0)
+          newOwnerToken.toNumber().should.be.equal(tokenId2)
 
-          const previousOwnerToken = await this.token.tokenOfOwnerByIndex(owner, 0);
-          previousOwnerToken.toNumber().should.not.be.equal(tokenId);
-        });
-      };
+          const previousOwnerToken = await this.token.tokenOfOwnerByIndex(owner2, 0)
+          previousOwnerToken.toNumber().should.not.be.equal(tokenId2)
+        })
+      }
 
       const shouldTransferTokensByUsers = function (transferFunction) {
         describe('when called by the owner', function () {
           beforeEach(async function () {
-            ({ logs } = await transferFunction.call(this, owner, this.to, tokenId, { from: owner }));
-          });
-          transferWasSuccessful({ owner, tokenId, approved });
-        });
+            ({ logs } = await transferFunction.call(this, owner, this.to, tokenId, { from: owner }))
+          })
+          transferWasSuccessful({ owner, tokenId, approved })
+        })
 
         describe('when called by the approved individual', function () {
           beforeEach(async function () {
-            ({ logs } = await transferFunction.call(this, owner, this.to, tokenId, { from: approved }));
-          });
-          transferWasSuccessful({ owner, tokenId, approved });
-        });
+            ({ logs } = await transferFunction.call(this, owner, this.to, tokenId, { from: approved }))
+          })
+          transferWasSuccessful({ owner, tokenId, approved })
+        })
 
         describe('when called by the operator', function () {
           beforeEach(async function () {
-            ({ logs } = await transferFunction.call(this, owner, this.to, tokenId, { from: operator }));
-          });
-          transferWasSuccessful({ owner, tokenId, approved });
-        });
+            ({ logs } = await transferFunction.call(this, owner, this.to, tokenId, { from: operator }))
+          })
+          transferWasSuccessful({ owner, tokenId, approved })
+        })
 
         describe('when called by the owner without an approved user', function () {
           beforeEach(async function () {
-            await this.token.approve(ZERO_ADDRESS, tokenId, { from: owner });
-            ({ logs } = await transferFunction.call(this, owner, this.to, tokenId, { from: operator }));
-          });
-          transferWasSuccessful({ owner, tokenId, approved: null });
-        });
+            await this.token.approve(ZERO_ADDRESS, tokenId, { from: owner })
+            ;({ logs } = await transferFunction.call(this, owner, this.to, tokenId, { from: operator }))
+          })
+          transferWasSuccessful({ owner, tokenId, approved: null })
+        })
 
         describe('when sent to the owner', function () {
           beforeEach(async function () {
-            ({ logs } = await transferFunction.call(this, owner, owner, tokenId, { from: owner }));
-          });
+            ({ logs } = await transferFunction.call(this, owner, owner, tokenId, { from: owner }))
+          })
 
           it('keeps ownership of the token', async function () {
-            const newOwner = await this.token.ownerOf(tokenId);
-            newOwner.should.be.equal(owner);
-          });
+            const newOwner = await this.token.ownerOf(tokenId)
+            newOwner.should.be.equal(owner)
+          })
 
           it('clears the approval for the token ID', async function () {
-            const approvedAccount = await this.token.getApproved(tokenId);
-            approvedAccount.should.be.equal(ZERO_ADDRESS);
-          });
+            const approvedAccount = await this.token.getApproved(tokenId)
+            approvedAccount.should.be.equal(ZERO_ADDRESS)
+          })
 
           it('emits an approval and transfer events', async function () {
-            logs.length.should.be.equal(2);
-            logs[0].event.should.be.eq('Approval');
-            logs[0].args._owner.should.be.equal(owner);
-            logs[0].args._approved.should.be.equal(ZERO_ADDRESS);
-            logs[0].args._tokenId.should.be.bignumber.equal(tokenId);
+            logs.length.should.be.equal(2)
+            logs[0].event.should.be.eq('Approval')
+            logs[0].args._owner.should.be.equal(owner)
+            logs[0].args._approved.should.be.equal(ZERO_ADDRESS)
+            logs[0].args._tokenId.should.be.bignumber.equal(tokenId)
 
-            logs[1].event.should.be.eq('Transfer');
-            logs[1].args._from.should.be.equal(owner);
-            logs[1].args._to.should.be.equal(owner);
-            logs[1].args._tokenId.should.be.bignumber.equal(tokenId);
-          });
+            logs[1].event.should.be.eq('Transfer')
+            logs[1].args._from.should.be.equal(owner)
+            logs[1].args._to.should.be.equal(owner)
+            logs[1].args._tokenId.should.be.bignumber.equal(tokenId)
+          })
 
           it('keeps the owner balance', async function () {
-            const ownerBalance = await this.token.balanceOf(owner);
-            ownerBalance.should.be.bignumber.equal(2);
-          });
+            const ownerBalance = await this.token.balanceOf(owner)
+            ownerBalance.should.be.bignumber.equal(2)
+          })
 
           it('keeps same tokens by index', async function () {
-            if (!this.token.tokenOfOwnerByIndex) return;
-            const tokensListed = await Promise.all(_.range(2).map(i => this.token.tokenOfOwnerByIndex(owner, i)));
-            tokensListed.map(t => t.toNumber()).should.have.members([firstTokenId, secondTokenId]);
-          });
-        });
+            if (!this.token.tokenOfOwnerByIndex) return
+            const tokensListed = await Promise.all(_.range(2).map((i) => { return this.token.tokenOfOwnerByIndex(owner, i) }))
+            tokensListed
+              .map((t) => { return t.toNumber() })
+              .should.have.members([firstTokenId, secondTokenId])
+          })
+        })
 
         describe('when the address of the previous owner is incorrect', function () {
           it('reverts', async function () {
-            await assertRevert(transferFunction.call(this, unauthorized, this.to, tokenId, { from: owner }));
-          });
-        });
+            await assertRevert(transferFunction.call(this, unauthorized, this.to, tokenId, { from: owner }))
+          })
+        })
 
         describe('when the sender is not authorized for the token id', function () {
           it('reverts', async function () {
-            await assertRevert(transferFunction.call(this, owner, this.to, tokenId, { from: unauthorized }));
-          });
-        });
+            await assertRevert(transferFunction.call(this, owner, this.to, tokenId, { from: unauthorized }))
+          })
+        })
 
         describe('when the given token ID does not exist', function () {
           it('reverts', async function () {
-            await assertRevert(transferFunction.call(this, owner, this.to, unknownTokenId, { from: owner }));
-          });
-        });
+            await assertRevert(transferFunction.call(this, owner, this.to, unknownTokenId, { from: owner }))
+          })
+        })
 
         describe('when the address to transfer the token to is the zero address', function () {
           it('reverts', async function () {
-            await assertRevert(transferFunction.call(this, owner, ZERO_ADDRESS, tokenId, { from: owner }));
-          });
-        });
-      };
+            await assertRevert(transferFunction.call(this, owner, ZERO_ADDRESS, tokenId, { from: owner }))
+          })
+        })
+      }
 
       describe('via transferFrom', function () {
-        shouldTransferTokensByUsers(function (from, to, tokenId, opts) {
-          return this.token.transferFrom(from, to, tokenId, opts);
-        });
-      });
+        shouldTransferTokensByUsers(function (from, to, tokenId2, opts) {
+          return this.token.transferFrom(from, to, tokenId2, opts)
+        })
+      })
 
       describe('via safeTransferFrom', function () {
-        const safeTransferFromWithData = function (from, to, tokenId, opts) {
+        const safeTransferFromWithData = function (from, to, tokenId2, opts) {
           return sendTransaction(
             this.token,
             'safeTransferFrom',
             'address,address,uint256,bytes',
-            [from, to, tokenId, data],
+            [from, to, tokenId2, data],
             opts
-          );
-        };
+          )
+        }
 
-        const safeTransferFromWithoutData = function (from, to, tokenId, opts) {
-          return this.token.safeTransferFrom(from, to, tokenId, opts);
-        };
+        const safeTransferFromWithoutData = function (from, to, tokenId2, opts) {
+          return this.token.safeTransferFrom(from, to, tokenId2, opts)
+        }
 
-        const shouldTransferSafely = function (transferFun, data) {
+        const shouldTransferSafely = function (transferFun, data2) {
           describe('to a user account', function () {
-            shouldTransferTokensByUsers(transferFun);
-          });
+            shouldTransferTokensByUsers(transferFun)
+          })
 
           describe('to a valid receiver contract', function () {
             beforeEach(async function () {
-              this.receiver = await ERC721Receiver.new(RECEIVER_MAGIC_VALUE, false);
-              this.to = this.receiver.address;
-            });
+              this.receiver = await ERC721Receiver.new(RECEIVER_MAGIC_VALUE, false)
+              this.to = this.receiver.address
+            })
 
-            shouldTransferTokensByUsers(transferFun);
+            shouldTransferTokensByUsers(transferFun)
 
             it('should call onERC721Received', async function () {
-              const result = await transferFun.call(this, owner, this.to, tokenId, { from: owner });
-              result.receipt.logs.length.should.be.equal(3);
-              const [log] = decodeLogs([result.receipt.logs[2]], ERC721Receiver, this.receiver.address);
-              log.event.should.be.eq('Received');
-              log.args._address.should.be.equal(owner);
-              log.args._tokenId.toNumber().should.be.equal(tokenId);
-              log.args._data.should.be.equal(data);
-            });
-          });
-        };
+              const result = await transferFun.call(this, owner, this.to, tokenId, { from: owner })
+              result.receipt.logs.length.should.be.equal(3)
+              const [log] = decodeLogs([result.receipt.logs[2]], ERC721Receiver, this.receiver.address)
+              log.event.should.be.eq('Received')
+              log.args._address.should.be.equal(owner)
+              log.args._tokenId.toNumber().should.be.equal(tokenId)
+              log.args._data.should.be.equal(data2)
+            })
+          })
+        }
 
         describe('with data', function () {
-          shouldTransferSafely(safeTransferFromWithData, data);
-        });
+          shouldTransferSafely(safeTransferFromWithData, data)
+        })
 
         describe('without data', function () {
-          shouldTransferSafely(safeTransferFromWithoutData, '0x');
-        });
+          shouldTransferSafely(safeTransferFromWithoutData, '0x')
+        })
 
         describe('to a receiver contract returning unexpected value', function () {
           it('reverts', async function () {
-            const invalidReceiver = await ERC721Receiver.new('0x42', false);
-            await assertRevert(this.token.safeTransferFrom(owner, invalidReceiver.address, tokenId, { from: owner }));
-          });
-        });
+            const invalidReceiver = await ERC721Receiver.new('0x42', false)
+            await assertRevert(this.token.safeTransferFrom(owner, invalidReceiver.address, tokenId, { from: owner }))
+          })
+        })
 
         describe('to a receiver contract that throws', function () {
           it('reverts', async function () {
-            const invalidReceiver = await ERC721Receiver.new(RECEIVER_MAGIC_VALUE, true);
-            await assertRevert(this.token.safeTransferFrom(owner, invalidReceiver.address, tokenId, { from: owner }));
-          });
-        });
+            const invalidReceiver = await ERC721Receiver.new(RECEIVER_MAGIC_VALUE, true)
+            await assertRevert(this.token.safeTransferFrom(owner, invalidReceiver.address, tokenId, { from: owner }))
+          })
+        })
 
-        describe('to a contract that does not implement the required function', function () {
+        describe('to a contract that does not implement the required', function () {
           it('reverts', async function () {
-            const invalidReceiver = this.token;
-            await assertRevert(this.token.safeTransferFrom(owner, invalidReceiver.address, tokenId, { from: owner }));
-          });
-        });
-      });
-    });
+            const invalidReceiver = this.token
+            await assertRevert(this.token.safeTransferFrom(owner, invalidReceiver.address, tokenId, { from: owner }))
+          })
+        })
+      })
+    })
 
     describe('approve', function () {
-      const tokenId = firstTokenId;
-      const sender = creator;
-      const to = accounts[1];
+      const tokenId = firstTokenId
+      const sender = creator
+      const to = accounts[1]
 
-      let logs = null;
+      let logs = null
 
       const itClearsApproval = function () {
         it('clears approval for the token', async function () {
-          const approvedAccount = await this.token.getApproved(tokenId);
-          approvedAccount.should.be.equal(ZERO_ADDRESS);
-        });
-      };
+          const approvedAccount = await this.token.getApproved(tokenId)
+          approvedAccount.should.be.equal(ZERO_ADDRESS)
+        })
+      }
 
       const itApproves = function (address) {
         it('sets the approval for the target address', async function () {
-          const approvedAccount = await this.token.getApproved(tokenId);
-          approvedAccount.should.be.equal(address);
-        });
-      };
+          const approvedAccount = await this.token.getApproved(tokenId)
+          approvedAccount.should.be.equal(address)
+        })
+      }
 
       const itEmitsApprovalEvent = function (address) {
         it('emits an approval event', async function () {
-          logs.length.should.be.equal(1);
-          logs[0].event.should.be.eq('Approval');
-          logs[0].args._owner.should.be.equal(sender);
-          logs[0].args._approved.should.be.equal(address);
-          logs[0].args._tokenId.should.be.bignumber.equal(tokenId);
-        });
-      };
+          logs.length.should.be.equal(1)
+          logs[0].event.should.be.eq('Approval')
+          logs[0].args._owner.should.be.equal(sender)
+          logs[0].args._approved.should.be.equal(address)
+          logs[0].args._tokenId.should.be.bignumber.equal(tokenId)
+        })
+      }
 
       describe('when clearing approval', function () {
         describe('when there was no prior approval', function () {
           beforeEach(async function () {
-            ({ logs } = await this.token.approve(ZERO_ADDRESS, tokenId, { from: sender }));
-          });
+            ({ logs } = await this.token.approve(ZERO_ADDRESS, tokenId, { from: sender }))
+          })
 
-          itClearsApproval();
+          itClearsApproval()
 
           it('does not emit an approval event', async function () {
-            logs.length.should.be.equal(0);
-          });
-        });
+            logs.length.should.be.equal(0)
+          })
+        })
 
         describe('when there was a prior approval', function () {
           beforeEach(async function () {
-            await this.token.approve(to, tokenId, { from: sender });
-            ({ logs } = await this.token.approve(ZERO_ADDRESS, tokenId, { from: sender }));
-          });
+            await this.token.approve(to, tokenId, { from: sender })
+            ;({ logs } = await this.token.approve(ZERO_ADDRESS, tokenId, { from: sender }))
+          })
 
-          itClearsApproval();
-          itEmitsApprovalEvent(ZERO_ADDRESS);
-        });
-      });
+          itClearsApproval()
+          itEmitsApprovalEvent(ZERO_ADDRESS)
+        })
+      })
 
       describe('when approving a non-zero address', function () {
         describe('when there was no prior approval', function () {
           beforeEach(async function () {
-            ({ logs } = await this.token.approve(to, tokenId, { from: sender }));
-          });
+            ({ logs } = await this.token.approve(to, tokenId, { from: sender }))
+          })
 
-          itApproves(to);
-          itEmitsApprovalEvent(to);
-        });
+          itApproves(to)
+          itEmitsApprovalEvent(to)
+        })
 
         describe('when there was a prior approval to the same address', function () {
           beforeEach(async function () {
-            await this.token.approve(to, tokenId, { from: sender });
-            ({ logs } = await this.token.approve(to, tokenId, { from: sender }));
-          });
+            await this.token.approve(to, tokenId, { from: sender })
+            ;({ logs } = await this.token.approve(to, tokenId, { from: sender }))
+          })
 
-          itApproves(to);
-          itEmitsApprovalEvent(to);
-        });
+          itApproves(to)
+          itEmitsApprovalEvent(to)
+        })
 
         describe('when there was a prior approval to a different address', function () {
           beforeEach(async function () {
-            await this.token.approve(accounts[2], tokenId, { from: sender });
-            ({ logs } = await this.token.approve(to, tokenId, { from: sender }));
-          });
+            await this.token.approve(accounts[2], tokenId, { from: sender })
+            ;({ logs } = await this.token.approve(to, tokenId, { from: sender }))
+          })
 
-          itApproves(to);
-          itEmitsApprovalEvent(to);
-        });
-      });
+          itApproves(to)
+          itEmitsApprovalEvent(to)
+        })
+      })
 
       describe('when the address that receives the approval is the owner', function () {
         it('reverts', async function () {
-          await assertRevert(this.token.approve(sender, tokenId, { from: sender }));
-        });
-      });
+          await assertRevert(this.token.approve(sender, tokenId, { from: sender }))
+        })
+      })
 
       describe('when the sender does not own the given token ID', function () {
         it('reverts', async function () {
-          await assertRevert(this.token.approve(to, tokenId, { from: accounts[2] }));
-        });
-      });
+          await assertRevert(this.token.approve(to, tokenId, { from: accounts[2] }))
+        })
+      })
 
       describe('when the sender is approved for the given token ID', function () {
         it('reverts', async function () {
-          await this.token.approve(accounts[2], tokenId, { from: sender });
-          await assertRevert(this.token.approve(to, tokenId, { from: accounts[2] }));
-        });
-      });
+          await this.token.approve(accounts[2], tokenId, { from: sender })
+          await assertRevert(this.token.approve(to, tokenId, { from: accounts[2] }))
+        })
+      })
 
       describe('when the sender is an operator', function () {
-        const operator = accounts[2];
+        const operator = accounts[2]
         beforeEach(async function () {
-          await this.token.setApprovalForAll(operator, true, { from: sender });
-          ({ logs } = await this.token.approve(to, tokenId, { from: operator }));
-        });
+          await this.token.setApprovalForAll(operator, true, { from: sender })
+          ;({ logs } = await this.token.approve(to, tokenId, { from: operator }))
+        })
 
-        itApproves(to);
-        itEmitsApprovalEvent(to);
-      });
+        itApproves(to)
+        itEmitsApprovalEvent(to)
+      })
 
       describe('when the given token ID does not exist', function () {
         it('reverts', async function () {
-          await assertRevert(this.token.approve(to, unknownTokenId, { from: sender }));
-        });
-      });
-    });
+          await assertRevert(this.token.approve(to, unknownTokenId, { from: sender }))
+        })
+      })
+    })
 
     describe('setApprovalForAll', function () {
-      const sender = creator;
+      const sender = creator
 
       describe('when the operator willing to approve is not the owner', function () {
-        const operator = accounts[1];
+        const operator = accounts[1]
 
         describe('when there is no operator approval set by the sender', function () {
           it('approves the operator', async function () {
-            await this.token.setApprovalForAll(operator, true, { from: sender });
+            await this.token.setApprovalForAll(operator, true, { from: sender })
 
-            const isApproved = await this.token.isApprovedForAll(sender, operator);
-            isApproved.should.be.true;
-          });
+            const isApproved = await this.token.isApprovedForAll(sender, operator)
+            isApproved.should.be.true
+          })
 
           it('emits an approval event', async function () {
-            const { logs } = await this.token.setApprovalForAll(operator, true, { from: sender });
+            const { logs } = await this.token.setApprovalForAll(operator, true, { from: sender })
 
-            logs.length.should.be.equal(1);
-            logs[0].event.should.be.eq('ApprovalForAll');
-            logs[0].args._owner.should.be.equal(sender);
-            logs[0].args._operator.should.be.equal(operator);
-            logs[0].args._approved.should.be.true;
-          });
-        });
+            logs.length.should.be.equal(1)
+            logs[0].event.should.be.eq('ApprovalForAll')
+            logs[0].args._owner.should.be.equal(sender)
+            logs[0].args._operator.should.be.equal(operator)
+            logs[0].args._approved.should.be.true
+          })
+        })
 
         describe('when the operator was set as not approved', function () {
           beforeEach(async function () {
-            await this.token.setApprovalForAll(operator, false, { from: sender });
-          });
+            await this.token.setApprovalForAll(operator, false, { from: sender })
+          })
 
           it('approves the operator', async function () {
-            await this.token.setApprovalForAll(operator, true, { from: sender });
+            await this.token.setApprovalForAll(operator, true, { from: sender })
 
-            const isApproved = await this.token.isApprovedForAll(sender, operator);
-            isApproved.should.be.true;
-          });
+            const isApproved = await this.token.isApprovedForAll(sender, operator)
+            isApproved.should.be.true
+          })
 
           it('emits an approval event', async function () {
-            const { logs } = await this.token.setApprovalForAll(operator, true, { from: sender });
+            const { logs } = await this.token.setApprovalForAll(operator, true, { from: sender })
 
-            logs.length.should.be.equal(1);
-            logs[0].event.should.be.eq('ApprovalForAll');
-            logs[0].args._owner.should.be.equal(sender);
-            logs[0].args._operator.should.be.equal(operator);
-            logs[0].args._approved.should.be.true;
-          });
+            logs.length.should.be.equal(1)
+            logs[0].event.should.be.eq('ApprovalForAll')
+            logs[0].args._owner.should.be.equal(sender)
+            logs[0].args._operator.should.be.equal(operator)
+            logs[0].args._approved.should.be.true
+          })
 
           it('can unset the operator approval', async function () {
-            await this.token.setApprovalForAll(operator, false, { from: sender });
+            await this.token.setApprovalForAll(operator, false, { from: sender })
 
-            const isApproved = await this.token.isApprovedForAll(sender, operator);
-            isApproved.should.be.false;
-          });
-        });
+            const isApproved = await this.token.isApprovedForAll(sender, operator)
+            isApproved.should.be.false
+          })
+        })
 
         describe('when the operator was already approved', function () {
           beforeEach(async function () {
-            await this.token.setApprovalForAll(operator, true, { from: sender });
-          });
+            await this.token.setApprovalForAll(operator, true, { from: sender })
+          })
 
           it('keeps the approval to the given address', async function () {
-            await this.token.setApprovalForAll(operator, true, { from: sender });
+            await this.token.setApprovalForAll(operator, true, { from: sender })
 
-            const isApproved = await this.token.isApprovedForAll(sender, operator);
-            isApproved.should.be.true;
-          });
+            const isApproved = await this.token.isApprovedForAll(sender, operator)
+            isApproved.should.be.true
+          })
 
           it('emits an approval event', async function () {
-            const { logs } = await this.token.setApprovalForAll(operator, true, { from: sender });
+            const { logs } = await this.token.setApprovalForAll(operator, true, { from: sender })
 
-            logs.length.should.be.equal(1);
-            logs[0].event.should.be.eq('ApprovalForAll');
-            logs[0].args._owner.should.be.equal(sender);
-            logs[0].args._operator.should.be.equal(operator);
-            logs[0].args._approved.should.be.true;
-          });
-        });
-      });
+            logs.length.should.be.equal(1)
+            logs[0].event.should.be.eq('ApprovalForAll')
+            logs[0].args._owner.should.be.equal(sender)
+            logs[0].args._operator.should.be.equal(operator)
+            logs[0].args._approved.should.be.true
+          })
+        })
+      })
 
       describe('when the operator is the owner', function () {
-        const operator = creator;
+        const operator = creator
 
         it('reverts', async function () {
-          await assertRevert(this.token.setApprovalForAll(operator, true, { from: sender }));
-        });
-      });
-    });
-  });
-};
+          await assertRevert(this.token.setApprovalForAll(operator, true, { from: sender }))
+        })
+      })
+    })
+  })
+}
+
+export default shouldBehaveLikeERC721BasicToken

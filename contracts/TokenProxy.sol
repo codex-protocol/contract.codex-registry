@@ -28,6 +28,7 @@ contract TokenProxy is Ownable {
   function () payable public {
     address _implementation = implementation;
 
+    // solium-disable-next-line security/no-inline-assembly
     assembly {
       let ptr := mload(0x40)
       calldatacopy(ptr, 0, calldatasize)

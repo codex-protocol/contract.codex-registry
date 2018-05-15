@@ -1,15 +1,17 @@
-require('dotenv').config();
-require('babel-register');
-require('babel-polyfill');
+require('babel-register')
+require('babel-polyfill')
 
-const HDWalletProvider = require('truffle-hdwallet-provider');
+const dotenv = require('dotenv')
+const HDWalletProvider = require('truffle-hdwallet-provider')
+
+dotenv.config()
 
 const infuraProvider = (network) => {
   return new HDWalletProvider(
     process.env.MNEMONIC,
     `https://${network}.infura.io/${process.env.INFURA_API_KEY}`
-  );
-};
+  )
+}
 
 module.exports = {
   networks: {
@@ -32,4 +34,4 @@ module.exports = {
       gasPrice: 5000000000, // 5 gwei
     },
   },
-};
+}

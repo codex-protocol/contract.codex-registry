@@ -1,37 +1,39 @@
+import assertRevert from '../helpers/assertRevert'
 
-import assertRevert from '../helpers/assertRevert';
+const Ownable = artifacts.require('Ownable')
 
-var Ownable = artifacts.require('Ownable');
+contract('Ownable', (accounts) => {
 
-contract('Ownable', function (accounts) {
-  let ownable;
+  let ownable
 
-  beforeEach(async function () {
-    ownable = await Ownable.new();
-  });
+  beforeEach(async () => {
+    ownable = await Ownable.new()
+  })
 
-  it('should have an owner', async function () {
-    let owner = await ownable.owner();
-    assert.isTrue(owner !== 0);
-  });
+  it('should have an owner', async () => {
+    const owner = await ownable.owner()
+    assert.isTrue(owner !== 0)
+  })
 
-  it('changes owner after transfer', async function () {
-    let other = accounts[1];
-    await ownable.transferOwnership(other);
-    let owner = await ownable.owner();
+  it('changes owner after transfer', async () => {
+    const other = accounts[1]
 
-    assert.isTrue(owner === other);
-  });
+    await ownable.transferOwnership(other)
 
-  it('should prevent non-owners from transfering', async function () {
-    const other = accounts[2];
-    const owner = await ownable.owner.call();
-    assert.isTrue(owner !== other);
-    await assertRevert(ownable.transferOwnership(other, { from: other }));
-  });
+    const owner = await ownable.owner()
 
-  it('should guard ownership against stuck state', async function () {
-    let originalOwner = await ownable.owner();
-    await assertRevert(ownable.transferOwnership(null, { from: originalOwner }));
-  });
-});
+    assert.isTrue(owner === other)
+  })
+
+  it('should prevent non-owners from transfering', async () => {
+    const other = accounts[2]
+    const owner = await ownable.owner.call()
+    assert.isTrue(owner !== other)
+    await assertRevert(ownable.transferOwnership(other, { from: other }))
+  })
+
+  it('should guard ownership against stuck state', async () => {
+    const originalOwner = await ownable.owner()
+    await assertRevert(ownable.transferOwnership(null, { from: originalOwner }))
+  })
+})
