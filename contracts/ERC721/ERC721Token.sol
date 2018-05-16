@@ -2,6 +2,7 @@ pragma solidity ^0.4.23;
 
 import "./ERC721.sol";
 import "./ERC721BasicToken.sol";
+import "../0xcert/SupportsInterface.sol";
 
 
 /**
@@ -10,7 +11,7 @@ import "./ERC721BasicToken.sol";
  * Moreover, it includes approve all functionality using operator terminology
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
-contract ERC721Token is ERC721, ERC721BasicToken {
+contract ERC721Token is ERC721, ERC721BasicToken, SupportsInterface {
   // Token name
   string internal name_;
 
@@ -35,6 +36,7 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   constructor(string _name, string _symbol) public {
     name_ = _name;
     symbol_ = _symbol;
+    supportedInterfaces[0x80ac58cd] = true; // ERC721
   }
 
   /**
