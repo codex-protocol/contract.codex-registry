@@ -103,9 +103,14 @@ contract CodexTitle is ERC721Token {
   /**
   * @dev Sets the address of the ERC20 token used for fees in the contract.
   * @param _codexTokenAddress The address of the ERC20 Codex Protocol Token
+  * @param _feeRecipient The address where the fees are sent
+  * @param _creationFee The new creation fee. 10^18 is 1 token.
   */
-  function setCodexTokenAddress(address _codexTokenAddress) external onlyOwner {
+  function setFees(address _codexTokenAddress, address _feeRecipient, uint256 _creationFee) external onlyOwner {
     codexTokenAddress = _codexTokenAddress;
+    codexToken = CodexToken(codexTokenAddress);
+    feeRecipient = _feeRecipient;
+    creationFee = _creationFee;
   }
 
   /**
@@ -173,22 +178,6 @@ contract CodexTitle is ERC721Token {
     }
 
     return string(output);
-  }
-
-  function mint(
-    address _to,
-    bytes32 _nameHash,
-    bytes32 _descriptionHash,
-    bytes32 _imageHash)
-    public
-  {
-    this.mint(
-      _to,
-      _nameHash,
-      _descriptionHash,
-      _imageHash,
-      "",
-      "");
   }
 
   /**
