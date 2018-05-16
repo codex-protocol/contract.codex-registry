@@ -33,8 +33,6 @@ contract('CodexTitle', async function (accounts) {
       hashedMetadata.name,
       hashedMetadata.description,
       hashedMetadata.imageBytes,
-      '1',
-      'metadataId'
     )
   })
 
