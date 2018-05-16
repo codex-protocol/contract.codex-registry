@@ -19,8 +19,8 @@ contract UpgradedTokenMock is ERC721TokenMock {
   uint256 public mintingFeesAccumulated = 0;
   uint256 public constant MINTING_FEE = 100000;
 
-  constructor(string name, string symbol) public
-    ERC721TokenMock(name, symbol)
+  constructor(string _name, string _symbol) public
+    ERC721TokenMock(_name, _symbol)
   { }
 
   function withdrawMintingFees() external onlyOwner {

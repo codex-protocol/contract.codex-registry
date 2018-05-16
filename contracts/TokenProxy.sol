@@ -1,6 +1,7 @@
 pragma solidity ^0.4.23;
 
 import "./zeppelin-solidity/Ownable.sol";
+import "./ERC721/ERC721.sol";
 
 
 /**
@@ -60,5 +61,27 @@ contract TokenProxy is Ownable {
     implementation = _implementation;
 
     emit Upgraded(version, implementation);
+  }
+
+  /**
+  * @dev Since name is passed into the ERC721 token constructor, it's not stored in the TokenProxy
+  *  contract. Thus, we call into the contract directly to retrieve its value.
+  * @return string The name of the token
+  */
+  function name() external view returns (string) {
+    ERC721Metadata tokenMetadata = ERC721Metadata(implementation);
+
+    return tokenMetadata.name();
+  }
+
+  /**
+  * @dev Since symbol is passed into the ERC721 token constructor, it's not stored in the TokenProxy
+  *  contract. Thus, we call into the contract directly to retrieve its value.
+  * @return string The symbol of token
+  */
+  function symbol() external view returns (string) {
+    ERC721Metadata tokenMetadata = ERC721Metadata(implementation);
+
+    return tokenMetadata.symbol();
   }
 }

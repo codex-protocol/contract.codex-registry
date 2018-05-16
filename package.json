@@ -42,13 +42,14 @@
     "@codex-protocol/eslint-config-base": "latest",
     "@codex-protocol/eslint-config-truffle": "latest",
     "babel-eslint": "^8.2.3",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "chai-bignumber": "^2.0.2",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.11.0",
+    "solc": "^0.4.23",
     "solidity-coverage": "^0.4.15",
     "solium": "^1.1.7"
   },
@@ -60,7 +61,7 @@
     "ethereumjs-util": "^5.2.0",
     "ethjs-abi": "^0.2.1",
     "lodash": "^4.17.10",
-    "truffle": "^4.1.7",
+    "truffle": "^4.1.8",
     "truffle-hdwallet-provider": "0.0.3",
     "zeppelin-solidity": "^1.9.0"
   }

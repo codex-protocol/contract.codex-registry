@@ -29,6 +29,9 @@ contract('ERC721Token via TokenProxy', async function (accounts) {
     await this.proxy.upgradeTo('1.1', upgradedToken.address)
 
     this.token = UpgradedToken.at(this.proxy.address)
+
+    const tokenName = await this.token.name()
+    tokenName.should.be.equal(name)
   })
 
   describe('minting UpgradedTokenMock', function () {

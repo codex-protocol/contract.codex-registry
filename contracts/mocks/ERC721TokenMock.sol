@@ -8,8 +8,8 @@ import "../ERC721/ERC721Token.sol";
  * This mock just provides a public mint function for testing purposes
  */
 contract ERC721TokenMock is ERC721Token {
-  constructor(string name, string symbol) public
-    ERC721Token(name, symbol)
+  constructor(string _name, string _symbol) public
+    ERC721Token(_name, _symbol)
   { }
 
   function mint(address _to, uint256 _tokenId) payable public {
