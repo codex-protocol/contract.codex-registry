@@ -2,6 +2,7 @@ import assertRevert from '../helpers/assertRevert'
 import shouldBehaveLikeERC721BasicToken from './behaviors/ERC721BasicToken.behavior'
 import shouldBehaveLikeERC721Token from './behaviors/ERC721Token.behavior'
 import shouldMintERC721Token from './behaviors/ERC721Mint.behavior'
+import shouldBehaveLikeERC165 from '../ERC165/behaviors/ERC165.behavior'
 
 const { BigNumber } = web3
 const ERC721Token = artifacts.require('ERC721TokenMock.sol')
@@ -62,6 +63,7 @@ contract('ERC721Token via CodexTitleProxy', async function (accounts) {
       shouldBehaveLikeERC721BasicToken(accounts)
       shouldMintERC721Token(accounts)
       shouldBehaveLikeERC721Token(name, symbol, creator, accounts)
+      shouldBehaveLikeERC165(name, symbol, creator, accounts)
     })
   })
 })

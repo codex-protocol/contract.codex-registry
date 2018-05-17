@@ -1,5 +1,4 @@
 import assertRevert from '../helpers/assertRevert'
-import shouldBehaveLikeERC165 from '../ERC165/behaviors/ERC165.behavior'
 
 const { BigNumber } = web3
 const ERC721Token = artifacts.require('ERC721TokenMock.sol')
@@ -28,8 +27,6 @@ contract('CodexTitleProxy', async function (accounts) {
     this.token = await ERC721Token.new(name, symbol, { from: creator })
     this.proxy = await CodexTitleProxy.new(this.token.address, { from: creator })
   })
-
-  shouldBehaveLikeERC165(name, symbol, creator, accounts)
 
   describe('when created', function () {
     it('should store the first version', async function () {
@@ -99,8 +96,65 @@ contract('CodexTitleProxy', async function (accounts) {
         )
       })
     })
+  })
 
-    // TODO: Add some basic tests here
-    describe('fallback function', function () { })
+  describe('contract data', function () {
+    let proxy
+    const firstTokenId = '1'
+
+    beforeEach(function () {
+      proxy = ERC721Token.at(this.proxy.address)
+    })
+
+    describe('when written by the proxy', function () {
+      beforeEach(async function () {
+        await proxy.mint(creator, firstTokenId)
+      })
+
+      it('is stored in the proxy', async function () {
+        const tokenBalance = await proxy.totalSupply()
+        tokenBalance.should.be.bignumber.equal(1)
+      })
+
+      it('is not stored in the original contract', async function () {
+        const tokenBalance = await this.token.totalSupply()
+        tokenBalance.should.be.bignumber.equal(0)
+      })
+
+      describe('and appended to through subsequent upgrades', function () {
+        beforeEach(async function () {
+          const upgradedToken = await UpgradedToken.new(name, symbol, { from: creator })
+          this.proxy.upgradeTo('1.1', upgradedToken.address)
+
+          proxy = UpgradedToken.at(this.proxy.address)
+        })
+
+        it('still stores the original data', async function () {
+          const tokenBalance = await proxy.totalSupply()
+          tokenBalance.should.be.bignumber.equal(1)
+        })
+
+        it('and also stores new contract data', async function () {
+          const mintingFees = await proxy.mintingFeesAccumulated()
+          mintingFees.should.be.bignumber.equal(0)
+        })
+      })
+    })
+
+    describe('when written by the original contract', function () {
+      beforeEach(async function () {
+        await this.token.mint(creator, firstTokenId)
+      })
+
+      it('is not stored in the proxy', async function () {
+        const tokenBalance = await this.token.totalSupply()
+        tokenBalance.should.be.bignumber.equal(1)
+      })
+
+      it('is stored in the original contract', async function () {
+        const tokenBalance = await proxy.totalSupply()
+        tokenBalance.should.be.bignumber.equal(0)
+      })
+    })
   })
 })

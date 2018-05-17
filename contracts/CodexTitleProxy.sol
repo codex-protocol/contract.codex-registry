@@ -9,7 +9,8 @@ import "./ERC721/ERC721.sol";
  * @dev This allows the token owner to optionally upgrade the token in the future
  *  if there are changes needed in the business logic. See the upgradeTo function
  *  for caveats.
- * See https://github.com/zeppelinos/labs/tree/master/upgradeability_using_inherited_storage
+ * Based on MIT licensed code from
+ *  https://github.com/zeppelinos/labs/tree/master/upgradeability_using_inherited_storage
  */
 contract CodexTitleProxy is Ownable {
   event Upgraded(string version, address indexed implementation);
@@ -73,11 +74,9 @@ contract CodexTitleProxy is Ownable {
   * @param _implementation The address at which the implementation is available
   */
   function upgradeTo(string _version, address _implementation) public onlyOwner {
-
-    // TODO: Add error messages for these
-    require(keccak256(_version) != keccak256(version));
-    require(_implementation != implementation);
-    require(_implementation != address(0));
+    require(keccak256(_version) != keccak256(version), "The version cannot be the same");
+    require(_implementation != implementation, "The implementation cannot be the same");
+    require(_implementation != address(0), "The implementation cannot be the 0 address");
 
     version = _version;
     implementation = _implementation;

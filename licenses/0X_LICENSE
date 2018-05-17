@@ -6,8 +6,6 @@ contracts/ERC165/SupportsInterface.sol
 test/ERC165/SupportsInterface.test.js
 test/ERC165/behaviors/ERC165.behavior.js
 
-
-
 --
 
 The MIT License (MIT)
