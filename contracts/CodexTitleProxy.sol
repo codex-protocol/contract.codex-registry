@@ -5,13 +5,13 @@ import "./ERC721/ERC721.sol";
 
 
 /**
- * @title TokenProxy, a proxy contract for token storage
+ * @title CodexTitleProxy, a proxy contract for token storage
  * @dev This allows the token owner to optionally upgrade the token in the future
  *  if there are changes needed in the business logic. See the upgradeTo function
  *  for caveats.
  * See https://github.com/zeppelinos/labs/tree/master/upgradeability_using_inherited_storage
  */
-contract TokenProxy is Ownable {
+contract CodexTitleProxy is Ownable {
   event Upgraded(string version, address indexed implementation);
 
   string public version;
@@ -44,7 +44,7 @@ contract TokenProxy is Ownable {
   }
 
   /**
-  * @dev Since name is passed into the ERC721 token constructor, it's not stored in the TokenProxy
+  * @dev Since name is passed into the ERC721 token constructor, it's not stored in the CodexTitleProxy
   *  contract. Thus, we call into the contract directly to retrieve its value.
   * @return string The name of the token
   */
@@ -55,7 +55,7 @@ contract TokenProxy is Ownable {
   }
 
   /**
-  * @dev Since symbol is passed into the ERC721 token constructor, it's not stored in the TokenProxy
+  * @dev Since symbol is passed into the ERC721 token constructor, it's not stored in the CodexTitleProxy
   *  contract. Thus, we call into the contract directly to retrieve its value.
   * @return string The symbol of token
   */
@@ -66,7 +66,7 @@ contract TokenProxy is Ownable {
   }
 
   /**
-  * @dev Upgrades the TokenProxy to point at a new implementation. Only callable by the owner.
+  * @dev Upgrades the CodexTitleProxy to point at a new implementation. Only callable by the owner.
   *  Only upgrade the token after extensive testing has been done. The storage is append only.
   *  The new token must inherit from the previous token so the shape of the storage is maintained.
   * @param _version The version of the token

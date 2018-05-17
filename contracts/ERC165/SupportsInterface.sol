@@ -5,6 +5,8 @@ import "./ERC165.sol";
 /**
  * @dev Implementation of standard for detect smart contract interfaces.
  */
+
+
 contract SupportsInterface is ERC165 {
 
   /**

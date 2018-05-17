@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 
 const CodexTitle = artifacts.require('./CodexTitle.sol')
-const TokenProxy = artifacts.require('./TokenProxy.sol')
+const CodexTitleProxy = artifacts.require('./CodexTitleProxy.sol')
 
 // NOTE: This should be run after 'npm run mint'
 
@@ -27,8 +27,8 @@ const transferTokens = async (contract, from, to, tokenIds) => {
 
 module.exports = async (callback) => {
 
-  const tokenProxy = await TokenProxy.deployed()
-  const codexTitle = CodexTitle.at(tokenProxy.address)
+  const codexTitleProxy = await CodexTitleProxy.deployed()
+  const codexTitle = CodexTitle.at(codexTitleProxy.address)
 
   const [firstAccount, secondAccount, thirdAccount] = web3.eth.accounts
 

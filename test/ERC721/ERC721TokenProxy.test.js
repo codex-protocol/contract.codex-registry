@@ -7,14 +7,14 @@ const { BigNumber } = web3
 const ERC721Token = artifacts.require('ERC721TokenMock.sol')
 const UpgradedToken = artifacts.require('UpgradedTokenMock.sol')
 const UpgradedTokenV2 = artifacts.require('UpgradedTokenMockV2.sol')
-const TokenProxy = artifacts.require('TokenProxy.sol')
+const CodexTitleProxy = artifacts.require('CodexTitleProxy.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-contract('ERC721Token via TokenProxy', async function (accounts) {
+contract('ERC721Token via CodexTitleProxy', async function (accounts) {
   const firstTokenId = 100
   const creator = accounts[0]
   const name = 'Non Fungible Token'
@@ -23,7 +23,7 @@ contract('ERC721Token via TokenProxy', async function (accounts) {
 
   beforeEach(async function () {
     const token = await ERC721Token.new(name, symbol, { from: creator })
-    this.proxy = await TokenProxy.new(token.address, { from: creator })
+    this.proxy = await CodexTitleProxy.new(token.address, { from: creator })
 
     const upgradedToken = await UpgradedToken.new(name, symbol, { from: creator })
     await this.proxy.upgradeTo('1.1', upgradedToken.address)

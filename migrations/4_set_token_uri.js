@@ -1,5 +1,5 @@
 const CodexTitle = artifacts.require('./CodexTitle.sol')
-const TokenProxy = artifacts.require('./TokenProxy.sol')
+const CodexTitleProxy = artifacts.require('./CodexTitleProxy.sol')
 
 module.exports = async (deployer, network) => {
 
@@ -26,8 +26,8 @@ module.exports = async (deployer, network) => {
           throw new Error('No tokenURIPrefix defined for this network')
       }
 
-      const tokenProxy = await TokenProxy.deployed()
-      const codexTitle = CodexTitle.at(tokenProxy.address)
+      const codexTitleProxy = await CodexTitleProxy.deployed()
+      const codexTitle = CodexTitle.at(codexTitleProxy.address)
 
       console.log('Setting the tokenURIPrefix to:', tokenURIPrefix)
 

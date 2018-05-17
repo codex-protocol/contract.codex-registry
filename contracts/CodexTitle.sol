@@ -7,7 +7,7 @@ import "./ERC20/ERC20.sol";
 /**
  * @title CodexTitle, an ERC721 token for arts & collectables
  * @dev Developers should never interact with this smart contract directly!
- *  All transactions/calls should be made through TokenProxy. Storage will be maintained
+ *  All transactions/calls should be made through CodexTitleProxy. Storage will be maintained
  *  in that smart contract so that the Codex Protocol governing body has the ability
  *  to upgrade the contract in the future in the event of an emergency or new functionality.
  */

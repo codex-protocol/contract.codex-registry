@@ -4,7 +4,7 @@ import shouldBehaveLikeERC165 from '../ERC165/behaviors/ERC165.behavior'
 const { BigNumber } = web3
 const ERC721Token = artifacts.require('ERC721TokenMock.sol')
 const UpgradedToken = artifacts.require('UpgradedTokenMock.sol')
-const TokenProxy = artifacts.require('TokenProxy.sol')
+const CodexTitleProxy = artifacts.require('CodexTitleProxy.sol')
 
 
 require('chai')
@@ -13,11 +13,11 @@ require('chai')
   .should()
 
 /**
- * These tests are specifically designed to test the functionality in TokenProxy.
+ * These tests are specifically designed to test the functionality in CodexTitleProxy.
  * i.e., constructor tests, upgradeTo tests, and fallback function tests.
- * Test cases covering the logistics of upgrading tokens are covered in ERC721TokenProxy.test.js.
+ * Test cases covering the logistics of upgrading tokens are covered in ERC721CodexTitleProxy.test.js.
  */
-contract('TokenProxy', async function (accounts) {
+contract('CodexTitleProxy', async function (accounts) {
   const creator = accounts[0]
   const notTheCreator = accounts[1]
   const name = 'Non Fungible Token'
@@ -26,7 +26,7 @@ contract('TokenProxy', async function (accounts) {
 
   beforeEach(async function () {
     this.token = await ERC721Token.new(name, symbol, { from: creator })
-    this.proxy = await TokenProxy.new(this.token.address, { from: creator })
+    this.proxy = await CodexTitleProxy.new(this.token.address, { from: creator })
   })
 
   shouldBehaveLikeERC165(name, symbol, creator, accounts)

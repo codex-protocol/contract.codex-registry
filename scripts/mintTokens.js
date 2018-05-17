@@ -2,7 +2,7 @@ const axios = require('axios')
 const util = require('ethereumjs-util')
 
 const CodexTitle = artifacts.require('./CodexTitle.sol')
-const TokenProxy = artifacts.require('./TokenProxy.sol')
+const CodexTitleProxy = artifacts.require('./CodexTitleProxy.sol')
 
 // NOTE: If you change this you also need to change the pre-defined images
 //  and the addProvenance script
@@ -125,8 +125,8 @@ const mintTokens = async (contract, authTokens, imageRecords) => {
 }
 
 module.exports = async (callback) => {
-  const tokenProxy = await TokenProxy.deployed()
-  const codexTitle = CodexTitle.at(tokenProxy.address)
+  const codexTitleProxy = await CodexTitleProxy.deployed()
+  const codexTitle = CodexTitle.at(codexTitleProxy.address)
 
   axios.defaults.baseURL = 'http://localhost:3001'
   axios.defaults.headers.common['Content-Type'] = 'application/json'

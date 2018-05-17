@@ -1,6 +1,6 @@
 const CodexToken = artifacts.require('./CodexToken.sol')
 const CodexTitle = artifacts.require('./CodexTitle.sol')
-const TokenProxy = artifacts.require('./TokenProxy.sol')
+const CodexTitleProxy = artifacts.require('./CodexTitleProxy.sol')
 
 module.exports = (deployer, network, accounts) => {
   deployer.deploy(CodexTitle)
@@ -24,7 +24,7 @@ module.exports = (deployer, network, accounts) => {
       await codexTitle.setFees(erc20TokenAddress, accounts[0], 0)
     })
     .then(() => {
-      return deployer.deploy(TokenProxy, CodexTitle.address)
+      return deployer.deploy(CodexTitleProxy, CodexTitle.address)
     })
     .catch((error) => {
       console.log(error)
