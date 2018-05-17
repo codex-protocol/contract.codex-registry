@@ -1,6 +1,7 @@
 pragma solidity ^0.4.23;
 
 import "./ERC721TokenMock.sol";
+import "../../zeppelin-solidity/Ownable.sol";
 
 
 /**
@@ -15,7 +16,7 @@ import "./ERC721TokenMock.sol";
  *  would be to migrate to change the fee structure of the minting/transfer functions
  *  as seen in this mock.
  */
-contract UpgradedTokenMock is ERC721TokenMock {
+contract UpgradedTokenMock is ERC721TokenMock, Ownable {
   uint256 public mintingFeesAccumulated = 0;
   uint256 public constant MINTING_FEE = 100000;
 

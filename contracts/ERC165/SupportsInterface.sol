@@ -2,6 +2,7 @@ pragma solidity ^0.4.23;
 
 import "./ERC165.sol";
 
+
 /**
  * @dev Implementation of standard for detect smart contract interfaces.
  */
