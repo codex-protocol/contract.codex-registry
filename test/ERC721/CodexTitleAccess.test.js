@@ -159,4 +159,95 @@ contract('CodexTitleAccess', async function (accounts) {
       })
     })
   })
+
+  describe('modifyDescriptionHash', function () {
+    const data = web3.sha3('description')
+    describe('when contract paused', function () {
+      beforeEach(async function () {
+        // Pause the contract
+        await this.token.pause()
+      })
+
+      afterEach(async function () {
+        // unpause the contract
+        await this.token.unpause()
+      })
+
+      it('should revert', async function () {
+        await assertRevert(
+          this.token.modifyDescriptionHash(firstTokenId, data, { from: creator })
+        )
+      })
+    })
+
+    describe('when contract unpaused', function () {
+      it('allows description modification', async function () {
+        await this.token.modifyDescriptionHash(firstTokenId, data, { from: creator })
+        const tokenById = await this.token.getTokenById(firstTokenId)
+        tokenById[1].should.be.equal(data)
+      })
+    })
+  })
+
+  describe('modifyNameHash', function () {
+    const data = web3.sha3('name')
+    describe('when contract paused', function () {
+      beforeEach(async function () {
+        // Pause the contract
+        await this.token.pause()
+      })
+
+      afterEach(async function () {
+        // unpause the contract
+        await this.token.unpause()
+      })
+
+      it('should revert', async function () {
+        await assertRevert(
+          this.token.modifyNameHash(firstTokenId, data, { from: creator })
+        )
+      })
+    })
+
+    describe('when contract unpaused', function () {
+      it('allows name modification', async function () {
+        await this.token.modifyNameHash(firstTokenId, data, { from: creator })
+        const tokenById = await this.token.getTokenById(firstTokenId)
+        tokenById[0].should.be.equal(data)
+      })
+    })
+  })
+
+  describe('addNewImageHash', function () {
+    const data = web3.sha3('image')
+    describe('when contract paused', function () {
+      beforeEach(async function () {
+        // Pause the contract
+        await this.token.pause()
+      })
+
+      afterEach(async function () {
+        // unpause the contract
+        await this.token.unpause()
+      })
+
+      it('should revert', async function () {
+        await assertRevert(
+          this.token.addNewImageHash(firstTokenId, data, { from: creator })
+        )
+      })
+    })
+
+    describe('when contract unpaused', function () {
+      it('allows image modification', async function () {
+        const originalTokenById = await this.token.getTokenById(firstTokenId)
+        const images = originalTokenById[2]
+        images.push(data)
+        await this.token.addNewImageHash(firstTokenId, data, { from: creator })
+        const tokenById = await this.token.getTokenById(firstTokenId)
+        tokenById[2][0].should.be.equal(images[0])
+        tokenById[2][1].should.be.equal(images[1])
+      })
+    })
+  })
 })
