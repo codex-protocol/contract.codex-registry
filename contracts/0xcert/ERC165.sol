@@ -1,7 +1,8 @@
 pragma solidity ^0.4.23;
 
 /**
- * @dev A standard for detecting smart contract interfaces. See https://goo.gl/cxQCse.
+ * @dev A standard for detecting smart contract interfaces.
+ *   See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-165.md
  */
 interface ERC165 {
 
@@ -10,10 +11,5 @@ interface ERC165 {
    * @notice This function uses less than 30,000 gas.
    * @param _interfaceID The interface identifier, as specified in ERC-165.
    */
-  function supportsInterface(
-    bytes4 _interfaceID
-  )
-    external
-    view
-    returns (bool);
+  function supportsInterface(bytes4 _interfaceID) external view returns (bool);
 }
