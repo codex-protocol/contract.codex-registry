@@ -1,7 +1,7 @@
 pragma solidity ^0.4.23;
 
 import "./ERC721/ERC721Token.sol";
-import "./CodexToken.sol";
+import "./ERC20/ERC20.sol";
 
 
 /**
@@ -46,7 +46,7 @@ contract CodexTitle is ERC721Token {
   address public codexTokenAddress;
 
   // Implementation of ERC20 Codex Protocol Token, used for fees in the contract
-  CodexToken public codexToken;
+  ERC20 public codexToken;
 
   // Address where all contract fees are sent, i.e., the Community Fund
   address public feeRecipient;
@@ -108,7 +108,7 @@ contract CodexTitle is ERC721Token {
   */
   function setFees(address _codexTokenAddress, address _feeRecipient, uint256 _creationFee) external onlyOwner {
     codexTokenAddress = _codexTokenAddress;
-    codexToken = CodexToken(codexTokenAddress);
+    codexToken = ERC20(codexTokenAddress);
     feeRecipient = _feeRecipient;
     creationFee = _creationFee;
   }

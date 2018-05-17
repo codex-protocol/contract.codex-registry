@@ -64,7 +64,7 @@ contract('CodexTitle', async function (accounts) {
       beforeEach(async function () {
         codexToken = await CodexToken.new({ from: creator })
 
-        // Set fees for creation to 1 CODX, sent ot the community fund
+        // Set fees for creation to 1 CODX, sent to the community fund
         await this.token.setFees(codexToken.address, communityFund, fee, { from: creator })
 
         // Get original balance of the creator in CODX
