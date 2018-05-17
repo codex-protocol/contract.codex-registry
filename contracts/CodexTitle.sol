@@ -1,6 +1,6 @@
 pragma solidity ^0.4.23;
 
-import "./CodexTitleCore.sol";
+import "./CodexTitleAccess.sol";
 
 
 /**
@@ -10,6 +10,6 @@ import "./CodexTitleCore.sol";
  *  in that smart contract so that the Codex Protocol governing body has the ability
  *  to upgrade the contract in the future in the event of an emergency or new functionality.
  */
-contract CodexTitle is CodexTitleCore {
+contract CodexTitle is CodexTitleAccess {
   constructor() public ERC721Token("Codex Title", "CT") { }
 }
