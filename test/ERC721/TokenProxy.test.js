@@ -1,9 +1,11 @@
 import assertRevert from '../helpers/assertRevert'
+import shouldBehaveLikeERC165 from '../ERC165/behaviors/ERC165.behavior'
 
 const { BigNumber } = web3
 const ERC721Token = artifacts.require('ERC721TokenMock.sol')
 const UpgradedToken = artifacts.require('UpgradedTokenMock.sol')
 const TokenProxy = artifacts.require('TokenProxy.sol')
+
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -26,6 +28,8 @@ contract('TokenProxy', async function (accounts) {
     this.token = await ERC721Token.new(name, symbol, { from: creator })
     this.proxy = await TokenProxy.new(this.token.address, { from: creator })
   })
+
+  shouldBehaveLikeERC165(name, symbol, creator, accounts)
 
   describe('when created', function () {
     it('should store the first version', async function () {

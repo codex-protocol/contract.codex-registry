@@ -2,19 +2,18 @@ pragma solidity ^0.4.23;
 
 import "./ERC721Basic.sol";
 import "./ERC721Receiver.sol";
+import "../0xcert/SupportsInterface.sol";
 
 import "../zeppelin-solidity/SafeMath.sol";
 import "../zeppelin-solidity/AddressUtils.sol";
 import "../zeppelin-solidity/Pausable.sol";
-
-// TODO: Needs to implement ERC165 to be standards compliant
 
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic implementation
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
-contract ERC721BasicToken is ERC721Basic, Pausable {
+contract ERC721BasicToken is ERC721Basic, Pausable, SupportsInterface {
   using SafeMath for uint256;
   using AddressUtils for address;
 
@@ -50,6 +49,13 @@ contract ERC721BasicToken is ERC721Basic, Pausable {
   modifier canTransfer(uint256 _tokenId) {
     require(isApprovedOrOwner(msg.sender, _tokenId));
     _;
+  }
+
+  /**
+  * @dev Constructor function
+  */
+  constructor() public {
+    supportedInterfaces[0x80ac58cd] = true; // ERC721
   }
 
   /**

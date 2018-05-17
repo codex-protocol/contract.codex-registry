@@ -17,6 +17,7 @@ export default function shouldBehaveLikeERC165(name, symbol, creator, accounts) 
         const nftokenInterface = await this.token.supportsInterface('0x80ac58cd')
         nftokenInterface.should.be.equal(true)
       })
+
       it('checks non-existing interface', async function () {
         const nftokenNonExistingInterface = await this.token.supportsInterface('0x5b5e139f')
         nftokenNonExistingInterface.should.be.equal(false)
