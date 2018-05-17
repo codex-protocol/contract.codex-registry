@@ -10,6 +10,7 @@ module.exports = async (deployer, network, accounts) => {
       // The owner key should be stored securely in cold storage.
       switch (network) {
         case 'develop':
+        case 'coverage':
           return
 
         case 'ganache':

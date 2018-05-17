@@ -10,6 +10,7 @@ module.exports = (deployer, network, accounts) => {
       switch (network) {
         case 'develop':
         case 'ganache':
+        case 'coverage':
           {
             const codexToken = await CodexToken.deployed()
             erc20TokenAddress = codexToken.address

@@ -26,7 +26,8 @@
     "lint:sol": "solium -d .",
     "compile": "truffle compile",
     "mint": "truffle exec scripts/mintTokens.js --network ganache",
-    "provenance": "truffle exec scripts/addProvenance.js --network ganache"
+    "provenance": "truffle exec scripts/addProvenance.js --network ganache",
+    "coverage": "./node_modules/.bin/solidity-coverage"
   },
   "repository": {
     "type": "git",
@@ -53,7 +54,7 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.11.0",
     "solc": "^0.4.23",
-    "solidity-coverage": "^0.4.15",
+    "solidity-coverage": "^0.5.0",
     "solium": "^1.1.7"
   },
   "dependencies": {
