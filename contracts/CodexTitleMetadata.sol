@@ -40,30 +40,30 @@ contract CodexTitleMetadata is ERC721Token {
     _;
   }
 
-  function modifyDescriptionHash(uint256 _tokenId, bytes32 _newDescriptionHash) external canModify(_tokenId) {
-    tokenData[_tokenId].descriptionHash = _newDescriptionHash;
-
-    emit Modified(msg.sender, _tokenId, ModifiedType.DESCRIPTION_CHANGE);
-  }
-
-  function modifyNameHash(uint256 _tokenId, bytes32 _newNameHash) external canModify(_tokenId) {
-    tokenData[_tokenId].nameHash = _newNameHash;
-
-    emit Modified(msg.sender, _tokenId, ModifiedType.NAME_CHANGE);
-  }
-
-  function addNewImageHash(uint256 _tokenId, bytes32 _imageHash) external canModify(_tokenId) {
-    tokenData[_tokenId].imageHashes.push(_imageHash);
-
-    emit Modified(msg.sender, _tokenId, ModifiedType.IMAGE_NEW);
-  }
-
   // TODO: Is it necessary to have a separate getter for this?
   function getImageHashByIndex(uint256 _tokenId, uint256 _index) external view returns (bytes32) {
     bytes32[] memory imageHashes;
     (,,imageHashes) = getTokenById(_tokenId);
 
     return imageHashes[_index];
+  }
+
+  function modifyDescriptionHash(uint256 _tokenId, bytes32 _newDescriptionHash) public canModify(_tokenId) {
+    tokenData[_tokenId].descriptionHash = _newDescriptionHash;
+
+    emit Modified(msg.sender, _tokenId, ModifiedType.DESCRIPTION_CHANGE);
+  }
+
+  function modifyNameHash(uint256 _tokenId, bytes32 _newNameHash) public canModify(_tokenId) {
+    tokenData[_tokenId].nameHash = _newNameHash;
+
+    emit Modified(msg.sender, _tokenId, ModifiedType.NAME_CHANGE);
+  }
+
+  function addNewImageHash(uint256 _tokenId, bytes32 _imageHash) public canModify(_tokenId) {
+    tokenData[_tokenId].imageHashes.push(_imageHash);
+
+    emit Modified(msg.sender, _tokenId, ModifiedType.IMAGE_NEW);
   }
 
   /**
