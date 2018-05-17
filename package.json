@@ -15,6 +15,7 @@
     "migrate:production": "npm run lint && truffle migrate --network mainnet && npm run copy:production",
     "migrate:reset:production": "npm run clean && npm run lint && truffle migrate --reset --network mainnet && npm run copy:production",
     "test:title": "truffle test --network ganache ./test/ERC721/CodexTitle.test.js",
+    "test:access": "truffle test --network ganache ./test/ERC721/CodexTitleAccess.test.js",
     "test:basic": "truffle test --network ganache ./test/ERC721/ERC721BasicToken.test.js",
     "test:proxy": "truffle test --network ganache ./test/ERC721/CodexTitleProxy.test.js",
     "test:token": "truffle test --network ganache ./test/ERC721/ERC721Token.test.js",

@@ -56,32 +56,6 @@ contract('CodexTitle', async function (accounts) {
       })
     })
 
-    describe('when contract paused', function () {
-
-      beforeEach(async function () {
-        // Pause the contract
-        await this.token.pause()
-      })
-
-      afterEach(async function () {
-        // unpause the contract
-        await this.token.unpause()
-      })
-
-      it('should revert', async function () {
-        await assertRevert(
-          this.token.mint(
-            creator,
-            hashedMetadata.name,
-            hashedMetadata.description,
-            hashedMetadata.imageBytes,
-            providerId,
-            providerMetadataId,
-          )
-        )
-      })
-    })
-
     describe('when fees are enabled', function () {
       const fee = web3.toWei(1, 'ether')
       let codexToken

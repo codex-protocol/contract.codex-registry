@@ -22,6 +22,58 @@ contract CodexTitleAccess is CodexTitleCore {
     public
     whenNotPaused
   {
-    return super.mint(_to, _nameHash, _descriptionHash, _imageHash, _providerId, _providerMetadataId);
+    return super.mint(
+      _to,
+      _nameHash,
+      _descriptionHash,
+      _imageHash,
+      _providerId,
+      _providerMetadataId
+    );
+  }
+
+  /**
+  * @dev Make trasferFrom() pausable
+  */
+  function transferFrom(
+    address _from,
+    address _to,
+    uint256 _tokenId)
+    public
+    whenNotPaused
+  {
+    return super.transferFrom(_from, _to, _tokenId);
+  }
+
+  /**
+  * @dev Make safeTrasferFrom() pausable
+  */
+  function safeTransferFrom(
+    address _from,
+    address _to,
+    uint256 _tokenId)
+    public
+    whenNotPaused
+  {
+    return super.safeTransferFrom(_from, _to, _tokenId);
+  }
+
+  /**
+  * @dev Make safeTrasferFrom() pausable
+  */
+  function safeTransferFrom(
+    address _from,
+    address _to,
+    uint256 _tokenId,
+    bytes _data)
+    public
+    whenNotPaused
+  {
+    return super.safeTransferFrom(
+      _from,
+      _to,
+      _tokenId,
+      _data
+    );
   }
 }
