@@ -2,7 +2,7 @@ pragma solidity ^0.4.23;
 
 import "./ERC721Basic.sol";
 import "./ERC721Receiver.sol";
-import "../0xcert/SupportsInterface.sol";
+import "../ERC165/SupportsInterface.sol";
 
 import "../zeppelin-solidity/SafeMath.sol";
 import "../zeppelin-solidity/AddressUtils.sol";

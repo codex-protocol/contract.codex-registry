@@ -1,7 +1,7 @@
 Licensing inclusion for the following files which were originally taken from the 0xcert ERC721 token contracts and later modified by us:
 
-contracts/0xcert/ERC165.sol
-contracts/0xcert/SupportsInterface.sol
+contracts/ERC165/ERC165.sol
+contracts/ERC165/SupportsInterface.sol
 
 test/ERC165/SupportsInterface.test.js
 test/ERC165/behaviors/ERC165.behavior.js
