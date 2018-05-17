@@ -1,6 +1,7 @@
 pragma solidity ^0.4.23;
 
 import "./ERC721/ERC721Token.sol";
+import "./ERC20/ERC20.sol";
 
 
 /**
@@ -40,6 +41,18 @@ contract CodexTitle is ERC721Token {
   // Global tokenURIPrefix prefix. The token ID will be appended to the uri when accessed
   //  via the tokenURI method
   string public tokenURIPrefix;
+
+  // Address of the ERC20 Codex Protocol Token, used for fees in the contract
+  address public codexTokenAddress;
+
+  // Implementation of ERC20 Codex Protocol Token, used for fees in the contract
+  ERC20 public codexToken;
+
+  // Address where all contract fees are sent, i.e., the Community Fund
+  address public feeRecipient;
+
+  // Fee to create new tokens. 10^18 = 1 token
+  uint256 public creationFee = 0;
 
   /**
   * @dev Checks msg.sender can transfer a token, by being owner, approved, or operator
@@ -87,20 +100,25 @@ contract CodexTitle is ERC721Token {
     tokenURIPrefix = _tokenURIPrefix;
   }
 
-  function mint(
-    address _to,
-    bytes32 _nameHash,
-    bytes32 _descriptionHash,
-    bytes32 _imageHash)
-    public
-  {
-    this.mint(
-      _to,
-      _nameHash,
-      _descriptionHash,
-      _imageHash,
-      "",
-      "");
+  /**
+  * @dev Sets the address of the ERC20 token used for fees in the contract.
+  * @param _codexTokenAddress The address of the ERC20 Codex Protocol Token
+  * @param _feeRecipient The address where the fees are sent
+  * @param _creationFee The new creation fee. 10^18 is 1 token.
+  */
+  function setFees(address _codexTokenAddress, address _feeRecipient, uint256 _creationFee) external onlyOwner {
+    codexTokenAddress = _codexTokenAddress;
+    codexToken = ERC20(codexTokenAddress);
+    feeRecipient = _feeRecipient;
+    creationFee = _creationFee;
+  }
+
+  /**
+  * @dev Sets the creation fee in CODX
+  * @param _creationFee The new creation fee. 10^18 is 1 token.
+  */
+  function setCreationFee(uint256 _creationFee) external onlyOwner {
+    creationFee = _creationFee;
   }
 
   /**
@@ -178,6 +196,12 @@ contract CodexTitle is ERC721Token {
     string _providerMetadataId) // TODO: convert to bytes32
     public
   {
+    if (feeRecipient != address(0)) {
+      require(
+        codexToken.transferFrom(msg.sender, feeRecipient, creationFee),
+        "Fee in CODX required");
+    }
+
     // For now, all new tokens will be the last entry in the array
     uint256 newTokenId = allTokens.length;
 

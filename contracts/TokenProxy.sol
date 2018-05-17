@@ -44,26 +44,6 @@ contract TokenProxy is Ownable {
   }
 
   /**
-  * @dev Upgrades the TokenProxy to point at a new implementation. Only callable by the owner.
-  *  Only upgrade the token after extensive testing has been done. The storage is append only.
-  *  The new token must inherit from the previous token so the shape of the storage is maintained.
-  * @param _version The version of the token
-  * @param _implementation The address at which the implementation is available
-  */
-  function upgradeTo(string _version, address _implementation) public onlyOwner {
-
-    // TODO: Add error messages for these
-    require(keccak256(_version) != keccak256(version));
-    require(_implementation != implementation);
-    require(_implementation != address(0));
-
-    version = _version;
-    implementation = _implementation;
-
-    emit Upgraded(version, implementation);
-  }
-
-  /**
   * @dev Since name is passed into the ERC721 token constructor, it's not stored in the TokenProxy
   *  contract. Thus, we call into the contract directly to retrieve its value.
   * @return string The name of the token
@@ -83,5 +63,25 @@ contract TokenProxy is Ownable {
     ERC721Metadata tokenMetadata = ERC721Metadata(implementation);
 
     return tokenMetadata.symbol();
+  }
+
+  /**
+  * @dev Upgrades the TokenProxy to point at a new implementation. Only callable by the owner.
+  *  Only upgrade the token after extensive testing has been done. The storage is append only.
+  *  The new token must inherit from the previous token so the shape of the storage is maintained.
+  * @param _version The version of the token
+  * @param _implementation The address at which the implementation is available
+  */
+  function upgradeTo(string _version, address _implementation) public onlyOwner {
+
+    // TODO: Add error messages for these
+    require(keccak256(_version) != keccak256(version));
+    require(_implementation != implementation);
+    require(_implementation != address(0));
+
+    version = _version;
+    implementation = _implementation;
+
+    emit Upgraded(version, implementation);
   }
 }

@@ -2,6 +2,7 @@ import assertRevert from '../helpers/assertRevert'
 
 const { BigNumber } = web3
 const CodexTitle = artifacts.require('CodexTitle.sol')
+const CodexToken = artifacts.require('CodexToken.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -10,8 +11,11 @@ require('chai')
 
 contract('CodexTitle', async function (accounts) {
   const creator = accounts[0]
+  const communityFund = accounts[8]
   const unauthorized = accounts[9]
   const firstTokenId = 0
+  const providerId = '1'
+  const providerMetadataId = '10'
 
   const firstTokenMetadata = {
     name: 'First token',
@@ -33,8 +37,8 @@ contract('CodexTitle', async function (accounts) {
       hashedMetadata.name,
       hashedMetadata.description,
       hashedMetadata.imageBytes,
-      '1',
-      'metadataId'
+      providerId,
+      providerMetadataId
     )
   })
 
@@ -49,6 +53,80 @@ contract('CodexTitle', async function (accounts) {
       it('should store the hashes at the minted tokens identifier', async function () {
         const tokenData = await this.token.getTokenById(0)
         tokenData[0].should.be.equal(hashedMetadata.name)
+      })
+    })
+
+    describe('when fees are enabled', function () {
+      const fee = web3.toWei(1, 'ether')
+      let codexToken
+      let originalBalance
+
+      beforeEach(async function () {
+        codexToken = await CodexToken.new({ from: creator })
+
+        // Set fees for creation to 1 CODX, sent to the community fund
+        await this.token.setFees(codexToken.address, communityFund, fee, { from: creator })
+
+        // Get original balance of the creator in CODX
+        originalBalance = await codexToken.balanceOf(creator)
+      })
+
+      it('has a codexToken address', async function () {
+        const tokenAddress = await this.token.codexTokenAddress()
+        tokenAddress.should.be.equal(codexToken.address)
+      })
+
+      it('has a feeRecipient', async function () {
+        const feeRecipient = await this.token.feeRecipient()
+        feeRecipient.should.be.equal(communityFund)
+      })
+
+      it('has a creationFee', async function () {
+        const creationFee = await this.token.creationFee()
+        creationFee.should.be.bignumber.equal(fee)
+      })
+
+      describe('and the fee is paid', function () {
+        beforeEach(async function () {
+          // Set allowance to 10 tokens (using the web3 helpers for ether since it also has 18 decimal places)
+          await codexToken.approve(this.token.address, web3.toWei(10, 'ether'), { from: creator })
+
+          await this.token.mint(
+            creator,
+            hashedMetadata.name,
+            hashedMetadata.description,
+            hashedMetadata.imageBytes,
+            providerId,
+            providerMetadataId
+          )
+        })
+
+        it('should create a new token', async function () {
+          const numTokens = await this.token.totalSupply()
+          numTokens.should.be.bignumber.equal(2)
+        })
+
+        it('should reduce the number of CODX in the minters balance by the creationFee', async function () {
+          const creationFee = await this.token.creationFee()
+          const currentBalance = await codexToken.balanceOf(creator)
+
+          currentBalance.should.be.bignumber.equal(originalBalance.minus(creationFee))
+        })
+      })
+
+      describe('and the fee is not paid', function () {
+        it('should revert', async function () {
+          await assertRevert(
+            this.token.mint(
+              creator,
+              hashedMetadata.name,
+              hashedMetadata.description,
+              hashedMetadata.imageBytes,
+              providerId,
+              providerMetadataId,
+            )
+          )
+        })
       })
     })
   })

@@ -1,5 +1,10 @@
 Licensing inclusion for the following files which were originally taken from the OpenZeppelin Solidity token contracts and later modified by us:
 
+contracts/ERC20/BasicToken.sol
+contracts/ERC20/ERC20.sol
+contracts/ERC20/ERC20Basic.sol
+contracts/ERC20/StandardToken.sol
+
 contracts/ERC721/ERC721.sol
 contracts/ERC721/ERC721Basic.sol
 contracts/ERC721/ERC721BasicToken.sol

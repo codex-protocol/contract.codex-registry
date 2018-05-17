@@ -9,6 +9,7 @@ module.exports = async (deployer, network) => {
       let tokenURIPrefix
 
       switch (network) {
+        case 'develop':
         case 'ganache':
           tokenURIPrefix = 'http://localhost:3001/token-metadata'
           break
