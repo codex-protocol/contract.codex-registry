@@ -24,11 +24,11 @@ contract CodexTitleFees is Pausable {
   uint256 public creationFee = 0;
 
   /**
-  * @dev Sets the address of the ERC20 token used for fees in the contract.
-  * @param _codexTokenAddress The address of the ERC20 Codex Protocol Token
-  * @param _feeRecipient The address where the fees are sent
-  * @param _creationFee The new creation fee. 10^18 is 1 token.
-  */
+    * @dev Sets the address of the ERC20 token used for fees in the contract.
+    * @param _codexTokenAddress The address of the ERC20 Codex Protocol Token
+    * @param _feeRecipient The address where the fees are sent
+    * @param _creationFee The new creation fee. 10^18 is 1 token.
+    */
   function setFees(address _codexTokenAddress, address _feeRecipient, uint256 _creationFee) external onlyOwner {
     codexTokenAddress = _codexTokenAddress;
     codexToken = ERC20(codexTokenAddress);
@@ -37,9 +37,9 @@ contract CodexTitleFees is Pausable {
   }
 
   /**
-  * @dev Sets the creation fee in CODX
-  * @param _creationFee The new creation fee. 10^18 is 1 token.
-  */
+   * @dev Sets the creation fee in CODX
+   * @param _creationFee The new creation fee. 10^18 is 1 token.
+   */
   function setCreationFee(uint256 _creationFee) external onlyOwner {
     creationFee = _creationFee;
   }

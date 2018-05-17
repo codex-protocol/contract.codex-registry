@@ -2,6 +2,7 @@ pragma solidity ^0.4.23;
 
 import "./zeppelin-solidity/Ownable.sol";
 import "./ERC721/ERC721.sol";
+import "./ERC165/ERC165.sol";
 
 
 /**
@@ -23,10 +24,10 @@ contract CodexTitleProxy is Ownable {
   }
 
   /**
-  * @dev Fallback function. Any transaction sent to this contract that doesn't match the
-  *  upgradeTo signature will fallback to this function, which in turn will use
-  *  DELEGATECALL to delegate the transaction data to the implementation.
-  */
+   * @dev Fallback function. Any transaction sent to this contract that doesn't match the
+   *  upgradeTo signature will fallback to this function, which in turn will use
+   *  DELEGATECALL to delegate the transaction data to the implementation.
+   */
   function () payable public {
     address _implementation = implementation;
 
@@ -45,10 +46,10 @@ contract CodexTitleProxy is Ownable {
   }
 
   /**
-  * @dev Since name is passed into the ERC721 token constructor, it's not stored in the CodexTitleProxy
-  *  contract. Thus, we call into the contract directly to retrieve its value.
-  * @return string The name of the token
-  */
+   * @dev Since name is passed into the ERC721 token constructor, it's not stored in the CodexTitleProxy
+   *  contract. Thus, we call into the contract directly to retrieve its value.
+   * @return string The name of the token
+   */
   function name() external view returns (string) {
     ERC721Metadata tokenMetadata = ERC721Metadata(implementation);
 
@@ -56,10 +57,10 @@ contract CodexTitleProxy is Ownable {
   }
 
   /**
-  * @dev Since symbol is passed into the ERC721 token constructor, it's not stored in the CodexTitleProxy
-  *  contract. Thus, we call into the contract directly to retrieve its value.
-  * @return string The symbol of token
-  */
+   * @dev Since symbol is passed into the ERC721 token constructor, it's not stored in the CodexTitleProxy
+   *  contract. Thus, we call into the contract directly to retrieve its value.
+   * @return string The symbol of token
+   */
   function symbol() external view returns (string) {
     ERC721Metadata tokenMetadata = ERC721Metadata(implementation);
 
@@ -67,12 +68,12 @@ contract CodexTitleProxy is Ownable {
   }
 
   /**
-  * @dev Upgrades the CodexTitleProxy to point at a new implementation. Only callable by the owner.
-  *  Only upgrade the token after extensive testing has been done. The storage is append only.
-  *  The new token must inherit from the previous token so the shape of the storage is maintained.
-  * @param _version The version of the token
-  * @param _implementation The address at which the implementation is available
-  */
+   * @dev Upgrades the CodexTitleProxy to point at a new implementation. Only callable by the owner.
+   *  Only upgrade the token after extensive testing has been done. The storage is append only.
+   *  The new token must inherit from the previous token so the shape of the storage is maintained.
+   * @param _version The version of the token
+   * @param _implementation The address at which the implementation is available
+   */
   function upgradeTo(string _version, address _implementation) public onlyOwner {
     require(keccak256(_version) != keccak256(version), "The version cannot be the same");
     require(_implementation != implementation, "The implementation cannot be the same");
