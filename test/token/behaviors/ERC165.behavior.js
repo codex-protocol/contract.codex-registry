@@ -2,7 +2,7 @@ require('chai')
   .use(require('chai-as-promised'))
   .should()
 
-export default function shouldBehaveLikeERC165(name, symbol, creator, accounts) {
+export default function shouldBehaveLikeERC165() {
   const interfaceERC165 = '0x01ffc9a7'
   const interfaceERC721 = '0x80ac58cd'
 

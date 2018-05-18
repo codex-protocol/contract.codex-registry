@@ -21,8 +21,8 @@ export default function shouldBehaveLikeERC721BasicToken(accounts) {
 
   describe('like a ERC721BasicToken', function () {
     beforeEach(async function () {
-      await this.token.mint(creator, firstTokenId, { from: creator })
-      await this.token.mint(creator, secondTokenId, { from: creator })
+      await this.token.mint(creator, firstTokenId)
+      await this.token.mint(creator, secondTokenId)
     })
 
     describe('balanceOf', function () {

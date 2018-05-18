@@ -11,15 +11,11 @@ require('chai')
   .should()
 
 contract('ERC721BasicToken should behave', function (accounts) {
-  const name = 'Non Fungible Token'
-  const symbol = 'NFT'
-  const creator = accounts[0]
-
   beforeEach(async function () {
-    this.token = await ERC721BasicToken.new({ from: accounts[0] })
+    this.token = await ERC721BasicToken.new()
   })
 
   shouldBehaveLikeERC721BasicToken(accounts)
   shouldMintERC721Token(accounts)
-  shouldBehaveLikeERC165(name, symbol, creator, accounts)
+  shouldBehaveLikeERC165()
 })

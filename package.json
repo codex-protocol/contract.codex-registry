@@ -18,7 +18,6 @@
     "test:basic": "truffle test --network ganache ./test/token/ERC721BasicToken.test.js",
     "test:proxy": "truffle test --network ganache ./test/token/CodexTitleProxy.test.js",
     "test:token": "truffle test --network ganache ./test/token/ERC721Token.test.js",
-    "test:token-proxy": "truffle test --network ganache ./test/token/ERC721TokenProxy.test.js",
     "test": "truffle test --network ganache",
     "lint": "npm run lint:js && npm run lint:sol",
     "lint:js": "eslint .",

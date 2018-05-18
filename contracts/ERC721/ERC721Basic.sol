@@ -25,6 +25,8 @@ contract ERC721Basic {
 
   function balanceOf(address _owner) public view returns (uint256 _balance);
   function ownerOf(uint256 _tokenId) public view returns (address _owner);
+
+  // Note: This is not in the official ERC-721 standard so it's not included in the interface hash
   function exists(uint256 _tokenId) public view returns (bool _exists);
 
   function approve(address _to, uint256 _tokenId) public;

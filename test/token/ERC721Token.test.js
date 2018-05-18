@@ -17,11 +17,11 @@ contract('ERC721Token should behave', function (accounts) {
   const creator = accounts[0]
 
   beforeEach(async function () {
-    this.token = await ERC721Token.new(name, symbol, { from: creator })
+    this.token = await ERC721Token.new(name, symbol)
   })
 
   shouldBehaveLikeERC721BasicToken(accounts)
   shouldMintERC721Token(accounts)
   shouldBehaveLikeERC721Token(name, symbol, creator, accounts)
-  shouldBehaveLikeERC165(name, symbol, creator, accounts)
+  shouldBehaveLikeERC165()
 })

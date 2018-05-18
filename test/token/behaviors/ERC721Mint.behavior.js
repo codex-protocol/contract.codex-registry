@@ -16,8 +16,8 @@ export default function shouldMintERC721Token(accounts) {
 
   describe('like a mintable ERC721Token', function () {
     beforeEach(async function () {
-      await this.token.mint(creator, firstTokenId, { from: creator })
-      await this.token.mint(creator, secondTokenId, { from: creator })
+      await this.token.mint(creator, firstTokenId)
+      await this.token.mint(creator, secondTokenId)
     })
 
     describe('mint', function () {
