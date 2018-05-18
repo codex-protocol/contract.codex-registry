@@ -1,7 +1,4 @@
 import assertRevert from '../helpers/assertRevert'
-import shouldBehaveLikeERC721BasicToken from './behaviors/ERC721BasicToken.behavior'
-import shouldBehaveLikeERC721Token from './behaviors/ERC721Token.behavior'
-import shouldMintERC721Token from './behaviors/ERC721Mint.behavior'
 import shouldBehaveLikeERC165 from './behaviors/ERC165.behavior'
 import shouldBehaveLikeCodexTitle from './behaviors/CodexTitle.behavior'
 
@@ -237,9 +234,6 @@ contract('CodexTitleProxy', async function (accounts) {
     })
 
     describe('should behave', function () {
-      // shouldBehaveLikeERC721BasicToken(accounts)
-      // shouldMintERC721Token(accounts)
-      // shouldBehaveLikeERC721Token(name, symbol, creator, accounts)
       shouldBehaveLikeERC165()
       shouldBehaveLikeCodexTitle(accounts)
     })
