@@ -11,6 +11,7 @@ require('chai')
 contract('CodexTitle', function (accounts) {
   beforeEach(async function () {
     this.token = await CodexTitle.new()
+    await this.token.initializeOwnable(accounts[0])
   })
 
   shouldBehaveLikeCodexTitle(accounts)

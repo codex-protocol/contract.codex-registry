@@ -1,6 +1,4 @@
 import shouldBehaveLikeERC721BasicToken from './behaviors/ERC721BasicToken.behavior'
-import shouldBehaveLikeERC721Token from './behaviors/ERC721Token.behavior'
-import shouldMintERC721Token from './behaviors/ERC721Mint.behavior'
 
 const { BigNumber } = web3
 const CodexTitle = artifacts.require('CodexTitle.sol')
@@ -14,21 +12,28 @@ require('chai')
 contract('CodexTitleProxy', async function (accounts) {
   const creator = accounts[0]
 
-  const name = 'Non Fungible Token'
-  const symbol = 'NFT'
-
   describe('proxying CodexTitle', function () {
     beforeEach(async function () {
       const token = await CodexTitle.new()
       this.proxy = await CodexTitleProxy.new(token.address)
 
       this.token = CodexTitle.at(this.proxy.address)
+      await this.token.initializeOwnable(creator)
     })
 
     describe('should behave', function () {
-      shouldBehaveLikeERC721BasicToken(accounts)
-      shouldMintERC721Token(accounts)
-      shouldBehaveLikeERC721Token(name, symbol, creator, accounts)
+      async function mintToken(tokenToMint, tokenCreator) {
+        await tokenToMint.mint(
+          tokenCreator,
+          'hashedMetadata.name',
+          'hashedMetadata.description',
+          'hashedMetadata.imageBytes',
+          '1',
+          '10'
+        )
+      }
+
+      shouldBehaveLikeERC721BasicToken(accounts, mintToken)
     })
   })
 })

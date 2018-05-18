@@ -60,10 +60,10 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
         let originalBalance
 
         beforeEach(async function () {
-          codexToken = await CodexToken.new({ from: creator })
+          codexToken = await CodexToken.new()
 
           // Set fees for creation to 1 CODX, sent to the community fund
-          await this.token.setFees(codexToken.address, communityFund, fee, { from: creator })
+          await this.token.setFees(codexToken.address, communityFund, fee)
 
           // Get original balance of the creator in CODX
           originalBalance = await codexToken.balanceOf(creator)
@@ -87,7 +87,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
         describe('and the fee is paid', function () {
           beforeEach(async function () {
             // Set allowance to 10 tokens (using the web3 helpers for ether since it also has 18 decimal places)
-            await codexToken.approve(this.token.address, web3.toWei(10, 'ether'), { from: creator })
+            await codexToken.approve(this.token.address, web3.toWei(10, 'ether'))
 
             await this.token.mint(
               creator,

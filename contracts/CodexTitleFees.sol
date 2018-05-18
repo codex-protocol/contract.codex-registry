@@ -1,7 +1,7 @@
 pragma solidity ^0.4.23;
 
 import "./ERC20/ERC20.sol";
-import "./zeppelin-solidity/Pausable.sol";
+import "./library/Pausable.sol";
 
 
 /**

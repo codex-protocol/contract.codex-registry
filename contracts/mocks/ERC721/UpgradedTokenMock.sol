@@ -1,7 +1,7 @@
 pragma solidity ^0.4.23;
 
 import "./ERC721TokenMock.sol";
-import "../../zeppelin-solidity/Ownable.sol";
+import "../../library/DelayedOwnable.sol";
 
 
 /**
@@ -16,7 +16,7 @@ import "../../zeppelin-solidity/Ownable.sol";
  *  would be to migrate to change the fee structure of the minting/transfer functions
  *  as seen in this mock.
  */
-contract UpgradedTokenMock is ERC721TokenMock, Ownable {
+contract UpgradedTokenMock is ERC721TokenMock, DelayedOwnable {
   uint256 public mintingFeesAccumulated = 0;
   uint256 public constant MINTING_FEE = 100000;
 
@@ -30,6 +30,8 @@ contract UpgradedTokenMock is ERC721TokenMock, Ownable {
 
   function mint(address _to, uint256 _tokenId) payable public onlyOwner {
     require(msg.value == MINTING_FEE);
+
+    mintingFeesAccumulated += msg.value;
 
     super.mint(_to, _tokenId);
   }

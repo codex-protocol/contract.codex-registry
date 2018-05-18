@@ -4,8 +4,8 @@ import "./ERC721Basic.sol";
 import "./ERC721Receiver.sol";
 import "../ERC165/ERC165.sol";
 
-import "../zeppelin-solidity/SafeMath.sol";
-import "../zeppelin-solidity/AddressUtils.sol";
+import "../library/SafeMath.sol";
+import "../library/AddressUtils.sol";
 
 
 /**

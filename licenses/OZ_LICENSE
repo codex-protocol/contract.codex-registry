@@ -18,10 +18,10 @@ contracts/mocks/ERC721/ERC721TokenMock.sol
 contracts/mocks/PausableMock.sol
 contracts/mocks/SafeMathMock.sol
 
-contracts/zeppelin-solidity/AddressUtils.sol
-contracts/zeppelin-solidity/Ownable.sol
-contracts/zeppelin-solidity/Pausable.sol
-contracts/zeppelin-solidity/SafeMath.sol
+contracts/library/AddressUtils.sol
+contracts/library/Ownable.sol
+contracts/library/Pausable.sol
+contracts/library/SafeMath.sol
 
 test/library/Pausable.test.js
 test/library/SafeMath.test.js

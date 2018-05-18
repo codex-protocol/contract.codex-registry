@@ -1,6 +1,6 @@
 pragma solidity ^0.4.23;
 
-import "./zeppelin-solidity/Ownable.sol";
+import "./library/Ownable.sol";
 import "./ERC721/ERC721.sol";
 import "./ERC165/ERC165.sol";
 

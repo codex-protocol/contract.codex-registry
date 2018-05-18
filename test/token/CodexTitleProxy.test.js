@@ -102,19 +102,19 @@ contract('CodexTitleProxy', async function (accounts) {
     })
 
     describe('contract data', function () {
-      let proxy
+      let proxiedToken
 
       beforeEach(function () {
-        proxy = ERC721Token.at(this.proxy.address)
+        proxiedToken = ERC721Token.at(this.proxy.address)
       })
 
       describe('when written by the proxy', function () {
         beforeEach(async function () {
-          await proxy.mint(creator, firstTokenId)
+          await proxiedToken.mint(creator, firstTokenId)
         })
 
         it('is stored in the proxy', async function () {
-          const tokenBalance = await proxy.totalSupply()
+          const tokenBalance = await proxiedToken.totalSupply()
           tokenBalance.should.be.bignumber.equal(1)
         })
 
@@ -128,16 +128,16 @@ contract('CodexTitleProxy', async function (accounts) {
             const upgradedToken = await UpgradedToken.new(name, symbol)
             this.proxy.upgradeTo('1.1', upgradedToken.address)
 
-            proxy = UpgradedToken.at(this.proxy.address)
+            proxiedToken = UpgradedToken.at(this.proxy.address)
           })
 
           it('still stores the original data', async function () {
-            const tokenBalance = await proxy.totalSupply()
+            const tokenBalance = await proxiedToken.totalSupply()
             tokenBalance.should.be.bignumber.equal(1)
           })
 
           it('and also stores new contract data', async function () {
-            const mintingFees = await proxy.mintingFeesAccumulated()
+            const mintingFees = await proxiedToken.mintingFeesAccumulated()
             mintingFees.should.be.bignumber.equal(0)
           })
         })
@@ -154,7 +154,7 @@ contract('CodexTitleProxy', async function (accounts) {
         })
 
         it('is stored in the original contract', async function () {
-          const tokenBalance = await proxy.totalSupply()
+          const tokenBalance = await proxiedToken.totalSupply()
           tokenBalance.should.be.bignumber.equal(0)
         })
       })
@@ -170,44 +170,32 @@ contract('CodexTitleProxy', async function (accounts) {
       await this.proxy.upgradeTo('1.1', upgradedToken.address)
 
       this.token = UpgradedToken.at(this.proxy.address)
+      await this.token.initializeOwnable(creator)
     })
 
-    describe('after upgraded to UpgradedTokenMock', function () {
-      describe('when called with no fee', function () {
-        it('should fail', async function () {
-          await assertRevert(this.token.mint(creator, firstTokenId))
-        })
+    describe('when called with no fee', function () {
+      it('should fail', async function () {
+        await assertRevert(this.token.mint(creator, firstTokenId))
+      })
+    })
+
+    describe('when called with the correct fee', function () {
+      let tx
+
+      beforeEach(async function () {
+        const requiredFee = await this.token.MINTING_FEE()
+        tx = await this.token.mint(creator, firstTokenId, { value: requiredFee })
       })
 
-      describe('when called with the correct fee', function () {
-        let tx
+      it('should emit the Transfer event', async function () {
+        tx.logs[0].event.should.equal(transferEvent)
+      })
 
-        beforeEach(async function () {
-          const requiredFee = await this.token.MINTING_FEE()
-          tx = await this.token.mint(creator, firstTokenId, { value: requiredFee })
-        })
+      it('should store any fees accumulated in the smart contract', async function () {
+        const fees = await this.token.mintingFeesAccumulated()
+        const requiredFee = await this.token.MINTING_FEE()
 
-        it('should emit the Transfer event', async function () {
-          tx.logs[0].event.should.equal(transferEvent)
-        })
-
-        it('should store any fees accumulated in the smart contract', async function () {
-          const fees = await this.token.mintingFeesAccumulated()
-          const requiredFee = await this.token.MINTING_FEE()
-
-          fees.should.be.bignumber.equal(requiredFee)
-        })
-
-        it('should allow the owner to withdraw any minting fees', async function () {
-          const originalBalance = web3.eth.getBalance(creator)
-          const requiredFee = await this.token.MINTING_FEE()
-
-          await this.token.withdrawMintingFees()
-
-          const newBalance = web3.eth.getBalance(creator)
-
-          newBalance.should.be.bignumber.equal(originalBalance.add(requiredFee))
-        })
+        fees.should.be.bignumber.equal(requiredFee)
       })
     })
 
@@ -231,6 +219,7 @@ contract('CodexTitleProxy', async function (accounts) {
       this.proxy = await CodexTitleProxy.new(token.address)
 
       this.token = CodexTitle.at(this.proxy.address)
+      await this.token.initializeOwnable(creator)
     })
 
     describe('should behave', function () {
