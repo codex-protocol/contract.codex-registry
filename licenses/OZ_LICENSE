@@ -18,26 +18,26 @@ contracts/mocks/ERC721/ERC721TokenMock.sol
 contracts/mocks/PausableMock.sol
 contracts/mocks/SafeMathMock.sol
 
-contracts/zeppelin-solidity/AddressUtils.sol
-contracts/zeppelin-solidity/Ownable.sol
-contracts/zeppelin-solidity/Pausable.sol
-contracts/zeppelin-solidity/SafeMath.sol
+contracts/library/AddressUtils.sol
+contracts/library/Ownable.sol
+contracts/library/Pausable.sol
+contracts/library/SafeMath.sol
 
-test/ERC721/behaviors/ERC721BasicToken.behavior.js
-test/ERC721/behaviors/ERC721Mint.behavior.js
-test/ERC721/behaviors/ERC721Token.behavior.js
+test/library/Pausable.test.js
+test/library/SafeMath.test.js
+test/library/Ownable.test.js
 
-test/ERC721/ERC721BasicToken.test.js
-test/ERC721/ERC721Token.test.js
+test/token/behaviors/ERC721BasicToken.behavior.js
+test/token/behaviors/ERC721Mint.behavior.js
+test/token/behaviors/ERC721Token.behavior.js
+
+test/token/ERC721BasicToken.test.js
+test/token/ERC721Token.test.js
 
 test/helpers/assertJump.js
 test/helpers/assertRevert.js
 test/helpers/decodeLogs.js
 test/helpers/sendTransaction.js
-
-test/lifecycle/Pausable.test.js
-test/math/SafeMath.test.js
-test/ownership/Ownable.test.js
 
 --
 

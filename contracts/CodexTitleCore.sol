@@ -11,29 +11,29 @@ import "./CodexTitleFees.sol";
 contract CodexTitleCore is CodexTitleMetadata, CodexTitleFees {
 
   /**
-  * @dev This event is emitted when a new token is minted and allows providers
-  *  to discern which Minted events came from transactions they submitted vs
-  *  transactions submitted by other platforms, as well as providing information
-  *  about what metadata record the newly minted token should be associated with
-  */
+   * @dev This event is emitted when a new token is minted and allows providers
+   *  to discern which Minted events came from transactions they submitted vs
+   *  transactions submitted by other platforms, as well as providing information
+   *  about what metadata record the newly minted token should be associated with
+   */
   event Minted(uint256 _tokenId, string _providerId, string _providerMetadataId);
 
   /**
-  * @dev Sets the global tokenURIPrefix for use when returning token metadata.
-  *  Only callable by the owner.
-  * @param _tokenURIPrefix The new tokenURIPrefix
-  */
+   * @dev Sets the global tokenURIPrefix for use when returning token metadata.
+   *  Only callable by the owner.
+   * @param _tokenURIPrefix The new tokenURIPrefix
+   */
   function setTokenURIPrefix(string _tokenURIPrefix) external onlyOwner {
     tokenURIPrefix = _tokenURIPrefix;
   }
 
   /**
-  * @dev Creates a new token
-  * @param _providerId (optional) An ID that identifies which provider is
-  *  minting this token
-  * @param _providerMetadataId (optional) An arbitrary provider-defined ID that
-  *  identifies the metadata record sotred by the provider
-  */
+   * @dev Creates a new token
+   * @param _providerId (optional) An ID that identifies which provider is
+   *  minting this token
+   * @param _providerMetadataId (optional) An arbitrary provider-defined ID that
+   *  identifies the metadata record sotred by the provider
+   */
   function mint(
     address _to,
     bytes32 _nameHash,
