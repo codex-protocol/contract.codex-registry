@@ -11,18 +11,27 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-export default function shouldBehaveLikeERC721BasicToken(accounts) {
-  const firstTokenId = 1
-  const secondTokenId = 2
-  const unknownTokenId = 3
+export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFunction) {
+  const firstTokenId = 0
+  const secondTokenId = 1
+  const unknownTokenId = 2
   const creator = accounts[0]
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
   const RECEIVER_MAGIC_VALUE = '0xf0b9e5ba'
 
+  let mintFunction
+  if (customMintFunction) {
+    mintFunction = customMintFunction
+  } else {
+    mintFunction = async function (tokenToMint, tokenCreator, tokenId) {
+      await tokenToMint.mint(tokenCreator, tokenId)
+    }
+  }
+
   describe('like a ERC721BasicToken', function () {
     beforeEach(async function () {
-      await this.token.mint(creator, firstTokenId, { from: creator })
-      await this.token.mint(creator, secondTokenId, { from: creator })
+      await mintFunction(this.token, creator, firstTokenId)
+      await mintFunction(this.token, creator, secondTokenId)
     })
 
     describe('balanceOf', function () {

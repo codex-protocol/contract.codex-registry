@@ -1,9 +1,8 @@
 module.exports = {
-  norpc: true,
-  testCommand: 'node --max-old-space-size=4096 ../node_modules/.bin/truffle test --network coverage',
-  compileCommand: 'node --max-old-space-size=4096 ../node_modules/.bin/truffle compile --network coverage',
+  testCommand: '../node_modules/.bin/truffle test --network coverage',
+  compileCommand: '../node_modules/.bin/truffle compile',
   skipFiles: [
-    'lifecycle/Migrations.sol',
-    'mocks'
+    'Migrations.sol',
+    'mocks',
   ]
 }

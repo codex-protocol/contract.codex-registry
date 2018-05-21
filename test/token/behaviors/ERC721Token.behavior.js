@@ -14,8 +14,8 @@ export default function shouldBehaveLikeERC721Token(name, symbol, creator, accou
 
   describe('like a full ERC721', function () {
     beforeEach(async function () {
-      await this.token.mint(creator, firstTokenId, { from: creator })
-      await this.token.mint(creator, secondTokenId, { from: creator })
+      await this.token.mint(creator, firstTokenId)
+      await this.token.mint(creator, secondTokenId)
     })
 
     describe('mint', function () {
