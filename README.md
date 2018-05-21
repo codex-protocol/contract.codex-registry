@@ -1,4 +1,4 @@
-# Codex Protocol | Codex Title Contract
+# Codex Protocol | Codex Registry Contracts
 
 ## To do
 ### Testing
