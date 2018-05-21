@@ -31,33 +31,21 @@ module.exports = async (deployer, network, accounts) => {
       const codexTitleProxy = await CodexTitleProxy.deployed()
       const proxiedCodexTitle = CodexTitle.at(codexTitleProxy.address)
 
-      try {
-        await proxiedCodexTitle.transferOwnership(newOwner)
-      } catch (error) {
-        console.error('proxiedCodexTitle.transferOwnership(newOwner) error', error)
-        throw error
-      }
+      console.log('Transferring proxiedCodexTitle ownership to', newOwner)
+      await proxiedCodexTitle.transferOwnership(newOwner)
 
       // For security, let's initialize the ownership of CodexTitle to newOwner as well.
       // This is a defensive action because no one should ever be interacting with CodexTitle
       //  directly, they should always be going through CodexTitleProxy.
       const codexTitle = await CodexTitle.deployed()
-      try {
-        await codexTitle.initializeOwnable(newOwner)
-      } catch (error) {
-        console.error('codexTitle.initializeOwnable(newOwner) error', error)
-        throw error
-      }
+      console.log('Transferring codexTitle ownership to', newOwner)
+      await codexTitle.initializeOwnable(newOwner)
 
       // Finally, transfer ownership of CodexTitleProxy from deployer to newOwner.
       // This is a crucial step in the process because the owner of CodexTitleProxy is the one
       //  that dictates future upgrades.
-      try {
-        await codexTitleProxy.transferOwnership(newOwner)
-      } catch (error) {
-        console.error('codexTitleProxy.transferOwnership(newOwner) error', error)
-        throw error
-      }
+      console.log('Transferring codexTitleProxy ownership to', newOwner)
+      await codexTitleProxy.transferProxyOwnership(newOwner)
     })
     .catch((error) => {
       console.error(error)

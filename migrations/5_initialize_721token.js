@@ -57,7 +57,7 @@ module.exports = async (deployer, network, accounts) => {
       }
 
       console.log('Setting the tokenURIPrefix to:', tokenURIPrefix)
-      proxiedCodexTitle.setTokenURIPrefix(tokenURIPrefix)
+      await proxiedCodexTitle.setTokenURIPrefix(tokenURIPrefix)
     })
     .catch((error) => {
       console.log(error)

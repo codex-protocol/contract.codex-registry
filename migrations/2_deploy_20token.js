@@ -1,6 +1,6 @@
 const CodexToken = artifacts.require('./CodexToken.sol')
 
-module.exports = async (deployer, network) => {
+module.exports = (deployer, network) => {
 
   // Only deploy the ERC20 token for local testing.
   // In staging/production environments the token will get deployed separately

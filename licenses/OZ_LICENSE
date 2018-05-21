@@ -19,13 +19,14 @@ contracts/mocks/PausableMock.sol
 contracts/mocks/SafeMathMock.sol
 
 contracts/library/AddressUtils.sol
-contracts/library/Ownable.sol
+contracts/library/DelayedOwnable.sol
 contracts/library/Pausable.sol
+contracts/library/ProxyOwnable.sol
 contracts/library/SafeMath.sol
 
 test/library/Pausable.test.js
 test/library/SafeMath.test.js
-test/library/Ownable.test.js
+test/library/ProxyOwnable.test.js
 
 test/token/behaviors/ERC721BasicToken.behavior.js
 test/token/behaviors/ERC721Mint.behavior.js

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.23;
 
-import "./library/Ownable.sol";
+import "./library/ProxyOwnable.sol";
 import "./ERC721/ERC721.sol";
 import "./ERC165/ERC165.sol";
 
@@ -13,7 +13,7 @@ import "./ERC165/ERC165.sol";
  * Based on MIT licensed code from
  *  https://github.com/zeppelinos/labs/tree/master/upgradeability_using_inherited_storage
  */
-contract CodexTitleProxy is Ownable {
+contract CodexTitleProxy is ProxyOwnable {
   event Upgraded(string version, address indexed implementation);
 
   string public version;
