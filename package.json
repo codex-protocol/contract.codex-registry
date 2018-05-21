@@ -1,7 +1,7 @@
 {
-  "name": "codex-title",
+  "name": "contract.codex-registry",
   "version": "1.0.0",
-  "description": "Contracts for Codex Protocol's Codex Title",
+  "description": "Contracts for Codex Protocol's Codex Registry",
   "scripts": {
     "clean": "rm -rf build",
     "build-ethereum-service": "cd $PWD/../npm.ethereum-service && npm run build",
@@ -30,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/codex-protocol/contract.codex-title"
+    "url": "https://github.com/codex-protocol/contract.codex-registry"
   },
   "keywords": [
     "codex"
@@ -38,9 +38,9 @@
   "author": "Codex Protocol <contact@codexprotocol.com>",
   "license": "AGPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/codex-protocol/codex-title/issues"
+    "url": "https://github.com/codex-protocol/contract.codex-registry/issues"
   },
-  "homepage": "https://github.com/codex-protocol/contract.codex-title",
+  "homepage": "https://github.com/codex-protocol/contract.codex-registry",
   "devDependencies": {
     "@codex-protocol/eslint-config-base": "latest",
     "@codex-protocol/eslint-config-truffle": "latest",
