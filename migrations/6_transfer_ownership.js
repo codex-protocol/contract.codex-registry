@@ -30,20 +30,36 @@ module.exports = async (deployer, network, accounts) => {
       //  because some operations (like setting the tokenURI) require owner permissions.
       const codexTitleProxy = await CodexTitleProxy.deployed()
       const proxiedCodexTitle = CodexTitle.at(codexTitleProxy.address)
-      await proxiedCodexTitle.transferOwnership(newOwner)
+
+      try {
+        await proxiedCodexTitle.transferOwnership(newOwner)
+      } catch (error) {
+        console.error('proxiedCodexTitle.transferOwnership(newOwner) error', error)
+        throw error
+      }
 
       // For security, let's initialize the ownership of CodexTitle to newOwner as well.
       // This is a defensive action because no one should ever be interacting with CodexTitle
       //  directly, they should always be going through CodexTitleProxy.
       const codexTitle = await CodexTitle.deployed()
-      await codexTitle.initializeOwnable(newOwner)
+      try {
+        await codexTitle.initializeOwnable(newOwner)
+      } catch (error) {
+        console.error('codexTitle.initializeOwnable(newOwner) error', error)
+        throw error
+      }
 
       // Finally, transfer ownership of CodexTitleProxy from deployer to newOwner.
       // This is a crucial step in the process because the owner of CodexTitleProxy is the one
       //  that dictates future upgrades.
-      codexTitleProxy.transferOwnership(newOwner)
+      try {
+        await codexTitleProxy.transferOwnership(newOwner, { from: accounts[0] })
+      } catch (error) {
+        console.error('codexTitleProxy.transferOwnership(newOwner) error', error)
+        throw error
+      }
     })
     .catch((error) => {
-      console.log(error)
+      console.error(error)
     })
 }
