@@ -53,7 +53,7 @@ module.exports = async (deployer, network, accounts) => {
       // This is a crucial step in the process because the owner of CodexTitleProxy is the one
       //  that dictates future upgrades.
       try {
-        await codexTitleProxy.transferOwnership(newOwner, { from: accounts[0] })
+        await codexTitleProxy.transferOwnership(newOwner)
       } catch (error) {
         console.error('codexTitleProxy.transferOwnership(newOwner) error', error)
         throw error
