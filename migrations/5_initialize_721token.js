@@ -23,6 +23,10 @@ module.exports = async (deployer, network, accounts) => {
           break
         }
 
+        case 'rinkeby':
+          erc20TokenAddress = '0xb05e292f89c6a82f5ed1be694dc7b6444866b364'
+          break
+
         default:
           throw new Error('No erc20TokenAddress defined for this network')
       }
