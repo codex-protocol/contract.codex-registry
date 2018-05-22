@@ -48,7 +48,7 @@ const fetchAuthTokens = () => {
   console.log('Grabbing auth tokens for minting')
 
   const authTokenRequests = []
-  const personalMessageToSign = 'Please sign this message to authenticate with the Codex Title Registry.'
+  const personalMessageToSign = 'Please sign this message to authenticate with the Codex Registry.'
 
   for (let accountIndex = 0; accountIndex < ganachePrivateKeys.length; accountIndex++) {
     const msgHash = util.hashPersonalMessage(Buffer.from(personalMessageToSign))

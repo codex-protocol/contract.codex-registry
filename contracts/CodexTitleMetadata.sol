@@ -32,9 +32,9 @@ contract CodexTitleMetadata is ERC721Token {
   string public tokenURIPrefix;
 
   /**
-  * @dev Checks msg.sender can transfer a token, by being owner, approved, or operator
-  * @param _tokenId uint256 ID of the token to validate
-  */
+   * @dev Checks msg.sender can transfer a token, by being owner, approved, or operator
+   * @param _tokenId uint256 ID of the token to validate
+   */
   modifier canModify(uint256 _tokenId) {
     require(isApprovedOrOwner(msg.sender, _tokenId));
     _;
@@ -67,10 +67,10 @@ contract CodexTitleMetadata is ERC721Token {
   }
 
   /**
-  * @dev Gets the token given a token ID.
-  * @param _tokenId token ID
-  * @return CodexTitleData token data for the given token ID
-  */
+   * @dev Gets the token given a token ID.
+   * @param _tokenId token ID
+   * @return CodexTitleData token data for the given token ID
+   */
   function getTokenById(uint256 _tokenId) public view
     returns (bytes32 nameHash, bytes32 descriptionHash, bytes32[] imageHashes)
   {
@@ -80,21 +80,21 @@ contract CodexTitleMetadata is ERC721Token {
   }
 
   /**
-  * @dev Returns an URI for a given token ID
-  * @dev Throws if the token ID does not exist.
-  *
-  * @dev To save on gas, we will host a standard metadata endpoint for each token.
-  *  For Collector privacy, specific token metadata is stored off chain, which means
-  *  the metadata returned by this endpoint cannot include specific details about
-  *  the physical asset the token represents.
-  *
-  * @dev This metadata will a JSON blob that includes:
-  *  name - Codex Title
-  *  description - Information about the Provider that is hosting the off-chain metadata
-  *  imageUri - A generic Codex Title image
-  *
-  * @param _tokenId uint256 ID of the token to query
-  */
+   * @dev Returns an URI for a given token ID
+   * @dev Throws if the token ID does not exist.
+   *
+   * @dev To save on gas, we will host a standard metadata endpoint for each token.
+   *  For Collector privacy, specific token metadata is stored off chain, which means
+   *  the metadata returned by this endpoint cannot include specific details about
+   *  the physical asset the token represents.
+   *
+   * @dev This metadata will a JSON blob that includes:
+   *  name - Codex Title
+   *  description - Information about the Provider that is hosting the off-chain metadata
+   *  imageUri - A generic Codex Title image
+   *
+   * @param _tokenId uint256 ID of the token to query
+   */
   function tokenURI(uint256 _tokenId) public view returns (string) {
     require(exists(_tokenId));
 
@@ -126,9 +126,9 @@ contract CodexTitleMetadata is ERC721Token {
   }
 
   /**
-  * @dev Based on MIT licensed code @ https://github.com/oraclize/ethereum-api
-  * @dev Converts an incoming uint256 to a dynamic byte array
-  */
+   * @dev Based on MIT licensed code @ https://github.com/oraclize/ethereum-api
+   * @dev Converts an incoming uint256 to a dynamic byte array
+   */
   function uint2bytes(uint256 i) internal pure returns (bytes) {
     if (i == 0) {
       return "0";
