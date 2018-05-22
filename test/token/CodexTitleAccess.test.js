@@ -29,6 +29,7 @@ contract('CodexTitleAccess', async function (accounts) {
 
   beforeEach(async function () {
     this.token = await CodexTitle.new({ from: creator })
+    await this.token.initializeOwnable(creator)
 
     await this.token.mint(
       creator,
