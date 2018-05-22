@@ -19,7 +19,8 @@
     "test:title": "truffle test --network develop ./test/token/CodexTitle.test.js",
     "test:proxy": "truffle test --network develop ./test/token/CodexTitleProxy.test.js",
     "test:proxy-extended": "truffle test --network develop ./test/token/CodexTitleProxy.extended.test.js",
-    "test": "truffle test --network develop",
+    "ganache-cli": "ganache-cli > /dev/null &",
+    "test": "npm run ganache-cli && truffle test",
     "lint": "npm run lint:js && npm run lint:sol",
     "lint:js": "eslint .",
     "lint:sol": "solium -d .",
@@ -52,6 +53,7 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.11.0",
+    "ganache-cli": "^6.1.0",
     "solc": "^0.4.23",
     "solidity-coverage": "^0.5.0",
     "solium": "^1.1.7"
