@@ -17,12 +17,11 @@ module.exports = async (deployer, network, accounts) => {
       switch (network) {
         case 'develop':
         case 'ganache':
-        case 'coverage':
-          {
-            const codexToken = await CodexToken.deployed()
-            erc20TokenAddress = codexToken.address
-          }
+        case 'coverage': {
+          const codexToken = await CodexToken.deployed()
+          erc20TokenAddress = codexToken.address
           break
+        }
 
         default:
           throw new Error('No erc20TokenAddress defined for this network')
