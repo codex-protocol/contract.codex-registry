@@ -12,6 +12,8 @@ module.exports = async (deployer, network, accounts) => {
       return proxiedCodexTitle
     })
     .then(async (proxiedCodexTitle) => {
+
+      let initialFees
       let erc20TokenAddress
 
       switch (network) {
@@ -20,19 +22,21 @@ module.exports = async (deployer, network, accounts) => {
         case 'coverage': {
           const codexToken = await CodexToken.deployed()
           erc20TokenAddress = codexToken.address
+          initialFees = 0
           break
         }
 
         case 'rinkeby':
           erc20TokenAddress = '0xb05e292f89c6a82f5ed1be694dc7b6444866b364'
+          initialFees = 10
           break
 
         default:
-          throw new Error('No erc20TokenAddress defined for this network')
+          throw new Error('No erc20TokenAddress & initialFees defined for this network')
       }
 
-      console.log('Setting the fees to 0 at ERC-20 token address:', erc20TokenAddress)
-      await proxiedCodexTitle.setFees(erc20TokenAddress, accounts[0], 0)
+      console.log(`Setting the fees to ${initialFees} at ERC-20 token address: ${erc20TokenAddress}`)
+      await proxiedCodexTitle.setFees(erc20TokenAddress, accounts[0], initialFees)
 
       return proxiedCodexTitle
     })
