@@ -1,4 +1,5 @@
 # Codex Protocol | Codex Registry Contracts
+[![Build Status](https://travis-ci.org/codex-protocol/contract.codex-registry.svg?branch=master)](https://travis-ci.org/codex-protocol/contract.codex-registry)
 
 ## To do
 ### Testing
