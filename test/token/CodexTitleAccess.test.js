@@ -89,7 +89,7 @@ contract('CodexTitleAccess', async function (accounts) {
         const countAnother = await this.token.balanceOf(another)
         countAnother.should.be.bignumber.equal(1)
         const countCreator = await this.token.balanceOf(creator)
-        countAnother.should.be.bignumber.equal(0)
+        countCreator.should.be.bignumber.equal(0)
       })
     })
   })
