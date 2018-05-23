@@ -28,7 +28,7 @@ contract('CodexTitleAccess', async function (accounts) {
   }
 
   beforeEach(async function () {
-    this.token = await CodexTitle.new({ from: creator })
+    this.token = await CodexTitle.new()
     await this.token.initializeOwnable(creator)
 
     await this.token.mint(
@@ -38,7 +38,6 @@ contract('CodexTitleAccess', async function (accounts) {
       hashedMetadata.imageBytes,
       providerId,
       providerMetadataId,
-      { from: creator }
     )
   })
 
@@ -47,11 +46,6 @@ contract('CodexTitleAccess', async function (accounts) {
       beforeEach(async function () {
         // Pause the contract
         await this.token.pause()
-      })
-
-      afterEach(async function () {
-        // unpause the contract
-        await this.token.unpause()
       })
 
       it('should revert', async function () {
@@ -63,7 +57,6 @@ contract('CodexTitleAccess', async function (accounts) {
             hashedMetadata.imageBytes,
             providerId,
             providerMetadataId,
-            { from: creator }
           )
         )
       })
@@ -77,20 +70,21 @@ contract('CodexTitleAccess', async function (accounts) {
         await this.token.pause()
       })
 
-      afterEach(async function () {
-        // unpause the contract
-        await this.token.unpause()
-      })
-
       it('should revert', async function () {
         await assertRevert(
-          this.token.transferFrom(creator, another, firstTokenId, { from: creator })
+          this.token.transferFrom(creator, another, firstTokenId)
         )
       })
     })
 
     describe('when contract unpaused', function () {
+      beforeEach(async function () {
+        // Pause the contract
+        await this.token.pause()
+      })
+
       it('allows transfer', async function () {
+        await this.token.unpause()
         await this.token.transferFrom(creator, another, firstTokenId, { from: creator })
         const countAnother = await this.token.balanceOf(another)
         countAnother.toNumber().should.be.equal(1)
@@ -107,25 +101,10 @@ contract('CodexTitleAccess', async function (accounts) {
         await this.token.pause()
       })
 
-      afterEach(async function () {
-        // unpause the contract
-        await this.token.unpause()
-      })
-
       it('should revert', async function () {
         await assertRevert(
-          this.token.safeTransferFrom(creator, another, firstTokenId, { from: creator })
+          this.token.safeTransferFrom(creator, another, firstTokenId)
         )
-      })
-    })
-
-    describe('when contract unpaused', function () {
-      it('allows transfer', async function () {
-        await this.token.safeTransferFrom(creator, another, firstTokenId, { from: creator })
-        const countAnother = await this.token.balanceOf(another)
-        countAnother.toNumber().should.be.equal(1)
-        const countCreator = await this.token.balanceOf(creator)
-        countCreator.toNumber().should.be.equal(0)
       })
     })
   })
@@ -138,25 +117,10 @@ contract('CodexTitleAccess', async function (accounts) {
         await this.token.pause()
       })
 
-      afterEach(async function () {
-        // unpause the contract
-        await this.token.unpause()
-      })
-
       it('should revert', async function () {
         await assertRevert(
-          this.token.safeTransferFrom(creator, another, firstTokenId, data, { from: creator })
+          this.token.safeTransferFrom(creator, another, firstTokenId, data)
         )
-      })
-    })
-
-    describe('when contract unpaused', function () {
-      it('allows transfer', async function () {
-        await this.token.safeTransferFrom(creator, another, firstTokenId, data, { from: creator })
-        const countAnother = await this.token.balanceOf(another)
-        countAnother.toNumber().should.be.equal(1)
-        const countCreator = await this.token.balanceOf(creator)
-        countCreator.toNumber().should.be.equal(0)
       })
     })
   })
@@ -169,23 +133,10 @@ contract('CodexTitleAccess', async function (accounts) {
         await this.token.pause()
       })
 
-      afterEach(async function () {
-        // unpause the contract
-        await this.token.unpause()
-      })
-
       it('should revert', async function () {
         await assertRevert(
-          this.token.modifyDescriptionHash(firstTokenId, data, { from: creator })
+          this.token.modifyDescriptionHash(firstTokenId, data)
         )
-      })
-    })
-
-    describe('when contract unpaused', function () {
-      it('allows description modification', async function () {
-        await this.token.modifyDescriptionHash(firstTokenId, data, { from: creator })
-        const tokenById = await this.token.getTokenById(firstTokenId)
-        tokenById[1].should.be.equal(data)
       })
     })
   })
@@ -198,23 +149,10 @@ contract('CodexTitleAccess', async function (accounts) {
         await this.token.pause()
       })
 
-      afterEach(async function () {
-        // unpause the contract
-        await this.token.unpause()
-      })
-
       it('should revert', async function () {
         await assertRevert(
           this.token.modifyNameHash(firstTokenId, data, { from: creator })
         )
-      })
-    })
-
-    describe('when contract unpaused', function () {
-      it('allows name modification', async function () {
-        await this.token.modifyNameHash(firstTokenId, data, { from: creator })
-        const tokenById = await this.token.getTokenById(firstTokenId)
-        tokenById[0].should.be.equal(data)
       })
     })
   })
@@ -227,27 +165,10 @@ contract('CodexTitleAccess', async function (accounts) {
         await this.token.pause()
       })
 
-      afterEach(async function () {
-        // unpause the contract
-        await this.token.unpause()
-      })
-
       it('should revert', async function () {
         await assertRevert(
           this.token.addNewImageHash(firstTokenId, data, { from: creator })
         )
-      })
-    })
-
-    describe('when contract unpaused', function () {
-      it('allows image modification', async function () {
-        const originalTokenById = await this.token.getTokenById(firstTokenId)
-        const images = originalTokenById[2]
-        images.push(data)
-        await this.token.addNewImageHash(firstTokenId, data, { from: creator })
-        const tokenById = await this.token.getTokenById(firstTokenId)
-        tokenById[2][0].should.be.equal(images[0])
-        tokenById[2][1].should.be.equal(images[1])
       })
     })
   })

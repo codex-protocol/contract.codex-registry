@@ -19,7 +19,7 @@
     "test:title": "truffle test --network ganache ./test/token/CodexTitle.test.js",
     "test:proxy": "truffle test --network ganache ./test/token/CodexTitleProxy.test.js",
     "test:proxy-extended": "truffle test --network ganache ./test/token/CodexTitleProxy.extended.test.js",
-    "test:access": "truffle test --network ganache ./test/ERC721/CodexTitleAccess.test.js",
+    "test:access": "truffle test --network ganache ./test/token/CodexTitleAccess.test.js",
     "test": "truffle test --network ganache",
     "lint": "npm run lint:js && npm run lint:sol",
     "lint:js": "eslint .",
