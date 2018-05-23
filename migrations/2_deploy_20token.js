@@ -5,7 +5,15 @@ module.exports = (deployer, network) => {
   // Only deploy the ERC20 token for local testing.
   // In staging/production environments the token will get deployed separately
   //  and its address will manually get added to the deployment script.
-  if (network === 'ganache' || network === 'develop' || network === 'coverage') {
-    deployer.deploy(CodexToken)
+  switch (network) {
+    case 'ganache':
+    case 'develop':
+    case 'test':
+    case 'coverage':
+      deployer.deploy(CodexToken)
+      break
+
+    default:
+      break
   }
 }

@@ -17,8 +17,9 @@ module.exports = async (deployer, network, accounts) => {
       let erc20TokenAddress
 
       switch (network) {
-        case 'develop':
         case 'ganache':
+        case 'develop':
+        case 'test':
         case 'coverage': {
           const codexToken = await CodexToken.deployed()
           erc20TokenAddress = codexToken.address
@@ -45,8 +46,9 @@ module.exports = async (deployer, network, accounts) => {
       let tokenURIPrefix
 
       switch (network) {
-        case 'develop':
         case 'ganache':
+        case 'develop':
+        case 'test':
         case 'coverage':
           tokenURIPrefix = 'http://localhost:3001/token-metadata'
           break
