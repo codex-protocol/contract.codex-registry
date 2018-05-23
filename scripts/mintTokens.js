@@ -86,7 +86,7 @@ const mintTokens = async (contract, authTokens, imageRecords) => {
     const requestBody = {
       name: getTokenName(tokenIndex),
       description: `Description of ${getTokenName(tokenIndex)}`,
-      files: imageRecords[tokenIndex],
+      mainImage: imageRecords[tokenIndex],
     }
 
     const requestOptions = {
