@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "./library/ProxyOwnable.sol";
 import "./ERC721/ERC721.sol";
@@ -75,7 +75,7 @@ contract CodexTitleProxy is ProxyOwnable {
    * @param _implementation The address at which the implementation is available
    */
   function upgradeTo(string _version, address _implementation) public onlyOwner {
-    require(keccak256(_version) != keccak256(version), "The version cannot be the same");
+    require(keccak256(abi.encodePacked(_version)) != keccak256(abi.encodePacked(version)), "The version cannot be the same");
     require(_implementation != implementation, "The implementation cannot be the same");
     require(_implementation != address(0), "The implementation cannot be the 0 address");
 
