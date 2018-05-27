@@ -21,6 +21,7 @@ contract CodexTitleAccess is CodexTitleCore {
     string _providerMetadataId) // TODO: convert to bytes32
     public
     whenNotPaused
+    canPayFees
   {
     return super.mint(
       _to,

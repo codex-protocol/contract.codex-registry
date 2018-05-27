@@ -3,6 +3,7 @@ import modifyMetadataHashesUnbound from '../../helpers/modifyMetadataHashes'
 
 const { BigNumber } = web3
 const CodexToken = artifacts.require('CodexToken.sol')
+const ERC900BasicStakeContainer = artifacts.require('ERC900BasicStakeContainer.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -84,7 +85,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
         })
 
         it('has a codexToken address', async function () {
-          const tokenAddress = await this.token.codexTokenAddress()
+          const tokenAddress = await this.token.codexToken()
           tokenAddress.should.be.equal(codexToken.address)
         })
 
@@ -138,6 +139,30 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
                 providerMetadataId,
               )
             )
+          })
+        })
+
+        describe('and tokens are staked', function () {
+          let stakeContainer
+
+          beforeEach(async function () {
+            stakeContainer = await ERC900BasicStakeContainer.new(codexToken.address)
+
+            await this.token.setStakeContainer(stakeContainer.address)
+
+            await this.token.mint(
+              creator,
+              hashedMetadata.name,
+              hashedMetadata.description,
+              hashedMetadata.imageBytes,
+              providerId,
+              providerMetadataId
+            )
+          })
+
+          it('should create a new token', async function () {
+            const numTokens = await this.token.totalSupply()
+            numTokens.should.be.bignumber.equal(2)
           })
         })
       })

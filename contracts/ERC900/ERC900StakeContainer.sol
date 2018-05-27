@@ -6,8 +6,8 @@ import "./ERC900BasicStakeContainer.sol";
  * @title ERC900StakeContainer
  */
 contract ERC900StakeContainer is ERC900BasicStakeContainer {
-  constructor(address _tokenAddress) public
-    ERC900BasicStakeContainer(_tokenAddress) {
+  constructor(ERC20 _stakingToken) public
+    ERC900BasicStakeContainer(_stakingToken) {
   }
 
   /*

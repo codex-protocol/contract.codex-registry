@@ -11,8 +11,6 @@ import "../library/SafeMath.sol";
 contract ERC900BasicStakeContainer is ERC900 {
   using SafeMath for uint256;
 
-  address tokenAddress;
-
   ERC20 stakingToken;
 
   mapping (address => Stake) stakes;
@@ -26,9 +24,8 @@ contract ERC900BasicStakeContainer is ERC900 {
     bool exists;
   }
 
-  constructor(address _tokenAddress) public {
-    tokenAddress = _tokenAddress;
-    stakingToken = ERC20(tokenAddress);
+  constructor(ERC20 _stakingToken) public {
+    stakingToken = _stakingToken;
   }
 
   function stake(uint256 _amount, bytes _data) public {
@@ -103,6 +100,6 @@ contract ERC900BasicStakeContainer is ERC900 {
   }
 
   function token() public view returns (address) {
-    return tokenAddress;
+    return stakingToken;
   }
 }
