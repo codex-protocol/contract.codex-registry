@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "./ERC900BasicStakeContainer.sol";
 
@@ -10,6 +10,7 @@ contract ERC900StakeContainer is ERC900BasicStakeContainer {
     ERC900BasicStakeContainer(_tokenAddress) {
   }
 
+  /*
   function supportsHistory() public pure returns (bool) {
     return true;
   }
@@ -25,4 +26,5 @@ contract ERC900StakeContainer is ERC900BasicStakeContainer {
   function totalStakedAt(uint256 blockNumber) public view returns (uint256) {
 
   }
+  */
 }
