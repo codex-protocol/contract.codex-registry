@@ -32,7 +32,7 @@ contract CodexTitleCore is CodexTitleMetadata, CodexTitleFees {
    * @param _providerId (optional) An ID that identifies which provider is
    *  minting this token
    * @param _providerMetadataId (optional) An arbitrary provider-defined ID that
-   *  identifies the metadata record sotred by the provider
+   *  identifies the metadata record stored by the provider
    */
   function mint(
     address _to,
