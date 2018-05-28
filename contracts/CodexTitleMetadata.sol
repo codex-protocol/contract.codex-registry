@@ -88,7 +88,7 @@ contract CodexTitleMetadata is ERC721Token {
    *  the metadata returned by this endpoint cannot include specific details about
    *  the physical asset the token represents.
    *
-   * @dev This metadata will a JSON blob that includes:
+   * @dev This metadata will be a JSON blob that includes:
    *  name - Codex Title
    *  description - Information about the Provider that is hosting the off-chain metadata
    *  imageUri - A generic Codex Title image
