@@ -50,7 +50,7 @@ contract CodexTitleMetadata is ERC721Token {
     public onlyOwnerOf(_tokenId)
   {
 
-    require(exists(_tokenId));
+    require(exists(_tokenId), "Codex Title with specified tokenId does not exist");
 
     // nameHash is only overridden if it's not a blank string, since name is a
     //  required value
@@ -98,7 +98,7 @@ contract CodexTitleMetadata is ERC721Token {
     returns (bytes32 nameHash, bytes32 descriptionHash, bytes32[] fileHashes)
   {
 
-    require(exists(_tokenId));
+    require(exists(_tokenId), "Codex Title with specified tokenId does not exist");
 
     return (
       tokenData[_tokenId].nameHash,
@@ -124,7 +124,8 @@ contract CodexTitleMetadata is ERC721Token {
    * @param _tokenId uint256 ID of the token to query
    */
   function tokenURI(uint256 _tokenId) public view returns (string) {
-    require(exists(_tokenId));
+
+    require(exists(_tokenId), "Codex Title with specified tokenId does not exist");
 
     bytes memory prefix = bytes(tokenURIPrefix);
     if (prefix.length == 0) {
