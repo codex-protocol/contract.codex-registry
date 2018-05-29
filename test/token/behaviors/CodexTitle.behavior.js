@@ -44,8 +44,8 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
       describe('when successful', function () {
         it('should create new tokens at the end of the allTokens array', async function () {
           const numTokens = await this.token.totalSupply()
-          const tokenId = await this.token.tokenByIndex(numTokens - 1)
-          tokenId.should.be.bignumber.equal(numTokens - 1)
+          const tokenAtIndex = await this.token.tokenByIndex(numTokens - 1)
+          tokenAtIndex.should.be.bignumber.equal(numTokens - 1)
         })
 
         it('should store the hashes at the minted tokens identifier', async function () {
