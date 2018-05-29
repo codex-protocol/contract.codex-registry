@@ -72,7 +72,7 @@ contract CodexTitleMetadata is ERC721Token {
     // nameHash is only overridden if it's not a blank string, since name is a
     //  required value
     //
-    // @dev: is this the best way to check for an empty bytes32 array?
+    // NOTE: is this the best way to check for an empty bytes32 array?
     //  would (_newNameHash != "") be better in any way?
     //  see: https://ethereum.stackexchange.com/questions/27227/why-does-require-length-of-bytes32-0-not-work
     if (_newNameHash[0] != 0) {
@@ -86,7 +86,7 @@ contract CodexTitleMetadata is ERC721Token {
     // imageHashes is only overridden if it has more than one value, since at
     //  least one image (i.e. mainImage) is required
     //
-    // @dev: is this the best way to check for an empty bytes32 array?
+    // NOTE: is this the best way to check for an empty bytes32 array?
     //  would (_newNameHash != "") be better in any way?
     //  see: https://ethereum.stackexchange.com/questions/27227/why-does-require-length-of-bytes32-0-not-work
     if (_newImageHashes.length > 0 && _newImageHashes[0][0] != 0) {
