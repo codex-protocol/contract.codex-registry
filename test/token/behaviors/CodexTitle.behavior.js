@@ -1,4 +1,5 @@
 import assertRevert from '../../helpers/assertRevert'
+import modifyMetadataHashesUnbound from '../../helpers/modifyMetadataHashes'
 
 const { BigNumber } = web3
 const CodexToken = artifacts.require('CodexToken.sol')
@@ -9,6 +10,7 @@ require('chai')
   .should()
 
 export default function shouldBehaveLikeCodexTitle(accounts) {
+
   const creator = accounts[0]
   const communityFund = accounts[8]
   const unauthorized = accounts[9]
@@ -16,16 +18,20 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
   const providerId = '1'
   const providerMetadataId = '10'
 
+  let modifyMetadataHashes // initialized per-test in beforeEach below
+
   const firstTokenMetadata = {
     name: 'First token',
     description: 'This is the first token',
-    imageBytes: 'asdf',
+    images: ['asdf'],
   }
 
   const hashedMetadata = {
     name: web3.sha3(firstTokenMetadata.name),
     description: web3.sha3(firstTokenMetadata.description),
-    imageBytes: web3.sha3(firstTokenMetadata.imageBytes),
+    images: firstTokenMetadata.images.map((image) => {
+      return web3.sha3(image)
+    }),
   }
 
   describe('like a CodexTitle', function () {
@@ -34,23 +40,33 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
         creator,
         hashedMetadata.name,
         hashedMetadata.description,
-        hashedMetadata.imageBytes,
+        hashedMetadata.images[0],
         providerId,
         providerMetadataId
       )
+
+      const numTokens = await this.token.totalSupply()
+
+      modifyMetadataHashes = modifyMetadataHashesUnbound.bind({
+        creator,
+        token: this.token,
+        tokenId: numTokens - 1,
+      })
     })
 
     describe('mint', function () {
       describe('when successful', function () {
         it('should create new tokens at the end of the allTokens array', async function () {
           const numTokens = await this.token.totalSupply()
-          const tokenId = await this.token.tokenByIndex(numTokens - 1)
-          tokenId.should.be.bignumber.equal(numTokens - 1)
+          const tokenAtIndex = await this.token.tokenByIndex(numTokens - 1)
+          tokenAtIndex.should.be.bignumber.equal(numTokens - 1)
         })
 
         it('should store the hashes at the minted tokens identifier', async function () {
           const tokenData = await this.token.getTokenById(0)
           tokenData[0].should.be.equal(hashedMetadata.name)
+          tokenData[1].should.be.equal(hashedMetadata.description)
+          tokenData[2].should.deep.equal(hashedMetadata.images)
         })
       })
 
@@ -93,7 +109,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
               creator,
               hashedMetadata.name,
               hashedMetadata.description,
-              hashedMetadata.imageBytes,
+              hashedMetadata.images[0],
               providerId,
               providerMetadataId
             )
@@ -119,7 +135,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
                 creator,
                 hashedMetadata.name,
                 hashedMetadata.description,
-                hashedMetadata.imageBytes,
+                hashedMetadata.images[0],
                 providerId,
                 providerMetadataId,
               )
@@ -129,46 +145,101 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
       })
     })
 
-    describe('addNewImageHash', function () {
-      const newImageHash = web3.sha3('abc123')
+    describe('modifyMetadataHashes', function () {
 
-      describe('when called by the owner', function () {
-        beforeEach(async function () {
-          await this.token.addNewImageHash(0, newImageHash)
-        })
-
-        it('should add the new hash to the imageHashes array', async function () {
-          const tokenData = await this.token.getTokenById(0)
-          tokenData[2][1].should.be.equal(newImageHash)
-          tokenData[2].length.should.be.equal(2)
-        })
-      })
-
-      describe('when the sender is not authorized', function () {
-        it('should revert', async function () {
-          await assertRevert(this.token.addNewImageHash(0, newImageHash, { from: unauthorized }))
-        })
-      })
-    })
-
-    // TODO: Abstract this out into a generic pattern so it can also be used for description
-    describe('modifyNameHash', function () {
       const newNameHash = web3.sha3('New name')
-
-      describe('when called by the owner', function () {
-        beforeEach(async function () {
-          await this.token.modifyNameHash(0, newNameHash)
-        })
-
-        it('should succeed', async function () {
-          const tokenData = await this.token.getTokenById(0)
-          tokenData[0].should.be.equal(newNameHash)
-        })
-      })
+      const newDescriptionHash = web3.sha3('New description')
+      const newImageHashes = [web3.sha3('New image 1'), web3.sha3('New image 2')]
 
       describe('when the sender is not authorized', function () {
         it('should revert', async function () {
-          await assertRevert(this.token.modifyNameHash(0, newNameHash, { from: unauthorized }))
+          await assertRevert(
+            this.token.modifyMetadataHashes(
+              0,
+              newNameHash,
+              newDescriptionHash,
+              newImageHashes,
+              providerId,
+              providerMetadataId,
+              { from: unauthorized },
+            ),
+          )
+        })
+      })
+
+      describe('when called by the owner', function () {
+
+        it('should update name hash only', async function () {
+          await modifyMetadataHashes({
+            newNameHash,
+            newDescriptionHash: hashedMetadata.description,
+            newImageHashes: [],
+
+            providerId,
+            providerMetadataId,
+
+            expectedImageHashes: hashedMetadata.images,
+          })
+        })
+
+        it('should update description hash only', async function () {
+          await modifyMetadataHashes({
+            newNameHash: '',
+            newDescriptionHash,
+            newImageHashes: [],
+
+            providerId,
+            providerMetadataId,
+
+            expectedNameHash: hashedMetadata.name,
+            expectedDescriptionHash: newDescriptionHash,
+            expectedImageHashes: hashedMetadata.images,
+          })
+        })
+
+        it('should remove description hash only', async function () {
+          await modifyMetadataHashes({
+            newNameHash: hashedMetadata.name,
+            newDescriptionHash: '',
+            newImageHashes: hashedMetadata.images,
+
+            providerId,
+            providerMetadataId,
+
+            expectedDescriptionHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
+          })
+        })
+
+        it('should update image hashes only', async function () {
+          await modifyMetadataHashes({
+            newNameHash: '',
+            newDescriptionHash: hashedMetadata.description,
+            newImageHashes,
+
+            providerId,
+            providerMetadataId,
+
+            expectedNameHash: hashedMetadata.name,
+          })
+        })
+
+        it('should update all hashes', async function () {
+          await modifyMetadataHashes({
+            newNameHash,
+            newDescriptionHash,
+            newImageHashes,
+
+            providerId,
+            providerMetadataId,
+          })
+        })
+
+        it('should update all hashes when no providerId & providerMetadataId are provided', async function () {
+          await modifyMetadataHashes({
+            newNameHash,
+            newDescriptionHash,
+            newImageHashes,
+          })
         })
       })
     })
@@ -219,4 +290,3 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
     })
   })
 }
-

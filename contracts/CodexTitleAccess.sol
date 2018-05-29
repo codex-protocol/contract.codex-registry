@@ -78,23 +78,26 @@ contract CodexTitleAccess is CodexTitleCore {
   }
 
   /**
-  * @dev Make modifyDescriptionHash() pausable
+  * @dev Make modifyMetadataHashes() pausable
   */
-  function modifyDescriptionHash(uint256 _tokenId, bytes32 _newDescriptionHash) public whenNotPaused {
-    return super.modifyDescriptionHash(_tokenId, _newDescriptionHash);
+  function modifyMetadataHashes(
+    uint256 _tokenId,
+    bytes32 _newNameHash,
+    bytes32 _newDescriptionHash,
+    bytes32[] _newImageHashes,
+    string _providerId, // TODO: convert to bytes32?
+    string _providerMetadataId // TODO: convert to bytes32?
+  )
+    public whenNotPaused
+  {
+    return super.modifyMetadataHashes(
+      _tokenId,
+      _newNameHash,
+      _newDescriptionHash,
+      _newImageHashes,
+      _providerId,
+      _providerMetadataId
+    );
   }
 
-  /**
-  * @dev Make modifyNameHash() pausable
-  */
-  function modifyNameHash(uint256 _tokenId, bytes32 _newNameHash) public whenNotPaused {
-    return super.modifyNameHash(_tokenId, _newNameHash);
-  }
-
-  /**
-  * @dev Make addNewImageHash() pausable
-  */
-  function addNewImageHash(uint256 _tokenId, bytes32 _imageHash) public whenNotPaused {
-    return super.addNewImageHash(_tokenId, _imageHash);
-  }
 }

@@ -15,14 +15,15 @@ contract CodexTitleMetadata is ERC721Token {
     bytes32[] imageHashes;
   }
 
-  enum ModifiedType {
-    NAME_CHANGE,
-    DESCRIPTION_CHANGE,
-    IMAGE_NEW,
-    IMAGE_DELETE
-  }
-
-  event Modified(address indexed _from, uint256 _tokenId, ModifiedType _type);
+  event Modified(
+    address indexed _from,
+    uint256 _tokenId,
+    bytes32 _newNameHash,
+    bytes32 _newDescriptionHash,
+    bytes32[] _newImageHashes,
+    string _providerId, // TODO: convert to bytes32?
+    string _providerMetadataId // TODO: convert to bytes32?
+  );
 
   // Mapping from token ID to token data
   mapping(uint256 => CodexTitleData) internal tokenData;
@@ -30,15 +31,6 @@ contract CodexTitleMetadata is ERC721Token {
   // Global tokenURIPrefix prefix. The token ID will be appended to the uri when accessed
   //  via the tokenURI method
   string public tokenURIPrefix;
-
-  /**
-   * @dev Checks msg.sender can transfer a token, by being owner, approved, or operator
-   * @param _tokenId uint256 ID of the token to validate
-   */
-  modifier canModify(uint256 _tokenId) {
-    require(isApprovedOrOwner(msg.sender, _tokenId));
-    _;
-  }
 
   // TODO: Is it necessary to have a separate getter for this?
   function getImageHashByIndex(uint256 _tokenId, uint256 _index) external view returns (bytes32) {
@@ -48,22 +40,61 @@ contract CodexTitleMetadata is ERC721Token {
     return imageHashes[_index];
   }
 
-  function modifyDescriptionHash(uint256 _tokenId, bytes32 _newDescriptionHash) public canModify(_tokenId) {
+  /**
+   * @dev Updates token metadata hashes to whatever is passed in
+   * @param _providerId (optional) An ID that identifies which provider is
+   *  minting this token
+   * @param _providerMetadataId (optional) An arbitrary provider-defined ID that
+   *  identifies the metadata record stored by the provider
+   */
+  function modifyMetadataHashes(
+    uint256 _tokenId,
+    bytes32 _newNameHash,
+    bytes32 _newDescriptionHash,
+    bytes32[] _newImageHashes,
+    string _providerId, // TODO: convert to bytes32?
+    string _providerMetadataId // TODO: convert to bytes32?
+  )
+    public onlyOwnerOf(_tokenId)
+  {
+
+    require(exists(_tokenId));
+
+    // nameHash is only overridden if it's not a blank string, since name is a
+    //  required value
+    //
+    // NOTE: is this the best way to check for an empty bytes32 array?
+    //  would (_newNameHash != "") be better in any way?
+    //  see: https://ethereum.stackexchange.com/questions/27227/why-does-require-length-of-bytes32-0-not-work
+    if (_newNameHash[0] != 0) {
+      tokenData[_tokenId].nameHash = _newNameHash;
+    }
+
+    // descriptionHash can always be overridden since it's an optional value
+    //  (e.g. you can "remove" a description by setting it to a blank string)
     tokenData[_tokenId].descriptionHash = _newDescriptionHash;
 
-    emit Modified(msg.sender, _tokenId, ModifiedType.DESCRIPTION_CHANGE);
-  }
+    // imageHashes is only overridden if it has more than one value, since at
+    //  least one image (i.e. mainImage) is required
+    //
+    // NOTE: is this the best way to check for an empty bytes32 array?
+    //  would (_newNameHash != "") be better in any way?
+    //  see: https://ethereum.stackexchange.com/questions/27227/why-does-require-length-of-bytes32-0-not-work
+    if (_newImageHashes.length > 0 && _newImageHashes[0][0] != 0) {
+      tokenData[_tokenId].imageHashes = _newImageHashes;
+    }
 
-  function modifyNameHash(uint256 _tokenId, bytes32 _newNameHash) public canModify(_tokenId) {
-    tokenData[_tokenId].nameHash = _newNameHash;
-
-    emit Modified(msg.sender, _tokenId, ModifiedType.NAME_CHANGE);
-  }
-
-  function addNewImageHash(uint256 _tokenId, bytes32 _imageHash) public canModify(_tokenId) {
-    tokenData[_tokenId].imageHashes.push(_imageHash);
-
-    emit Modified(msg.sender, _tokenId, ModifiedType.IMAGE_NEW);
+    if (bytes(_providerId).length != 0 && bytes(_providerMetadataId).length != 0) {
+      emit Modified(
+        msg.sender,
+        _tokenId,
+        tokenData[_tokenId].nameHash,
+        tokenData[_tokenId].descriptionHash,
+        tokenData[_tokenId].imageHashes,
+        _providerId,
+        _providerMetadataId
+      );
+    }
   }
 
   /**

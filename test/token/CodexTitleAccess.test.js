@@ -125,8 +125,7 @@ contract('CodexTitleAccess', async function (accounts) {
     })
   })
 
-  describe('modifyDescriptionHash', function () {
-    const data = web3.sha3('description')
+  describe('modifyMetadataHashes', function () {
     describe('when contract paused', function () {
       beforeEach(async function () {
         // Pause the contract
@@ -135,39 +134,14 @@ contract('CodexTitleAccess', async function (accounts) {
 
       it('should revert', async function () {
         await assertRevert(
-          this.token.modifyDescriptionHash(firstTokenId, data)
-        )
-      })
-    })
-  })
-
-  describe('modifyNameHash', function () {
-    const data = web3.sha3('name')
-    describe('when contract paused', function () {
-      beforeEach(async function () {
-        // Pause the contract
-        await this.token.pause()
-      })
-
-      it('should revert', async function () {
-        await assertRevert(
-          this.token.modifyNameHash(firstTokenId, data, { from: creator })
-        )
-      })
-    })
-  })
-
-  describe('addNewImageHash', function () {
-    const data = web3.sha3('image')
-    describe('when contract paused', function () {
-      beforeEach(async function () {
-        // Pause the contract
-        await this.token.pause()
-      })
-
-      it('should revert', async function () {
-        await assertRevert(
-          this.token.addNewImageHash(firstTokenId, data, { from: creator })
+          this.token.modifyMetadataHashes(
+            firstTokenId,
+            web3.sha3('name'),
+            web3.sha3('description'),
+            [web3.sha3('image')],
+            providerId,
+            providerMetadataId,
+          )
         )
       })
     })
