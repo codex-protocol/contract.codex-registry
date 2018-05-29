@@ -32,14 +32,6 @@ contract CodexTitleMetadata is ERC721Token {
   //  via the tokenURI method
   string public tokenURIPrefix;
 
-  // TODO: Is it necessary to have a separate getter for this?
-  function getImageHashByIndex(uint256 _tokenId, uint256 _index) external view returns (bytes32) {
-    bytes32[] memory imageHashes;
-    (,,imageHashes) = getTokenById(_tokenId);
-
-    return imageHashes[_index];
-  }
-
   /**
    * @dev Updates token metadata hashes to whatever is passed in
    * @param _providerId (optional) An ID that identifies which provider is
