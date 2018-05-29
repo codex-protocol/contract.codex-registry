@@ -56,6 +56,10 @@ contract CodexTitleCore is CodexTitleMetadata, CodexTitleFees {
     super._mint(_to, newTokenId);
 
     // Add metadata to the newly created token
+    //
+    // TODO: evaluate gas costs here, it may be more efficient to push each
+    //  individual file onto the existing fileHashes array for this index
+    //  instead of replacing the array altogether
     tokenData[newTokenId] = CodexTitleData({
       nameHash: _nameHash,
       descriptionHash: _descriptionHash,
