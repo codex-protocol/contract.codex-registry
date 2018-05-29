@@ -32,15 +32,6 @@ contract CodexTitleMetadata is ERC721Token {
   //  via the tokenURI method
   string public tokenURIPrefix;
 
-  /**
-   * @dev Checks msg.sender can transfer a token, by being owner, approved, or operator
-   * @param _tokenId uint256 ID of the token to validate
-   */
-  modifier canModify(uint256 _tokenId) {
-    require(isApprovedOrOwner(msg.sender, _tokenId));
-    _;
-  }
-
   // TODO: Is it necessary to have a separate getter for this?
   function getImageHashByIndex(uint256 _tokenId, uint256 _index) external view returns (bytes32) {
     bytes32[] memory imageHashes;
@@ -64,7 +55,7 @@ contract CodexTitleMetadata is ERC721Token {
     string _providerId, // TODO: convert to bytes32?
     string _providerMetadataId // TODO: convert to bytes32?
   )
-    public canModify(_tokenId)
+    public onlyOwnerOf(_tokenId)
   {
 
     require(exists(_tokenId));
