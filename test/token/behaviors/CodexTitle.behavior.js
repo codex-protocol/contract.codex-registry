@@ -23,15 +23,13 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
   const firstTokenMetadata = {
     name: 'First token',
     description: 'This is the first token',
-    images: ['asdf'],
+    files: ['file data'],
   }
 
   const hashedMetadata = {
     name: web3.sha3(firstTokenMetadata.name),
     description: web3.sha3(firstTokenMetadata.description),
-    images: firstTokenMetadata.images.map((image) => {
-      return web3.sha3(image)
-    }),
+    files: firstTokenMetadata.files.map(web3.sha3),
   }
 
   describe('like a CodexTitle', function () {
@@ -40,7 +38,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
         creator,
         hashedMetadata.name,
         hashedMetadata.description,
-        hashedMetadata.images[0],
+        hashedMetadata.files,
         providerId,
         providerMetadataId
       )
@@ -66,7 +64,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
           const tokenData = await this.token.getTokenById(0)
           tokenData[0].should.be.equal(hashedMetadata.name)
           tokenData[1].should.be.equal(hashedMetadata.description)
-          tokenData[2].should.deep.equal(hashedMetadata.images)
+          tokenData[2].should.deep.equal(hashedMetadata.files)
         })
       })
 
@@ -109,7 +107,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
               creator,
               hashedMetadata.name,
               hashedMetadata.description,
-              hashedMetadata.images[0],
+              hashedMetadata.files,
               providerId,
               providerMetadataId
             )
@@ -135,7 +133,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
                 creator,
                 hashedMetadata.name,
                 hashedMetadata.description,
-                hashedMetadata.images[0],
+                hashedMetadata.files,
                 providerId,
                 providerMetadataId,
               )
@@ -149,7 +147,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
 
       const newNameHash = web3.sha3('New name')
       const newDescriptionHash = web3.sha3('New description')
-      const newImageHashes = [web3.sha3('New image 1'), web3.sha3('New image 2')]
+      const newFileHashes = [web3.sha3('new file data 1'), web3.sha3('new file data 2')]
 
       describe('when the sender is not authorized', function () {
         it('should revert', async function () {
@@ -158,7 +156,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
               0,
               newNameHash,
               newDescriptionHash,
-              newImageHashes,
+              newFileHashes,
               providerId,
               providerMetadataId,
               { from: unauthorized },
@@ -173,12 +171,12 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
           await modifyMetadataHashes({
             newNameHash,
             newDescriptionHash: hashedMetadata.description,
-            newImageHashes: [],
+            newFileHashes: [],
 
             providerId,
             providerMetadataId,
 
-            expectedImageHashes: hashedMetadata.images,
+            expectedFileHashes: hashedMetadata.files,
           })
         })
 
@@ -186,14 +184,14 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
           await modifyMetadataHashes({
             newNameHash: '',
             newDescriptionHash,
-            newImageHashes: [],
+            newFileHashes: [],
 
             providerId,
             providerMetadataId,
 
             expectedNameHash: hashedMetadata.name,
             expectedDescriptionHash: newDescriptionHash,
-            expectedImageHashes: hashedMetadata.images,
+            expectedFileHashes: hashedMetadata.files,
           })
         })
 
@@ -201,7 +199,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
           await modifyMetadataHashes({
             newNameHash: hashedMetadata.name,
             newDescriptionHash: '',
-            newImageHashes: hashedMetadata.images,
+            newFileHashes: hashedMetadata.files,
 
             providerId,
             providerMetadataId,
@@ -210,11 +208,11 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
           })
         })
 
-        it('should update image hashes only', async function () {
+        it('should update file hashes only', async function () {
           await modifyMetadataHashes({
             newNameHash: '',
             newDescriptionHash: hashedMetadata.description,
-            newImageHashes,
+            newFileHashes,
 
             providerId,
             providerMetadataId,
@@ -227,7 +225,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
           await modifyMetadataHashes({
             newNameHash,
             newDescriptionHash,
-            newImageHashes,
+            newFileHashes,
 
             providerId,
             providerMetadataId,
@@ -238,7 +236,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
           await modifyMetadataHashes({
             newNameHash,
             newDescriptionHash,
-            newImageHashes,
+            newFileHashes,
           })
         })
       })

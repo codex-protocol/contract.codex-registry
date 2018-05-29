@@ -38,7 +38,7 @@ contract CodexTitleCore is CodexTitleMetadata, CodexTitleFees {
     address _to,
     bytes32 _nameHash,
     bytes32 _descriptionHash,
-    bytes32 _imageHash,
+    bytes32[] _fileHashes,
     string _providerId, // TODO: convert to bytes32
     string _providerMetadataId) // TODO: convert to bytes32
     public
@@ -55,11 +55,12 @@ contract CodexTitleCore is CodexTitleMetadata, CodexTitleFees {
     // Add a new token to the allTokens array
     super._mint(_to, newTokenId);
 
-    // Add new token data to the newly created token
-    // Note that we aren't using the struct here so we can directly write to the imageHashes dynamic storage array
-    tokenData[newTokenId].nameHash = _nameHash;
-    tokenData[newTokenId].descriptionHash = _descriptionHash;
-    tokenData[newTokenId].imageHashes.push(_imageHash);
+    // Add metadata to the newly created token
+    tokenData[newTokenId] = CodexTitleData({
+      nameHash: _nameHash,
+      descriptionHash: _descriptionHash,
+      fileHashes: _fileHashes
+    });
 
     if (bytes(_providerId).length != 0 && bytes(_providerMetadataId).length != 0) {
       emit Minted(newTokenId, _providerId, _providerMetadataId);

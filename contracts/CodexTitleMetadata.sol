@@ -12,7 +12,7 @@ contract CodexTitleMetadata is ERC721Token {
   struct CodexTitleData {
     bytes32 nameHash;
     bytes32 descriptionHash;
-    bytes32[] imageHashes;
+    bytes32[] fileHashes;
   }
 
   event Modified(
@@ -20,7 +20,7 @@ contract CodexTitleMetadata is ERC721Token {
     uint256 _tokenId,
     bytes32 _newNameHash,
     bytes32 _newDescriptionHash,
-    bytes32[] _newImageHashes,
+    bytes32[] _newFileHashes,
     string _providerId, // TODO: convert to bytes32?
     string _providerMetadataId // TODO: convert to bytes32?
   );
@@ -43,7 +43,7 @@ contract CodexTitleMetadata is ERC721Token {
     uint256 _tokenId,
     bytes32 _newNameHash,
     bytes32 _newDescriptionHash,
-    bytes32[] _newImageHashes,
+    bytes32[] _newFileHashes,
     string _providerId, // TODO: convert to bytes32?
     string _providerMetadataId // TODO: convert to bytes32?
   )
@@ -66,14 +66,14 @@ contract CodexTitleMetadata is ERC721Token {
     //  (e.g. you can "remove" a description by setting it to a blank string)
     tokenData[_tokenId].descriptionHash = _newDescriptionHash;
 
-    // imageHashes is only overridden if it has more than one value, since at
-    //  least one image (i.e. mainImage) is required
+    // fileHashes is only overridden if it has more than one value, since at
+    //  least one file (i.e. mainImage) is required
     //
     // NOTE: is this the best way to check for an empty bytes32 array?
     //  would (_newNameHash != "") be better in any way?
     //  see: https://ethereum.stackexchange.com/questions/27227/why-does-require-length-of-bytes32-0-not-work
-    if (_newImageHashes.length > 0 && _newImageHashes[0][0] != 0) {
-      tokenData[_tokenId].imageHashes = _newImageHashes;
+    if (_newFileHashes.length > 0 && _newFileHashes[0][0] != 0) {
+      tokenData[_tokenId].fileHashes = _newFileHashes;
     }
 
     if (bytes(_providerId).length != 0 && bytes(_providerMetadataId).length != 0) {
@@ -82,7 +82,7 @@ contract CodexTitleMetadata is ERC721Token {
         _tokenId,
         tokenData[_tokenId].nameHash,
         tokenData[_tokenId].descriptionHash,
-        tokenData[_tokenId].imageHashes,
+        tokenData[_tokenId].fileHashes,
         _providerId,
         _providerMetadataId
       );
@@ -95,11 +95,16 @@ contract CodexTitleMetadata is ERC721Token {
    * @return CodexTitleData token data for the given token ID
    */
   function getTokenById(uint256 _tokenId) public view
-    returns (bytes32 nameHash, bytes32 descriptionHash, bytes32[] imageHashes)
+    returns (bytes32 nameHash, bytes32 descriptionHash, bytes32[] fileHashes)
   {
-    CodexTitleData storage codexTitle = tokenData[_tokenId];
 
-    return (codexTitle.nameHash, codexTitle.descriptionHash, codexTitle.imageHashes);
+    require(exists(_tokenId));
+
+    return (
+      tokenData[_tokenId].nameHash,
+      tokenData[_tokenId].descriptionHash,
+      tokenData[_tokenId].fileHashes
+    );
   }
 
   /**

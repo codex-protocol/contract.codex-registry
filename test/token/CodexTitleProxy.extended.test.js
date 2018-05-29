@@ -25,9 +25,9 @@ contract('CodexTitleProxy', async function (accounts) {
       async function mintToken(tokenToMint, tokenCreator) {
         await tokenToMint.mint(
           tokenCreator,
-          'hashedMetadata.name',
-          'hashedMetadata.description',
-          'hashedMetadata.imageBytes',
+          web3.sha3('name'),
+          web3.sha3('description'),
+          [web3.sha3('file data')],
           '1',
           '10'
         )
