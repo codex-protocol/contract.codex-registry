@@ -3,7 +3,7 @@ import modifyMetadataHashesUnbound from '../../helpers/modifyMetadataHashes'
 
 const { BigNumber } = web3
 const CodexToken = artifacts.require('CodexToken.sol')
-const ERC900BasicStakeContainer = artifacts.require('ERC900BasicStakeContainer.sol')
+const ERC900StakeContainer = artifacts.require('ERC900StakeContainer.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -146,7 +146,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
           let stakeContainer
 
           beforeEach(async function () {
-            stakeContainer = await ERC900BasicStakeContainer.new(codexToken.address)
+            stakeContainer = await ERC900StakeContainer.new(codexToken.address)
 
             await this.token.setStakeContainer(stakeContainer.address)
 

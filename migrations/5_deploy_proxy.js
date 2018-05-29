@@ -15,5 +15,7 @@ module.exports = async (deployer, network, accounts) => {
     })
     .catch((error) => {
       console.log(error)
+
+      throw error
     })
 }

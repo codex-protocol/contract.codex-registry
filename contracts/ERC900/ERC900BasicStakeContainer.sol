@@ -5,6 +5,7 @@ import "../ERC20/ERC20.sol";
 
 import "../library/SafeMath.sol";
 
+
 /**
  * @title ERC900BasicStakeContainer
  */
@@ -13,10 +14,7 @@ contract ERC900BasicStakeContainer is ERC900 {
 
   ERC20 stakingToken;
 
-  mapping (address => Stake) stakes;
-
-  // TODO: This data structure should change to represent "weight" instead of amount
-  mapping (address => uint256) amountStakedFor;
+  mapping (address => StakeContainer) addresses;
 
   struct Stake {
     uint256 blockNumber;
@@ -24,19 +22,34 @@ contract ERC900BasicStakeContainer is ERC900 {
     bool exists;
   }
 
+  // To save on gas, rather than create a separate mapping for amountStakedFor & personalStake,
+  //  both data structures are stored in a single mapping for a given addresses.
+  //
+  // amountStakedFor consists of all tokens staked for a given address.
+  // personalStake is the stake made by a given address.
+  //
+  // It's possible to have a non-existing personalStake, but have tokens in amountStakedFor
+  //  if other users are staking on behalf of a given address.
+  struct StakeContainer {
+    // TODO: This data structure should change to represent "weight" instead of amount
+    uint256 amountStakedFor;
+
+    Stake personalStake;
+  }
+
   constructor(ERC20 _stakingToken) public {
     stakingToken = _stakingToken;
   }
 
   function stake(uint256 _amount, bytes _data) public {
-    require(!stakes[msg.sender].exists, "Stake already exists");
+    require(!addresses[msg.sender].personalStake.exists, "Stake already exists");
 
     require(
       stakingToken.transferFrom(msg.sender, this, _amount),
       "Stake required");
 
-    stakes[msg.sender] = Stake(block.number, _amount, true);
-    amountStakedFor[msg.sender].add(_amount);
+    addresses[msg.sender].personalStake = Stake(block.number, _amount, true);
+    addresses[msg.sender].amountStakedFor.add(_amount);
 
     emit Staked(
       msg.sender,
@@ -46,17 +59,17 @@ contract ERC900BasicStakeContainer is ERC900 {
   }
 
   function stakeFor(address _user, uint256 _amount, bytes _data) public {
-    require(!stakes[msg.sender].exists, "Stake already exists");
+    require(!addresses[msg.sender].personalStake.exists, "Stake already exists");
 
     require(
       stakingToken.transferFrom(msg.sender, this, _amount),
       "Stake required");
 
-    stakes[msg.sender] = Stake(block.number, _amount, true);
+    addresses[msg.sender].personalStake = Stake(block.number, _amount, true);
 
     // Notice here that we are increasing the staked amount for _user
     //  instead of msg.sender
-    amountStakedFor[_user].add(_amount);
+    addresses[_user].amountStakedFor.add(_amount);
 
     emit Staked(
       _user,
@@ -66,7 +79,7 @@ contract ERC900BasicStakeContainer is ERC900 {
   }
 
   function unstake(uint256 _amount, bytes _data) public {
-    require(stakes[msg.sender].exists, "Stake doesn't exist");
+    require(addresses[msg.sender].personalStake.exists, "Stake doesn't exist");
 
     // Transfer the staked tokens from this contract back tot he sender
     // Notice that we are using transfer instead of transferFrom here, so
@@ -77,11 +90,11 @@ contract ERC900BasicStakeContainer is ERC900 {
 
     // If this was a complete withdrawal, then delete the previous stake to reset
     //  the block number and exists flag
-    if (stakes[msg.sender].amount == 0) {
-      delete stakes[msg.sender];
-      amountStakedFor[msg.sender] = 0;
+    if (addresses[msg.sender].personalStake.amount == 0) {
+      delete addresses[msg.sender].personalStake;
+      addresses[msg.sender].amountStakedFor = 0;
     } else {
-      amountStakedFor[msg.sender].sub(_amount);
+      addresses[msg.sender].amountStakedFor.sub(_amount);
     }
 
     emit Unstaked(
@@ -92,7 +105,7 @@ contract ERC900BasicStakeContainer is ERC900 {
   }
 
   function totalStakedFor(address _address) public view returns (uint256) {
-    return amountStakedFor[_address];
+    return addresses[_address].amountStakedFor;
   }
 
   function totalStaked() public view returns (uint256) {
