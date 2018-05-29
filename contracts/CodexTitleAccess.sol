@@ -21,7 +21,7 @@ contract CodexTitleAccess is CodexTitleCore {
     string _providerMetadataId) // TODO: convert to bytes32
     public
     whenNotPaused
-    canPayFees
+    canPayFees(creationFee)
   {
     return super.mint(
       _to,
@@ -42,6 +42,7 @@ contract CodexTitleAccess is CodexTitleCore {
     uint256 _tokenId)
     public
     whenNotPaused
+    canPayFees(transferFee)
   {
     return super.transferFrom(_from, _to, _tokenId);
   }
@@ -55,6 +56,7 @@ contract CodexTitleAccess is CodexTitleCore {
     uint256 _tokenId)
     public
     whenNotPaused
+    canPayFees(transferFee)
   {
     return super.safeTransferFrom(_from, _to, _tokenId);
   }
@@ -69,6 +71,7 @@ contract CodexTitleAccess is CodexTitleCore {
     bytes _data)
     public
     whenNotPaused
+    canPayFees(transferFee)
   {
     return super.safeTransferFrom(
       _from,
@@ -87,9 +90,10 @@ contract CodexTitleAccess is CodexTitleCore {
     bytes32 _newDescriptionHash,
     bytes32[] _newFileHashes,
     string _providerId, // TODO: convert to bytes32?
-    string _providerMetadataId // TODO: convert to bytes32?
-  )
-    public whenNotPaused
+    string _providerMetadataId) // TODO: convert to bytes32?
+    public
+    whenNotPaused
+    canPayFees(modificationFee)
   {
     return super.modifyMetadataHashes(
       _tokenId,

@@ -26,11 +26,17 @@ contract CodexTitleFees is Pausable {
   // Fee to create new tokens. 10^18 = 1 token
   uint256 public creationFee = 0;
 
-  modifier canPayFees() {
+  // Fee to transfer tokens. 10^18 = 1 token
+  uint256 public transferFee = 0;
+
+  // Fee to modify tokens. 10^18 = 1 token
+  uint256 public modificationFee = 0;
+
+  modifier canPayFees(uint256 baseFee) {
     if (feeRecipient != address(0)) {
       // TODO: Update the discount to be based on weight as opposed to just
       //  a binary on/off value
-      uint256 calculatedFee = creationFee;
+      uint256 calculatedFee = baseFee;
       if (codexStakeContainer != address(0) &&
         codexStakeContainer.totalStakedFor(msg.sender) >= 0) {
 
@@ -47,25 +53,29 @@ contract CodexTitleFees is Pausable {
 
   /**
    * @dev Sets the address of the ERC20 token used for fees in the contract.
+   *  Fees are in the smallest denomination, e.g., 10^18 is 1 token.
    * @param _codexToken The address of the ERC20 Codex Protocol Token
    * @param _feeRecipient The address where the fees are sent
-   * @param _creationFee The new creation fee. 10^18 is 1 token.
+   * @param _creationFee The new creation fee.
+   * @param _transferFee The new transfer fee.
+   * @param _modificationFee The new modification fee.
    */
-  function setFees(ERC20 _codexToken, address _feeRecipient, uint256 _creationFee) external onlyOwner {
+  function setFees(
+    ERC20 _codexToken,
+    address _feeRecipient,
+    uint256 _creationFee,
+    uint256 _transferFee,
+    uint256 _modificationFee)
+    external onlyOwner
+  {
     codexToken = _codexToken;
     feeRecipient = _feeRecipient;
     creationFee = _creationFee;
+    transferFee = _transferFee;
+    modificationFee = _modificationFee;
   }
 
   function setStakeContainer(ERC900 _codexStakeContainer) external onlyOwner {
     codexStakeContainer = _codexStakeContainer;
-  }
-
-  /**
-   * @dev Sets the creation fee in CODX
-   * @param _creationFee The new creation fee. 10^18 is 1 token.
-   */
-  function setCreationFee(uint256 _creationFee) external onlyOwner {
-    creationFee = _creationFee;
   }
 }

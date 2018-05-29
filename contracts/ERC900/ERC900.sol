@@ -17,7 +17,7 @@ contract ERC900 {
   function token() public view returns (address);
   function supportsHistory() public pure returns (bool);
 
-  // optional
+  // NOTE: Not implementing the optional functions
   // function lastStakedFor(address addr) public view returns (uint256);
   // function totalStakedForAt(address addr, uint256 blockNumber) public view returns (uint256);
   // function totalStakedAt(uint256 blockNumber) public view returns (uint256);
