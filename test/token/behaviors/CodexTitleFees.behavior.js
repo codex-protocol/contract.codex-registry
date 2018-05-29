@@ -4,7 +4,7 @@ import shouldBehaveLikeCodexTitle from './CodexTitle.behavior'
 const { BigNumber } = web3
 
 const CodexToken = artifacts.require('CodexToken.sol')
-const ERC900StakeContainer = artifacts.require('ERC900StakeContainer.sol')
+const ERC900BasicStakeContainer = artifacts.require('ERC900BasicStakeContainer.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -112,7 +112,7 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
       let stakeContainer
 
       beforeEach(async function () {
-        stakeContainer = await ERC900StakeContainer.new(this.codexToken.address)
+        stakeContainer = await ERC900BasicStakeContainer.new(this.codexToken.address)
 
         await this.token.setStakeContainer(stakeContainer.address)
       })
