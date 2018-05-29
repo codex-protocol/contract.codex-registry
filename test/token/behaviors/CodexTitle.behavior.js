@@ -1,4 +1,5 @@
 import assertRevert from '../../helpers/assertRevert'
+import modifyMetadataHashesUnbound from '../../helpers/modifyMetadataHashes'
 
 const { BigNumber } = web3
 const CodexToken = artifacts.require('CodexToken.sol')
@@ -9,6 +10,7 @@ require('chai')
   .should()
 
 export default function shouldBehaveLikeCodexTitle(accounts) {
+
   const creator = accounts[0]
   const communityFund = accounts[8]
   const unauthorized = accounts[9]
@@ -16,16 +18,20 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
   const providerId = '1'
   const providerMetadataId = '10'
 
+  let modifyMetadataHashes // initialized per-test in beforeEach below
+
   const firstTokenMetadata = {
     name: 'First token',
     description: 'This is the first token',
-    imageBytes: 'asdf',
+    images: ['asdf'],
   }
 
   const hashedMetadata = {
     name: web3.sha3(firstTokenMetadata.name),
     description: web3.sha3(firstTokenMetadata.description),
-    imageBytes: web3.sha3(firstTokenMetadata.imageBytes),
+    images: firstTokenMetadata.images.map((image) => {
+      return web3.sha3(image)
+    }),
   }
 
   describe('like a CodexTitle', function () {
@@ -34,10 +40,18 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
         creator,
         hashedMetadata.name,
         hashedMetadata.description,
-        hashedMetadata.imageBytes,
+        hashedMetadata.images[0],
         providerId,
         providerMetadataId
       )
+
+      const numTokens = await this.token.totalSupply()
+
+      modifyMetadataHashes = modifyMetadataHashesUnbound.bind({
+        creator,
+        token: this.token,
+        tokenId: numTokens - 1,
+      })
     })
 
     describe('mint', function () {
@@ -51,6 +65,8 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
         it('should store the hashes at the minted tokens identifier', async function () {
           const tokenData = await this.token.getTokenById(0)
           tokenData[0].should.be.equal(hashedMetadata.name)
+          tokenData[1].should.be.equal(hashedMetadata.description)
+          tokenData[2].should.deep.equal(hashedMetadata.images)
         })
       })
 
@@ -93,7 +109,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
               creator,
               hashedMetadata.name,
               hashedMetadata.description,
-              hashedMetadata.imageBytes,
+              hashedMetadata.images[0],
               providerId,
               providerMetadataId
             )
@@ -119,7 +135,7 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
                 creator,
                 hashedMetadata.name,
                 hashedMetadata.description,
-                hashedMetadata.imageBytes,
+                hashedMetadata.images[0],
                 providerId,
                 providerMetadataId,
               )
@@ -154,187 +170,76 @@ export default function shouldBehaveLikeCodexTitle(accounts) {
       describe('when called by the owner', function () {
 
         it('should update name hash only', async function () {
-
-          const { logs } = await this.token.modifyMetadataHashes(
-            0,
+          await modifyMetadataHashes({
             newNameHash,
-            hashedMetadata.description,
-            [],
+            newDescriptionHash: hashedMetadata.description,
+            newImageHashes: [],
+
             providerId,
             providerMetadataId,
-          )
 
-          const tokenData = await this.token.getTokenById(0)
-
-          tokenData[0].should.be.equal(newNameHash)
-          tokenData[1].should.be.equal(hashedMetadata.description)
-          tokenData[2].should.deep.equal([hashedMetadata.imageBytes])
-
-          // a Modified event is emitted when provider details are specified
-          logs.length.should.be.equal(1)
-
-          logs[0].event.should.be.eq('Modified')
-          logs[0].args._from.should.be.equal(creator)
-          logs[0].args._tokenId.should.be.bignumber.equal(0)
-          logs[0].args._newNameHash.should.be.equal(tokenData[0])
-          logs[0].args._newDescriptionHash.should.be.equal(tokenData[1])
-          logs[0].args._newImageHashes.should.deep.equal(tokenData[2])
-          logs[0].args._providerId.should.be.equal(providerId)
-          logs[0].args._providerMetadataId.should.be.equal(providerMetadataId)
-
+            expectedImageHashes: hashedMetadata.images,
+          })
         })
 
         it('should update description hash only', async function () {
-
-          const { logs } = await this.token.modifyMetadataHashes(
-            0,
-            '',
+          await modifyMetadataHashes({
+            newNameHash: '',
             newDescriptionHash,
-            [],
+            newImageHashes: [],
+
             providerId,
             providerMetadataId,
-          )
 
-          const tokenData = await this.token.getTokenById(0)
-
-          tokenData[0].should.be.equal(hashedMetadata.name)
-          tokenData[1].should.be.equal(newDescriptionHash)
-          tokenData[2].should.deep.equal([hashedMetadata.imageBytes])
-
-          // a Modified event is emitted when provider details are specified
-          logs.length.should.be.equal(1)
-
-          logs[0].event.should.be.eq('Modified')
-          logs[0].args._from.should.be.equal(creator)
-          logs[0].args._tokenId.should.be.bignumber.equal(0)
-          logs[0].args._newNameHash.should.be.equal(tokenData[0])
-          logs[0].args._newDescriptionHash.should.be.equal(tokenData[1])
-          logs[0].args._newImageHashes.should.deep.equal(tokenData[2])
-          logs[0].args._providerId.should.be.equal(providerId)
-          logs[0].args._providerMetadataId.should.be.equal(providerMetadataId)
-
+            expectedNameHash: hashedMetadata.name,
+            expectedDescriptionHash: newDescriptionHash,
+            expectedImageHashes: hashedMetadata.images,
+          })
         })
 
         it('should remove description hash only', async function () {
+          await modifyMetadataHashes({
+            newNameHash: hashedMetadata.name,
+            newDescriptionHash: '',
+            newImageHashes: hashedMetadata.images,
 
-          const { logs } = await this.token.modifyMetadataHashes(
-            0,
-            hashedMetadata.name,
-            '',
-            [hashedMetadata.imageBytes],
             providerId,
             providerMetadataId,
-          )
 
-          const tokenData = await this.token.getTokenById(0)
-
-          tokenData[0].should.be.equal(hashedMetadata.name)
-          tokenData[1].should.be.equal('0x0000000000000000000000000000000000000000000000000000000000000000')
-          tokenData[2].should.deep.equal([hashedMetadata.imageBytes])
-
-          // a Modified event is emitted when provider details are specified
-          logs.length.should.be.equal(1)
-
-          logs[0].event.should.be.eq('Modified')
-          logs[0].args._from.should.be.equal(creator)
-          logs[0].args._tokenId.should.be.bignumber.equal(0)
-          logs[0].args._newNameHash.should.be.equal(tokenData[0])
-          logs[0].args._newDescriptionHash.should.be.equal(tokenData[1])
-          logs[0].args._newImageHashes.should.deep.equal(tokenData[2])
-          logs[0].args._providerId.should.be.equal(providerId)
-          logs[0].args._providerMetadataId.should.be.equal(providerMetadataId)
-
+            expectedDescriptionHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
+          })
         })
 
         it('should update image hashes only', async function () {
-
-          const { logs } = await this.token.modifyMetadataHashes(
-            0,
-            '',
-            hashedMetadata.description,
+          await modifyMetadataHashes({
+            newNameHash: '',
+            newDescriptionHash: hashedMetadata.description,
             newImageHashes,
+
             providerId,
             providerMetadataId,
-          )
 
-          const tokenData = await this.token.getTokenById(0)
-
-          tokenData[0].should.be.equal(hashedMetadata.name)
-          tokenData[1].should.be.equal(hashedMetadata.description)
-          tokenData[2].should.deep.equal(newImageHashes)
-
-          // a Modified event is emitted when provider details are specified
-          logs.length.should.be.equal(1)
-
-          logs[0].event.should.be.eq('Modified')
-          logs[0].args._from.should.be.equal(creator)
-          logs[0].args._tokenId.should.be.bignumber.equal(0)
-          logs[0].args._newNameHash.should.be.equal(tokenData[0])
-          logs[0].args._newDescriptionHash.should.be.equal(tokenData[1])
-          logs[0].args._newImageHashes.should.deep.equal(tokenData[2])
-          logs[0].args._providerId.should.be.equal(providerId)
-          logs[0].args._providerMetadataId.should.be.equal(providerMetadataId)
-
+            expectedNameHash: hashedMetadata.name,
+          })
         })
 
         it('should update all hashes', async function () {
+          await modifyMetadataHashes({
+            newNameHash,
+            newDescriptionHash,
+            newImageHashes,
 
-          const newNameHash2 = web3.sha3('New name 2')
-          const newDescriptionHash2 = web3.sha3('New description 2')
-          const newImageHashes2 = [web3.sha3('New image 2 1'), web3.sha3('New image 2 2')]
-
-          const { logs } = await this.token.modifyMetadataHashes(
-            0,
-            newNameHash2,
-            newDescriptionHash2,
-            newImageHashes2,
             providerId,
             providerMetadataId,
-          )
-
-          const tokenData = await this.token.getTokenById(0)
-
-          tokenData[0].should.be.equal(newNameHash2)
-          tokenData[1].should.be.equal(newDescriptionHash2)
-          tokenData[2].should.deep.equal(newImageHashes2)
-
-          // a Modified event is emitted when provider details are specified
-          logs.length.should.be.equal(1)
-
-          logs[0].event.should.be.eq('Modified')
-          logs[0].args._from.should.be.equal(creator)
-          logs[0].args._tokenId.should.be.bignumber.equal(0)
-          logs[0].args._newNameHash.should.be.equal(tokenData[0])
-          logs[0].args._newDescriptionHash.should.be.equal(tokenData[1])
-          logs[0].args._newImageHashes.should.deep.equal(tokenData[2])
-          logs[0].args._providerId.should.be.equal(providerId)
-          logs[0].args._providerMetadataId.should.be.equal(providerMetadataId)
-
+          })
         })
 
         it('should update all hashes when no providerId & providerMetadataId are provided', async function () {
-
-          const newNameHash2 = web3.sha3('New name 2')
-          const newDescriptionHash2 = web3.sha3('New description 2')
-          const newImageHashes2 = [web3.sha3('New image 2 1'), web3.sha3('New image 2 2')]
-
-          const { logs } = await this.token.modifyMetadataHashes(
-            0,
-            newNameHash2,
-            newDescriptionHash2,
-            newImageHashes2,
-            '',
-            '',
-          )
-
-          const tokenData = await this.token.getTokenById(0)
-
-          tokenData[0].should.be.equal(newNameHash2)
-          tokenData[1].should.be.equal(newDescriptionHash2)
-          tokenData[2].should.deep.equal(newImageHashes2)
-
-          // no Modified event is emitted when no provider details are specified
-          logs.length.should.be.equal(0)
+          await modifyMetadataHashes({
+            newNameHash,
+            newDescriptionHash,
+            newImageHashes,
+          })
         })
       })
     })
