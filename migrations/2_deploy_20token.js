@@ -1,6 +1,6 @@
 const CodexToken = artifacts.require('./CodexToken.sol')
 
-module.exports = (deployer, network) => {
+module.exports = (deployer, network, accounts) => {
 
   // Only deploy the ERC20 token for local testing.
   // In staging/production environments the token will get deployed separately
@@ -10,7 +10,8 @@ module.exports = (deployer, network) => {
     case 'develop':
     case 'test':
     case 'coverage':
-      deployer.deploy(CodexToken)
+      // For local testing, we use accounts[2] as the registry API (i.e., the faucet)
+      deployer.deploy(CodexToken, { from: accounts[2] })
       break
 
     default:

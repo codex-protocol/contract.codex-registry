@@ -1,9 +1,10 @@
 pragma solidity ^0.4.24;
 
 import "./StandardToken.sol";
+import "../../library/Pausable.sol";
 
 
-contract CodexToken is StandardToken {
+contract CodexToken is StandardToken, Pausable {
 
   /* solium-disable uppercase */
   uint8 constant public decimals = 18;
