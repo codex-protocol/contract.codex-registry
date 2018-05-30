@@ -16,7 +16,7 @@ contract CodexTitleAccess is CodexTitleCore {
     address _to,
     bytes32 _nameHash,
     bytes32 _descriptionHash,
-    bytes32 _imageHash,
+    bytes32[] _fileHashes,
     string _providerId, // TODO: convert to bytes32
     string _providerMetadataId) // TODO: convert to bytes32
     public
@@ -26,7 +26,7 @@ contract CodexTitleAccess is CodexTitleCore {
       _to,
       _nameHash,
       _descriptionHash,
-      _imageHash,
+      _fileHashes,
       _providerId,
       _providerMetadataId
     );
@@ -84,7 +84,7 @@ contract CodexTitleAccess is CodexTitleCore {
     uint256 _tokenId,
     bytes32 _newNameHash,
     bytes32 _newDescriptionHash,
-    bytes32[] _newImageHashes,
+    bytes32[] _newFileHashes,
     string _providerId, // TODO: convert to bytes32?
     string _providerMetadataId // TODO: convert to bytes32?
   )
@@ -94,7 +94,7 @@ contract CodexTitleAccess is CodexTitleCore {
       _tokenId,
       _newNameHash,
       _newDescriptionHash,
-      _newImageHashes,
+      _newFileHashes,
       _providerId,
       _providerMetadataId
     );

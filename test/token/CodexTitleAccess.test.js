@@ -18,13 +18,13 @@ contract('CodexTitleAccess', async function (accounts) {
   const firstTokenMetadata = {
     name: 'First token',
     description: 'This is the first token',
-    imageBytes: 'asdf',
+    files: ['file data'],
   }
 
   const hashedMetadata = {
     name: web3.sha3(firstTokenMetadata.name),
     description: web3.sha3(firstTokenMetadata.description),
-    imageBytes: web3.sha3(firstTokenMetadata.imageBytes),
+    files: firstTokenMetadata.files.map(web3.sha3),
   }
 
   beforeEach(async function () {
@@ -35,7 +35,7 @@ contract('CodexTitleAccess', async function (accounts) {
       creator,
       hashedMetadata.name,
       hashedMetadata.description,
-      hashedMetadata.imageBytes,
+      hashedMetadata.files,
       providerId,
       providerMetadataId,
     )
@@ -54,7 +54,7 @@ contract('CodexTitleAccess', async function (accounts) {
             creator,
             hashedMetadata.name,
             hashedMetadata.description,
-            hashedMetadata.imageBytes,
+            hashedMetadata.files,
             providerId,
             providerMetadataId,
           )
@@ -136,9 +136,9 @@ contract('CodexTitleAccess', async function (accounts) {
         await assertRevert(
           this.token.modifyMetadataHashes(
             firstTokenId,
-            web3.sha3('name'),
-            web3.sha3('description'),
-            [web3.sha3('image')],
+            hashedMetadata.name,
+            hashedMetadata.description,
+            hashedMetadata.files,
             providerId,
             providerMetadataId,
           )

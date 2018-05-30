@@ -1,14 +1,14 @@
 export default async function modifyMetadataHashes({
 
   newNameHash,
-  newImageHashes,
+  newFileHashes,
   newDescriptionHash,
 
   providerId = '',
   providerMetadataId = '',
 
   expectedNameHash = newNameHash,
-  expectedImageHashes = newImageHashes,
+  expectedFileHashes = newFileHashes,
   expectedDescriptionHash = newDescriptionHash,
 
 }) {
@@ -26,7 +26,7 @@ export default async function modifyMetadataHashes({
     this.tokenId,
     newNameHash,
     newDescriptionHash,
-    newImageHashes,
+    newFileHashes,
     providerId,
     providerMetadataId,
   )
@@ -35,7 +35,7 @@ export default async function modifyMetadataHashes({
 
   tokenData[0].should.be.equal(expectedNameHash)
   tokenData[1].should.be.equal(expectedDescriptionHash)
-  tokenData[2].should.deep.equal(expectedImageHashes)
+  tokenData[2].should.deep.equal(expectedFileHashes)
 
   // no Modified event is emitted when no provider details are specified
   if (!providerId && !providerMetadataId) {
@@ -50,7 +50,7 @@ export default async function modifyMetadataHashes({
   logs[0].args._tokenId.should.be.bignumber.equal(this.tokenId)
   logs[0].args._newNameHash.should.be.equal(tokenData[0])
   logs[0].args._newDescriptionHash.should.be.equal(tokenData[1])
-  logs[0].args._newImageHashes.should.deep.equal(tokenData[2])
+  logs[0].args._newFileHashes.should.deep.equal(tokenData[2])
   logs[0].args._providerId.should.be.equal(providerId)
   logs[0].args._providerMetadataId.should.be.equal(providerMetadataId)
 

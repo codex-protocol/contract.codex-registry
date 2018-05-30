@@ -12,7 +12,7 @@ contract CodexTitleMetadata is ERC721Token {
   struct CodexTitleData {
     bytes32 nameHash;
     bytes32 descriptionHash;
-    bytes32[] imageHashes;
+    bytes32[] fileHashes;
   }
 
   event Modified(
@@ -20,7 +20,7 @@ contract CodexTitleMetadata is ERC721Token {
     uint256 _tokenId,
     bytes32 _newNameHash,
     bytes32 _newDescriptionHash,
-    bytes32[] _newImageHashes,
+    bytes32[] _newFileHashes,
     string _providerId, // TODO: convert to bytes32?
     string _providerMetadataId // TODO: convert to bytes32?
   );
@@ -31,14 +31,6 @@ contract CodexTitleMetadata is ERC721Token {
   // Global tokenURIPrefix prefix. The token ID will be appended to the uri when accessed
   //  via the tokenURI method
   string public tokenURIPrefix;
-
-  // TODO: Is it necessary to have a separate getter for this?
-  function getImageHashByIndex(uint256 _tokenId, uint256 _index) external view returns (bytes32) {
-    bytes32[] memory imageHashes;
-    (,,imageHashes) = getTokenById(_tokenId);
-
-    return imageHashes[_index];
-  }
 
   /**
    * @dev Updates token metadata hashes to whatever is passed in
@@ -51,14 +43,14 @@ contract CodexTitleMetadata is ERC721Token {
     uint256 _tokenId,
     bytes32 _newNameHash,
     bytes32 _newDescriptionHash,
-    bytes32[] _newImageHashes,
+    bytes32[] _newFileHashes,
     string _providerId, // TODO: convert to bytes32?
     string _providerMetadataId // TODO: convert to bytes32?
   )
     public onlyOwnerOf(_tokenId)
   {
 
-    require(exists(_tokenId));
+    require(exists(_tokenId), "Codex Title with specified tokenId does not exist");
 
     // nameHash is only overridden if it's not a blank string, since name is a
     //  required value
@@ -74,14 +66,14 @@ contract CodexTitleMetadata is ERC721Token {
     //  (e.g. you can "remove" a description by setting it to a blank string)
     tokenData[_tokenId].descriptionHash = _newDescriptionHash;
 
-    // imageHashes is only overridden if it has more than one value, since at
-    //  least one image (i.e. mainImage) is required
+    // fileHashes is only overridden if it has more than one value, since at
+    //  least one file (i.e. mainImage) is required
     //
     // NOTE: is this the best way to check for an empty bytes32 array?
     //  would (_newNameHash != "") be better in any way?
     //  see: https://ethereum.stackexchange.com/questions/27227/why-does-require-length-of-bytes32-0-not-work
-    if (_newImageHashes.length > 0 && _newImageHashes[0][0] != 0) {
-      tokenData[_tokenId].imageHashes = _newImageHashes;
+    if (_newFileHashes.length > 0 && _newFileHashes[0][0] != 0) {
+      tokenData[_tokenId].fileHashes = _newFileHashes;
     }
 
     if (bytes(_providerId).length != 0 && bytes(_providerMetadataId).length != 0) {
@@ -90,7 +82,7 @@ contract CodexTitleMetadata is ERC721Token {
         _tokenId,
         tokenData[_tokenId].nameHash,
         tokenData[_tokenId].descriptionHash,
-        tokenData[_tokenId].imageHashes,
+        tokenData[_tokenId].fileHashes,
         _providerId,
         _providerMetadataId
       );
@@ -103,11 +95,16 @@ contract CodexTitleMetadata is ERC721Token {
    * @return CodexTitleData token data for the given token ID
    */
   function getTokenById(uint256 _tokenId) public view
-    returns (bytes32 nameHash, bytes32 descriptionHash, bytes32[] imageHashes)
+    returns (bytes32 nameHash, bytes32 descriptionHash, bytes32[] fileHashes)
   {
-    CodexTitleData storage codexTitle = tokenData[_tokenId];
 
-    return (codexTitle.nameHash, codexTitle.descriptionHash, codexTitle.imageHashes);
+    require(exists(_tokenId), "Codex Title with specified tokenId does not exist");
+
+    return (
+      tokenData[_tokenId].nameHash,
+      tokenData[_tokenId].descriptionHash,
+      tokenData[_tokenId].fileHashes
+    );
   }
 
   /**
@@ -127,7 +124,8 @@ contract CodexTitleMetadata is ERC721Token {
    * @param _tokenId uint256 ID of the token to query
    */
   function tokenURI(uint256 _tokenId) public view returns (string) {
-    require(exists(_tokenId));
+
+    require(exists(_tokenId), "Codex Title with specified tokenId does not exist");
 
     bytes memory prefix = bytes(tokenURIPrefix);
     if (prefix.length == 0) {
