@@ -1,6 +1,6 @@
 import assertRevert from '../helpers/assertRevert'
-import shouldBehaveLikeERC165 from './behaviors/ERC165.behavior'
 import shouldBehaveLikeCodexTitle from './behaviors/CodexTitle.behavior'
+import shouldBehaveLikeCodexTitleWithFees from './behaviors/CodexTitleFees.behavior'
 
 const { BigNumber } = web3
 const ERC721Token = artifacts.require('ERC721TokenMock.sol')
@@ -214,6 +214,16 @@ contract('CodexTitleProxy', async function (accounts) {
   })
 
   describe('proxying CodexTitle', function () {
+    const metadata = {
+      hashedMetadata: {
+        name: web3.sha3('First token'),
+        description: web3.sha3('This is the first token'),
+        files: [web3.sha3('file data')],
+      },
+      providerId: '1',
+      providerMetadataId: '10',
+    }
+
     beforeEach(async function () {
       const token = await CodexTitle.new()
       this.proxy = await CodexTitleProxy.new(token.address)
@@ -223,8 +233,8 @@ contract('CodexTitleProxy', async function (accounts) {
     })
 
     describe('should behave', function () {
-      shouldBehaveLikeERC165()
-      shouldBehaveLikeCodexTitle(accounts)
+      shouldBehaveLikeCodexTitle(accounts, metadata)
+      shouldBehaveLikeCodexTitleWithFees(accounts, metadata)
     })
   })
 })

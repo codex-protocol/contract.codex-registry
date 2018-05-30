@@ -3,16 +3,10 @@ const CodexTitle = artifacts.require('./CodexTitle.sol')
 const CodexTitleProxy = artifacts.require('./CodexTitleProxy.sol')
 
 module.exports = async (deployer, network, accounts) => {
+  const proxiedCodexTitle = CodexTitle.at(CodexTitleProxy.address)
 
   deployer
     .then(async () => {
-      const codexTitleProxy = await CodexTitleProxy.deployed()
-      const proxiedCodexTitle = CodexTitle.at(codexTitleProxy.address)
-
-      return proxiedCodexTitle
-    })
-    .then(async (proxiedCodexTitle) => {
-
       let initialFees
       let erc20TokenAddress
 
@@ -29,7 +23,7 @@ module.exports = async (deployer, network, accounts) => {
 
         case 'rinkeby':
           erc20TokenAddress = '0xb05e292f89c6a82f5ed1be694dc7b6444866b364'
-          initialFees = 10
+          initialFees = web3.toWei(1, 'ether')
           break
 
         default:
@@ -37,11 +31,15 @@ module.exports = async (deployer, network, accounts) => {
       }
 
       console.log(`Setting the fees to ${initialFees} at ERC-20 token address: ${erc20TokenAddress}`)
-      await proxiedCodexTitle.setFees(erc20TokenAddress, accounts[0], initialFees)
-
-      return proxiedCodexTitle
+      await proxiedCodexTitle.setFees(
+        erc20TokenAddress,
+        accounts[0],
+        initialFees, // creationFee
+        initialFees, // transferFee
+        initialFees, // modificationFee
+      )
     })
-    .then(async (proxiedCodexTitle) => {
+    .then(async () => {
 
       let tokenURIPrefix
 
@@ -70,5 +68,7 @@ module.exports = async (deployer, network, accounts) => {
     })
     .catch((error) => {
       console.log(error)
+
+      throw error
     })
 }

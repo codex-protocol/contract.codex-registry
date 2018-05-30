@@ -1,5 +1,5 @@
 const CodexTitle = artifacts.require('./CodexTitle.sol')
 
-module.exports = (deployer, network, accounts) => {
+module.exports = (deployer) => {
   deployer.deploy(CodexTitle)
 }

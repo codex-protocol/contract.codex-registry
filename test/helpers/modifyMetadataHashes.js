@@ -11,6 +11,7 @@ export default async function modifyMetadataHashes({
   expectedFileHashes = newFileHashes,
   expectedDescriptionHash = newDescriptionHash,
 
+  feesEnabled = false,
 }) {
 
   if (
@@ -21,6 +22,10 @@ export default async function modifyMetadataHashes({
     console.error('modifyMetadataHashes must be bound to a context that includes token, tokenId, and creator')
     return
   }
+
+  // If fees are enabled, a Transfer event is fired in addition to the Modified event
+  const expectedLogsLength = feesEnabled ? 2 : 1
+  const expectedEventIndex = feesEnabled ? 1 : 0
 
   const { logs } = await this.token.modifyMetadataHashes(
     this.tokenId,
@@ -39,19 +44,18 @@ export default async function modifyMetadataHashes({
 
   // no Modified event is emitted when no provider details are specified
   if (!providerId && !providerMetadataId) {
-    logs.length.should.be.equal(0)
+    logs.length.should.be.equal(expectedLogsLength - 1)
     return
   }
 
-  logs.length.should.be.equal(1)
+  logs.length.should.be.equal(expectedLogsLength)
 
-  logs[0].event.should.be.eq('Modified')
-  logs[0].args._from.should.be.equal(this.creator)
-  logs[0].args._tokenId.should.be.bignumber.equal(this.tokenId)
-  logs[0].args._newNameHash.should.be.equal(tokenData[0])
-  logs[0].args._newDescriptionHash.should.be.equal(tokenData[1])
-  logs[0].args._newFileHashes.should.deep.equal(tokenData[2])
-  logs[0].args._providerId.should.be.equal(providerId)
-  logs[0].args._providerMetadataId.should.be.equal(providerMetadataId)
-
+  logs[expectedEventIndex].event.should.be.eq('Modified')
+  logs[expectedEventIndex].args._from.should.be.equal(this.creator)
+  logs[expectedEventIndex].args._tokenId.should.be.bignumber.equal(this.tokenId)
+  logs[expectedEventIndex].args._newNameHash.should.be.equal(tokenData[0])
+  logs[expectedEventIndex].args._newDescriptionHash.should.be.equal(tokenData[1])
+  logs[expectedEventIndex].args._newFileHashes.should.deep.equal(tokenData[2])
+  logs[expectedEventIndex].args._providerId.should.be.equal(providerId)
+  logs[expectedEventIndex].args._providerMetadataId.should.be.equal(providerMetadataId)
 }

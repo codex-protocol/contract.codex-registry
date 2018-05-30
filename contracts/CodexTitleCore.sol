@@ -43,12 +43,6 @@ contract CodexTitleCore is CodexTitleMetadata, CodexTitleFees {
     string _providerMetadataId) // TODO: convert to bytes32
     public
   {
-    if (feeRecipient != address(0)) {
-      require(
-        codexToken.transferFrom(msg.sender, feeRecipient, creationFee),
-        "Fee in CODX required");
-    }
-
     // For now, all new tokens will be the last entry in the array
     uint256 newTokenId = allTokens.length;
 
