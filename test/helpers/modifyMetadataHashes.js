@@ -25,7 +25,7 @@ export default async function modifyMetadataHashes({
 
   // If fees are enabled, a Transfer event is fired in addition to the Modified event
   const expectedLogsLength = feesEnabled ? 2 : 1
-  const logIndex = feesEnabled ? 1 : 0
+  const expectedEventIndex = feesEnabled ? 1 : 0
 
   const { logs } = await this.token.modifyMetadataHashes(
     this.tokenId,
@@ -50,13 +50,12 @@ export default async function modifyMetadataHashes({
 
   logs.length.should.be.equal(expectedLogsLength)
 
-  logs[logIndex].event.should.be.eq('Modified')
-  logs[logIndex].args._from.should.be.equal(this.creator)
-  logs[logIndex].args._tokenId.should.be.bignumber.equal(this.tokenId)
-  logs[logIndex].args._newNameHash.should.be.equal(tokenData[0])
-  logs[logIndex].args._newDescriptionHash.should.be.equal(tokenData[1])
-  logs[logIndex].args._newFileHashes.should.deep.equal(tokenData[2])
-  logs[logIndex].args._providerId.should.be.equal(providerId)
-  logs[logIndex].args._providerMetadataId.should.be.equal(providerMetadataId)
-
+  logs[expectedEventIndex].event.should.be.eq('Modified')
+  logs[expectedEventIndex].args._from.should.be.equal(this.creator)
+  logs[expectedEventIndex].args._tokenId.should.be.bignumber.equal(this.tokenId)
+  logs[expectedEventIndex].args._newNameHash.should.be.equal(tokenData[0])
+  logs[expectedEventIndex].args._newDescriptionHash.should.be.equal(tokenData[1])
+  logs[expectedEventIndex].args._newFileHashes.should.deep.equal(tokenData[2])
+  logs[expectedEventIndex].args._providerId.should.be.equal(providerId)
+  logs[expectedEventIndex].args._providerMetadataId.should.be.equal(providerMetadataId)
 }

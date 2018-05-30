@@ -75,7 +75,7 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
             creator,
             hashedMetadata.name,
             hashedMetadata.description,
-            hashedMetadata.files[0],
+            hashedMetadata.files,
             providerId,
             providerMetadataId,
           )
@@ -94,7 +94,7 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
           creator,
           hashedMetadata.name,
           hashedMetadata.description,
-          hashedMetadata.files[0],
+          hashedMetadata.files,
           providerId,
           providerMetadataId,
         )

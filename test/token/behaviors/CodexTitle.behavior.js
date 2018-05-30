@@ -169,49 +169,51 @@ export default function shouldBehaveLikeCodexTitle(accounts, metadata, feesEnabl
       })
     })
 
-    describe('metadata', function () {
-      it('should have the correct name', async function () {
-        const name = await this.token.name()
-        name.should.be.equal('Codex Title')
-      })
-
-      it('should have the correct symbol', async function () {
-        const symbol = await this.token.symbol()
-        symbol.should.be.equal('CT')
-      })
-
-      describe('tokenURI', function () {
-        it('should be empty by default', async function () {
-          const tokenURI = await this.token.tokenURI(firstTokenId)
-          tokenURI.should.be.equal('')
+    if (!feesEnabled) {
+      describe('metadata', function () {
+        it('should have the correct name', async function () {
+          const name = await this.token.name()
+          name.should.be.equal('Codex Title')
         })
 
-        describe('tokenURIPrefix', function () {
-          const constantTokenURIPrefix = 'https://codexprotocol.com/token/'
+        it('should have the correct symbol', async function () {
+          const symbol = await this.token.symbol()
+          symbol.should.be.equal('CT')
+        })
 
+        describe('tokenURI', function () {
           it('should be empty by default', async function () {
-            const tokenURIPrefix = await this.token.tokenURIPrefix()
-            tokenURIPrefix.should.be.equal('')
+            const tokenURI = await this.token.tokenURI(firstTokenId)
+            tokenURI.should.be.equal('')
           })
 
-          describe('when set by an address that is not the owner', function () {
-            it('should fail', async function () {
-              await assertRevert(this.token.setTokenURIPrefix(constantTokenURIPrefix, { from: unauthorized }))
-            })
-          })
+          describe('tokenURIPrefix', function () {
+            const constantTokenURIPrefix = 'https://codexprotocol.com/token/'
 
-          describe('when called by the owner', function () {
-            beforeEach(async function () {
-              await this.token.setTokenURIPrefix(constantTokenURIPrefix)
+            it('should be empty by default', async function () {
+              const tokenURIPrefix = await this.token.tokenURIPrefix()
+              tokenURIPrefix.should.be.equal('')
             })
 
-            it('should update the URI for all tokens', async function () {
-              const tokenURI = await this.token.tokenURI(firstTokenId)
-              tokenURI.should.be.equal(`${constantTokenURIPrefix}${firstTokenId}`)
+            describe('when set by an address that is not the owner', function () {
+              it('should fail', async function () {
+                await assertRevert(this.token.setTokenURIPrefix(constantTokenURIPrefix, { from: unauthorized }))
+              })
+            })
+
+            describe('when called by the owner', function () {
+              beforeEach(async function () {
+                await this.token.setTokenURIPrefix(constantTokenURIPrefix)
+              })
+
+              it('should update the URI for all tokens', async function () {
+                const tokenURI = await this.token.tokenURI(firstTokenId)
+                tokenURI.should.be.equal(`${constantTokenURIPrefix}${firstTokenId}`)
+              })
             })
           })
         })
       })
-    })
+    }
   })
 }

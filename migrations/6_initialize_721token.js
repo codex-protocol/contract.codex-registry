@@ -23,7 +23,7 @@ module.exports = async (deployer, network, accounts) => {
 
         case 'rinkeby':
           erc20TokenAddress = '0xb05e292f89c6a82f5ed1be694dc7b6444866b364'
-          initialFees = 10 ** 18 // 1 token
+          initialFees = web3.toWei(1, 'ether')
           break
 
         default:
