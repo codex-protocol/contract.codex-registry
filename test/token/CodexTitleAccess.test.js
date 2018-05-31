@@ -15,134 +15,96 @@ contract('CodexTitleAccess', async function (accounts) {
   const providerId = '1'
   const providerMetadataId = '10'
 
-  const firstTokenMetadata = {
-    name: 'First token',
-    description: 'This is the first token',
-    files: ['file data'],
-  }
-
   const hashedMetadata = {
-    name: web3.sha3(firstTokenMetadata.name),
-    description: web3.sha3(firstTokenMetadata.description),
-    files: firstTokenMetadata.files.map(web3.sha3),
+    name: web3.sha3('first token'),
+    description: web3.sha3('this is the first token'),
+    files: [web3.sha3('file data')],
   }
 
-  beforeEach(async function () {
-    this.token = await CodexTitle.new()
-    await this.token.initializeOwnable(creator)
-
-    await this.token.mint(
+  const pausableFunctions = [{
+    name: 'mint',
+    args: [
       creator,
       hashedMetadata.name,
       hashedMetadata.description,
       hashedMetadata.files,
       providerId,
       providerMetadataId,
-    )
-  })
+    ],
+  }, {
+    name: 'transferFrom',
+    args: [
+      creator,
+      another,
+      firstTokenId,
+    ],
+  }, {
+    name: 'safeTransferFrom',
+    args: [
+      creator,
+      another,
+      firstTokenId,
+    ],
+  }, {
+    name: 'safeTransferFrom', // with data
+    args: [
+      creator,
+      another,
+      firstTokenId,
+      new Uint32Array(10),
+    ],
+  }, {
+    name: 'modifyMetadataHashes',
+    args: [
+      firstTokenId,
+      hashedMetadata.name,
+      hashedMetadata.description,
+      hashedMetadata.files,
+      providerId,
+      providerMetadataId,
+    ],
+  }]
 
-  describe('mint', function () {
-    describe('when contract paused', function () {
-      beforeEach(async function () {
-        // Pause the contract
-        await this.token.pause()
-      })
+  describe('when the contract is paused', function () {
+    let token
 
-      it('should revert', async function () {
-        await assertRevert(
-          this.token.mint(
-            creator,
-            hashedMetadata.name,
-            hashedMetadata.description,
-            hashedMetadata.files,
-            providerId,
-            providerMetadataId,
+    beforeEach(async function () {
+      token = await CodexTitle.new()
+      await token.initializeOwnable(creator)
+
+      await token.mint(
+        creator,
+        hashedMetadata.name,
+        hashedMetadata.description,
+        hashedMetadata.files,
+        providerId,
+        providerMetadataId,
+      )
+
+      await token.pause()
+    })
+
+    describe('pausable functions should revert', function () {
+      pausableFunctions.forEach((pausableFunction) => {
+        it(pausableFunction.name, async () => {
+          await assertRevert(
+            token[pausableFunction.name](...pausableFunction.args)
           )
-        )
-      })
-    })
-  })
-
-  describe('transferFrom', function () {
-    describe('when contract paused', function () {
-      beforeEach(async function () {
-        // Pause the contract
-        await this.token.pause()
-      })
-
-      it('should revert', async function () {
-        await assertRevert(
-          this.token.transferFrom(creator, another, firstTokenId)
-        )
+        })
       })
     })
 
-    describe('when contract unpaused', function () {
+    describe('and then unpaused', function () {
       beforeEach(async function () {
-        // Pause the contract
-        await this.token.pause()
+        await token.unpause()
       })
 
-      it('allows transfer', async function () {
-        await this.token.unpause()
-        await this.token.transferFrom(creator, another, firstTokenId, { from: creator })
-        const countAnother = await this.token.balanceOf(another)
-        countAnother.should.be.bignumber.equal(1)
-        const countCreator = await this.token.balanceOf(creator)
-        countCreator.should.be.bignumber.equal(0)
-      })
-    })
-  })
-
-  describe('safeTransferFrom', function () {
-    describe('when contract paused', function () {
-      beforeEach(async function () {
-        // Pause the contract
-        await this.token.pause()
-      })
-
-      it('should revert', async function () {
-        await assertRevert(
-          this.token.safeTransferFrom(creator, another, firstTokenId)
-        )
-      })
-    })
-  })
-
-  describe('safeTransferFrom with data', function () {
-    const data = new Uint32Array(10)
-    describe('when contract paused', function () {
-      beforeEach(async function () {
-        // Pause the contract
-        await this.token.pause()
-      })
-
-      it('should revert', async function () {
-        await assertRevert(
-          this.token.safeTransferFrom(creator, another, firstTokenId, data)
-        )
-      })
-    })
-  })
-
-  describe('modifyMetadataHashes', function () {
-    describe('when contract paused', function () {
-      beforeEach(async function () {
-        // Pause the contract
-        await this.token.pause()
-      })
-
-      it('should revert', async function () {
-        await assertRevert(
-          this.token.modifyMetadataHashes(
-            firstTokenId,
-            hashedMetadata.name,
-            hashedMetadata.description,
-            hashedMetadata.files,
-            providerId,
-            providerMetadataId,
-          )
-        )
+      describe('pausable functions should succeed', function () {
+        pausableFunctions.forEach((pausableFunction) => {
+          it(pausableFunction.name, async () => {
+            await token[pausableFunction.name](...pausableFunction.args)
+          })
+        })
       })
     })
   })
