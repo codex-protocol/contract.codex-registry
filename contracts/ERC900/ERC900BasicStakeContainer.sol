@@ -10,16 +10,17 @@ import "../library/SafeMath.sol";
  * @title ERC900BasicStakeContainer
  */
 contract ERC900BasicStakeContainer is ERC900 {
-  // todo: deploy this separately so we don't have to deploy it multiple times for each contract
+  // @TODO: deploy this separately so we don't have to deploy it multiple times for each contract
   using SafeMath for uint256;
 
   ERC20 stakingToken;
 
-  mapping (address => StakeContainer) addresses;
+  mapping (address => StakeContainer) public addresses;
 
   struct Stake {
     uint256 blockNumber;
     uint256 amount;
+    address stakedFor;
     bool exists;
   }
 
@@ -32,7 +33,7 @@ contract ERC900BasicStakeContainer is ERC900 {
   // It's possible to have a non-existing personalStake, but have tokens in amountStakedFor
   //  if other users are staking on behalf of a given address.
   struct StakeContainer {
-    // TODO: This data structure should change to represent "weight" instead of amount
+    // @TODO: This data structure should change to represent "weight" instead of amount
     uint256 amountStakedFor;
 
     Stake personalStake;
@@ -67,7 +68,7 @@ contract ERC900BasicStakeContainer is ERC900 {
   function unstake(uint256 _amount, bytes _data) public {
     require(addresses[msg.sender].personalStake.exists, "Stake doesn't exist");
 
-    // Transfer the staked tokens from this contract back tot he sender
+    // Transfer the staked tokens from this contract back to the sender
     // Notice that we are using transfer instead of transferFrom here, so
     //  no approval is needed before hand.
     require(
@@ -88,6 +89,21 @@ contract ERC900BasicStakeContainer is ERC900 {
       _amount,
       totalStakedFor(msg.sender),
       _data);
+  }
+
+  // @TODO: These accessors functions are needed until https://github.com/ethereum/web3.js/issues/1241 is solved
+  function getPersonalStakeBlockNumber(address _address) public view returns (uint256) {
+    return addresses[_address].personalStake.blockNumber;
+  }
+
+  // @TODO: These accessors functions are needed until https://github.com/ethereum/web3.js/issues/1241 is solved
+  function getPersonalStakeAmount(address _address) public view returns (uint256) {
+    return addresses[_address].personalStake.amount;
+  }
+
+  // @TODO: These accessors functions are needed until https://github.com/ethereum/web3.js/issues/1241 is solved
+  function getPersonalStakeFor(address _address) public view returns (address) {
+    return addresses[_address].personalStake.stakedFor;
   }
 
   function totalStakedFor(address _address) public view returns (uint256) {
@@ -113,11 +129,11 @@ contract ERC900BasicStakeContainer is ERC900 {
     if (!addresses[msg.sender].exists) {
       addresses[msg.sender] = StakeContainer(
         0,
-        Stake(block.number, _amount, true),
+        Stake(block.number, _amount, _address, true),
         true
       );
     } else {
-      addresses[msg.sender].personalStake = Stake(block.number, _amount, true);
+      addresses[msg.sender].personalStake = Stake(block.number, _amount, _address, true);
     }
 
     addresses[_address].amountStakedFor = addresses[_address].amountStakedFor.add(_amount);
