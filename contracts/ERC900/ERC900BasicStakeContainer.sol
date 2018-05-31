@@ -35,6 +35,8 @@ contract ERC900BasicStakeContainer is ERC900 {
     uint256 amountStakedFor;
 
     Stake personalStake;
+
+    bool exists;
   }
 
   modifier noExistingStake(address _address) {
@@ -60,8 +62,16 @@ contract ERC900BasicStakeContainer is ERC900 {
     noExistingStake(msg.sender)
     canStake(msg.sender, _amount)
   {
-    addresses[msg.sender].personalStake = Stake(block.number, _amount, true);
-    addresses[msg.sender].amountStakedFor.add(_amount);
+    if (!addresses[msg.sender].exists) {
+      addresses[msg.sender] = StakeContainer(
+        _amount,
+        Stake(block.number, _amount, true),
+        true
+      );
+    } else {
+      addresses[msg.sender].personalStake = Stake(block.number, _amount, true);
+      addresses[msg.sender].amountStakedFor.add(_amount);
+    }
 
     emit Staked(
       msg.sender,
@@ -70,6 +80,7 @@ contract ERC900BasicStakeContainer is ERC900 {
       _data);
   }
 
+  // TODO: fix this function w/ StakeContainer
   function stakeFor(address _user, uint256 _amount, bytes _data)
     public
     noExistingStake(msg.sender)
@@ -88,6 +99,7 @@ contract ERC900BasicStakeContainer is ERC900 {
       _data);
   }
 
+  // TODO: fix this function w/ StakeContainer
   function unstake(uint256 _amount, bytes _data) public {
     require(addresses[msg.sender].personalStake.exists, "Stake doesn't exist");
 

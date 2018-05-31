@@ -38,7 +38,7 @@ contract CodexTitleFees is Pausable {
       //  a binary on/off value
       uint256 calculatedFee = baseFee;
       if (codexStakeContainer != address(0) &&
-        codexStakeContainer.totalStakedFor(msg.sender) >= 0) {
+        codexStakeContainer.totalStakedFor(msg.sender) > 0) {
 
         calculatedFee = 0;
       }

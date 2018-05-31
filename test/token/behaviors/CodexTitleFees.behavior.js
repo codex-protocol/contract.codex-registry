@@ -115,6 +115,12 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
         stakeContainer = await ERC900BasicStakeContainer.new(this.codexToken.address)
 
         await this.token.setStakeContainer(stakeContainer.address)
+
+        // @TODO: once the staking logic is updated, approval of both contracts is needed to pay fees since it's a discount only
+        // await this.codexToken.approve(this.token.address, web3.toWei(100, 'ether'))
+        await this.codexToken.approve(stakeContainer.address, web3.toWei(100, 'ether'))
+
+        await stakeContainer.stake(web3.toWei(1, 'ether'), '0x0')
       })
 
       shouldBehaveLikeCodexTitle(accounts, metadata, true)
