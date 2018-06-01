@@ -1,6 +1,7 @@
 const CodexCoin = artifacts.require('./CodexCoin.sol')
 const CodexTitle = artifacts.require('./CodexTitle.sol')
 const CodexTitleProxy = artifacts.require('./CodexTitleProxy.sol')
+const ERC900BasicStakeContainer = artifacts.require('./ERC900BasicStakeContainer.sol')
 
 module.exports = async (deployer, network, accounts) => {
   const proxiedCodexTitle = CodexTitle.at(CodexTitleProxy.address)
@@ -15,14 +16,13 @@ module.exports = async (deployer, network, accounts) => {
         case 'develop':
         case 'test':
         case 'coverage': {
-          const codexCoin = await CodexCoin.deployed()
-          erc20TokenAddress = codexCoin.address
+          erc20TokenAddress = CodexCoin.address
           initialFees = 0
           break
         }
 
         case 'rinkeby':
-          erc20TokenAddress = '0xb05e292f89c6a82f5ed1be694dc7b6444866b364'
+          erc20TokenAddress = '0xb902c00f8e5aced53e2a513903fd831d32dd1097'
           initialFees = web3.toWei(1, 'ether')
           break
 
@@ -37,6 +37,10 @@ module.exports = async (deployer, network, accounts) => {
         initialFees, // creationFee
         initialFees, // transferFee
         initialFees, // modificationFee
+      )
+
+      await proxiedCodexTitle.setStakeContainer(
+        ERC900BasicStakeContainer.address
       )
     })
     .then(async () => {
