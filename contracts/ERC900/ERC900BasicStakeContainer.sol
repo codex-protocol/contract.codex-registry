@@ -81,6 +81,7 @@ contract ERC900BasicStakeContainer is ERC900 {
       delete addresses[msg.sender].personalStake;
       addresses[msg.sender].amountStakedFor = 0;
     } else {
+      addresses[msg.sender].personalStake.amount = addresses[msg.sender].personalStake.amount.sub(_amount);
       addresses[msg.sender].amountStakedFor = addresses[msg.sender].amountStakedFor.sub(_amount);
     }
 
@@ -129,11 +130,19 @@ contract ERC900BasicStakeContainer is ERC900 {
     if (!addresses[msg.sender].exists) {
       addresses[msg.sender] = StakeContainer(
         0,
-        Stake(block.number, _amount, _address, true),
+        Stake(
+          block.number,
+          _amount,
+          _address,
+          true),
         true
       );
     } else {
-      addresses[msg.sender].personalStake = Stake(block.number, _amount, _address, true);
+      addresses[msg.sender].personalStake = Stake(
+        block.number,
+        _amount,
+        _address,
+        true);
     }
 
     addresses[_address].amountStakedFor = addresses[_address].amountStakedFor.add(_amount);
