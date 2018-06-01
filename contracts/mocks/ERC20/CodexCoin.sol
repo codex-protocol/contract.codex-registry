@@ -4,7 +4,7 @@ import "./StandardToken.sol";
 import "../../library/Pausable.sol";
 
 
-contract CodexToken is StandardToken, Pausable {
+contract CodexCoin is StandardToken, Pausable {
 
   /* solium-disable uppercase */
   uint8 constant public decimals = 18;

@@ -3,7 +3,7 @@ import shouldBehaveLikeCodexTitle from './CodexTitle.behavior'
 
 const { BigNumber } = web3
 
-const CodexToken = artifacts.require('CodexToken.sol')
+const CodexCoin = artifacts.require('CodexCoin.sol')
 const ERC900BasicStakeContainer = artifacts.require('ERC900BasicStakeContainer.sol')
 
 require('chai')
@@ -28,11 +28,11 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
 
   describe('like a CodexTitle with fees', function () {
     beforeEach(async function () {
-      this.codexToken = await CodexToken.new()
+      this.codexCoin = await CodexCoin.new()
 
       // Set contract fees, sent to the community fund
       await this.token.setFees(
-        this.codexToken.address,
+        this.codexCoin.address,
         communityFund,
         creationFee,
         transferFee,
@@ -40,12 +40,12 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
       )
 
       // Get original balance of the creator in CODX
-      originalBalance = await this.codexToken.balanceOf(creator)
+      originalBalance = await this.codexCoin.balanceOf(creator)
     })
 
-    it('has a codexToken address', async function () {
-      const tokenAddress = await this.token.codexToken()
-      tokenAddress.should.be.equal(this.codexToken.address)
+    it('has a codexCoin address', async function () {
+      const tokenAddress = await this.token.codexCoin()
+      tokenAddress.should.be.equal(this.codexCoin.address)
     })
 
     it('has a feeRecipient', async function () {
@@ -86,7 +86,7 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
     describe('and the fee is paid', function () {
       beforeEach(async function () {
         // Set allowance to 100 tokens (using the web3 helpers for ether since it also has 18 decimal places)
-        await this.codexToken.approve(this.token.address, web3.toWei(100, 'ether'))
+        await this.codexCoin.approve(this.token.address, web3.toWei(100, 'ether'))
       })
 
       it('should reduce the number of CODX in the minters balance by the creationFee', async function () {
@@ -100,7 +100,7 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
         )
 
         const tokenFee = await this.token.creationFee()
-        const currentBalance = await this.codexToken.balanceOf(creator)
+        const currentBalance = await this.codexCoin.balanceOf(creator)
 
         currentBalance.should.be.bignumber.equal(originalBalance.minus(tokenFee))
       })
@@ -112,13 +112,13 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
       let stakeContainer
 
       beforeEach(async function () {
-        stakeContainer = await ERC900BasicStakeContainer.new(this.codexToken.address)
+        stakeContainer = await ERC900BasicStakeContainer.new(this.codexCoin.address)
 
         await this.token.setStakeContainer(stakeContainer.address)
 
         // @TODO: once the staking logic is updated, approval of both contracts is needed to pay fees since it's a discount only
-        // await this.codexToken.approve(this.token.address, web3.toWei(100, 'ether'))
-        await this.codexToken.approve(stakeContainer.address, web3.toWei(100, 'ether'))
+        // await this.codexCoin.approve(this.token.address, web3.toWei(100, 'ether'))
+        await this.codexCoin.approve(stakeContainer.address, web3.toWei(100, 'ether'))
 
         await stakeContainer.stake(web3.toWei(1, 'ether'), '0x0')
       })

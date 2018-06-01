@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rm -rf build",
     "build-ethereum-service": "cd $PWD/../npm.ethereum-service && npm run build",
-    "copy": "cp build/contracts/CodexTitle.json build/contracts/CodexTitleProxy.json build/contracts/CodexToken.json build/contracts/ERC900BasicStakeContainer.json $PWD/../npm.ethereum-service/static/contracts-source/5777 && npm run build-ethereum-service",
+    "copy": "cp build/contracts/CodexTitle.json build/contracts/CodexTitleProxy.json build/contracts/CodexCoin.json build/contracts/ERC900BasicStakeContainer.json $PWD/../npm.ethereum-service/static/contracts-source/5777 && npm run build-ethereum-service",
     "copy:staging": "cp build/contracts/CodexTitle.json build/contracts/CodexTitleProxy.json $PWD/../npm.ethereum-service/static/contracts-source/4 && npm run build-ethereum-service",
     "copy:production": "cp build/contracts/CodexTitle.json build/contracts/CodexTitleProxy.json $PWD/../npm.ethereum-service/static/contracts-source/1 && npm run build-ethereum-service",
     "migrate": "npm run lint && truffle migrate --network ganache && npm run copy",

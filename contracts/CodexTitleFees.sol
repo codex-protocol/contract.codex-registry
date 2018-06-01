@@ -14,7 +14,7 @@ import "./library/Pausable.sol";
 contract CodexTitleFees is Pausable {
 
   // Implementation of the ERC20 Codex Protocol Token, used for fees in the contract
-  ERC20 public codexToken;
+  ERC20 public codexCoin;
 
   // Implementation of the ERC900 Codex Protocol Stake Container,
   //  used to calculate discounts on fees
@@ -44,7 +44,7 @@ contract CodexTitleFees is Pausable {
       }
 
       require(
-        codexToken.transferFrom(msg.sender, feeRecipient, calculatedFee),
+        codexCoin.transferFrom(msg.sender, feeRecipient, calculatedFee),
         "Fee in CODX required");
     }
 
@@ -68,7 +68,7 @@ contract CodexTitleFees is Pausable {
     uint256 _modificationFee)
     external onlyOwner
   {
-    codexToken = _codexToken;
+    codexCoin = _codexToken;
     feeRecipient = _feeRecipient;
     creationFee = _creationFee;
     transferFee = _transferFee;

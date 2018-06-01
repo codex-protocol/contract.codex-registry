@@ -1,4 +1,4 @@
-const CodexToken = artifacts.require('./CodexToken.sol')
+const CodexCoin = artifacts.require('./CodexCoin.sol')
 
 module.exports = (deployer, network, accounts) => {
 
@@ -11,7 +11,7 @@ module.exports = (deployer, network, accounts) => {
     case 'test':
     case 'coverage':
       // For local testing, we use accounts[2] as the registry API (i.e., the faucet)
-      deployer.deploy(CodexToken, { from: accounts[2] })
+      deployer.deploy(CodexCoin, { from: accounts[2] })
       break
 
     default:

@@ -1,4 +1,4 @@
-const CodexToken = artifacts.require('./CodexToken.sol')
+const CodexCoin = artifacts.require('./CodexCoin.sol')
 const CodexTitle = artifacts.require('./CodexTitle.sol')
 const CodexTitleProxy = artifacts.require('./CodexTitleProxy.sol')
 
@@ -15,8 +15,8 @@ module.exports = async (deployer, network, accounts) => {
         case 'develop':
         case 'test':
         case 'coverage': {
-          const codexToken = await CodexToken.deployed()
-          erc20TokenAddress = codexToken.address
+          const codexCoin = await CodexCoin.deployed()
+          erc20TokenAddress = codexCoin.address
           initialFees = 0
           break
         }

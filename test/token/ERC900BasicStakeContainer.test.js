@@ -1,6 +1,6 @@
 const { BigNumber } = web3
 
-const CodexToken = artifacts.require('CodexToken.sol')
+const CodexCoin = artifacts.require('CodexCoin.sol')
 const ERC900BasicStakeContainer = artifacts.require('ERC900BasicStakeContainer.sol')
 
 require('chai')
@@ -13,7 +13,7 @@ contract('ERC900BasicStakeContainer', function (accounts) {
   const otherUser = accounts[1]
 
   beforeEach(async function () {
-    this.token = await CodexToken.new()
+    this.token = await CodexCoin.new()
     this.stakeContainer = await ERC900BasicStakeContainer.new(this.token.address)
 
     await this.token.approve(this.stakeContainer.address, web3.toWei('100', 'ether'))
