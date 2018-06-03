@@ -1,4 +1,5 @@
 import assertRevert from '../helpers/assertRevert'
+import getCoreRegistryFunctions from '../helpers/getCoreRegistryFunctions'
 
 const { BigNumber } = web3
 const CodexTitle = artifacts.require('CodexTitle.sol')
@@ -10,7 +11,6 @@ require('chai')
 
 contract('CodexTitleAccess', async function (accounts) {
   const creator = accounts[0]
-  const another = accounts[1]
   const firstTokenId = 0
   const providerId = '1'
   const providerMetadataId = '10'
@@ -21,49 +21,14 @@ contract('CodexTitleAccess', async function (accounts) {
     files: [web3.sha3('file data')],
   }
 
-  const pausableFunctions = [{
-    name: 'mint',
-    args: [
-      creator,
-      hashedMetadata.name,
-      hashedMetadata.description,
-      hashedMetadata.files,
+  const pausableFunctions = getCoreRegistryFunctions(
+    accounts,
+    firstTokenId, {
+      hashedMetadata,
       providerId,
       providerMetadataId,
-    ],
-  }, {
-    name: 'transferFrom',
-    args: [
-      creator,
-      another,
-      firstTokenId,
-    ],
-  }, {
-    name: 'safeTransferFrom',
-    args: [
-      creator,
-      another,
-      firstTokenId,
-    ],
-  }, {
-    name: 'safeTransferFrom', // with data
-    args: [
-      creator,
-      another,
-      firstTokenId,
-      new Uint32Array(10),
-    ],
-  }, {
-    name: 'modifyMetadataHashes',
-    args: [
-      firstTokenId,
-      hashedMetadata.name,
-      hashedMetadata.description,
-      hashedMetadata.files,
-      providerId,
-      providerMetadataId,
-    ],
-  }]
+    }
+  )
 
   describe('when the contract is paused', function () {
     let token

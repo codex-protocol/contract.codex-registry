@@ -153,14 +153,10 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
     uint256 _tokenId)
     public canTransfer(_tokenId)
   {
-    require(_from != address(0));
-    require(_to != address(0));
-
-    clearApproval(_from, _tokenId);
-    removeTokenFrom(_from, _tokenId);
-    addTokenTo(_to, _tokenId);
-
-    emit Transfer(_from, _to, _tokenId);
+    internalTransferFrom(
+      _from,
+      _to,
+      _tokenId);
   }
 
   /**
@@ -180,7 +176,7 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
     uint256 _tokenId)
     public canTransfer(_tokenId)
   {
-    safeTransferFrom(
+    internalSafeTransferFrom(
       _from,
       _to,
       _tokenId,
@@ -206,10 +202,37 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
     bytes _data)
     public canTransfer(_tokenId)
   {
-    transferFrom(
+    internalSafeTransferFrom(
       _from,
       _to,
-      _tokenId);
+      _tokenId,
+      _data);
+  }
+
+  function internalTransferFrom(
+    address _from,
+    address _to,
+    uint256 _tokenId)
+    internal
+  {
+    require(_from != address(0));
+    require(_to != address(0));
+
+    clearApproval(_from, _tokenId);
+    removeTokenFrom(_from, _tokenId);
+    addTokenTo(_to, _tokenId);
+
+    emit Transfer(_from, _to, _tokenId);
+  }
+
+  function internalSafeTransferFrom(
+    address _from,
+    address _to,
+    uint256 _tokenId,
+    bytes _data)
+    internal
+  {
+    internalTransferFrom(_from, _to, _tokenId);
 
     require(
       checkAndCallSafeTransfer(

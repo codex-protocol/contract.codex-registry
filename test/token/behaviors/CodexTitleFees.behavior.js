@@ -1,4 +1,6 @@
 import assertRevert from '../../helpers/assertRevert'
+import getCoreRegistryFunctions from '../../helpers/getCoreRegistryFunctions'
+
 import shouldBehaveLikeCodexTitle from './CodexTitle.behavior'
 
 const { BigNumber } = web3
@@ -14,29 +16,42 @@ require('chai')
 export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
   const creator = accounts[0]
   const communityFund = accounts[8]
-  const creationFee = web3.toWei(3, 'ether')
-  const transferFee = web3.toWei(2, 'ether')
-  const modificationFee = web3.toWei(1, 'ether')
-
-  const {
-    hashedMetadata,
-    providerId,
-    providerMetadataId,
-  } = metadata
-
+  const firstTokenId = 0
   let originalBalance
+
+  const fees = {
+    creation: web3.toWei(3, 'ether'),
+    transfer: web3.toWei(2, 'ether'),
+    modification: web3.toWei(1, 'ether'),
+  }
+
+  const payableFunctions = getCoreRegistryFunctions(
+    accounts,
+    firstTokenId,
+    metadata
+  )
 
   describe('like a CodexTitle with fees', function () {
     beforeEach(async function () {
       this.codexCoin = await CodexCoin.new()
 
+      // pre-minting a token for use in some of the transfer tests
+      await this.token.mint(
+        creator,
+        metadata.hashedMetadata.name,
+        metadata.hashedMetadata.description,
+        metadata.hashedMetadata.files,
+        metadata.providerId,
+        metadata.providerMetadataId,
+      )
+
       // Set contract fees, sent to the community fund
       await this.token.setFees(
         this.codexCoin.address,
         communityFund,
-        creationFee,
-        transferFee,
-        modificationFee,
+        fees.creation,
+        fees.transfer,
+        fees.modification,
       )
 
       // Get original balance of the creator in CODX
@@ -55,32 +70,17 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
 
     it('has a creationFee', async function () {
       const tokenFee = await this.token.creationFee()
-      tokenFee.should.be.bignumber.equal(creationFee)
+      tokenFee.should.be.bignumber.equal(fees.creation)
     })
 
     it('has a transferFee', async function () {
       const tokenFee = await this.token.transferFee()
-      tokenFee.should.be.bignumber.equal(transferFee)
+      tokenFee.should.be.bignumber.equal(fees.transfer)
     })
 
     it('has a modificationFee', async function () {
       const tokenFee = await this.token.modificationFee()
-      tokenFee.should.be.bignumber.equal(modificationFee)
-    })
-
-    describe('and the fee is not paid', function () {
-      it('should revert', async function () {
-        await assertRevert(
-          this.token.mint(
-            creator,
-            hashedMetadata.name,
-            hashedMetadata.description,
-            hashedMetadata.files,
-            providerId,
-            providerMetadataId,
-          )
-        )
-      })
+      tokenFee.should.be.bignumber.equal(fees.modification)
     })
 
     describe('and the fee is paid', function () {
@@ -89,23 +89,24 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
         await this.codexCoin.approve(this.token.address, web3.toWei(100, 'ether'))
       })
 
-      it('should reduce the number of CODX in the minters balance by the creationFee', async function () {
-        this.token.mint(
-          creator,
-          hashedMetadata.name,
-          hashedMetadata.description,
-          hashedMetadata.files,
-          providerId,
-          providerMetadataId,
-        )
+      payableFunctions.forEach((payableFunction) => {
+        it(`${payableFunction.name} should succeed & reduce the number of CODX by the fee`, async function () {
+          await this.token[payableFunction.name](...payableFunction.args)
 
-        const tokenFee = await this.token.creationFee()
-        const currentBalance = await this.codexCoin.balanceOf(creator)
+          const tokenFee = await this.token[`${payableFunction.fee}Fee`]()
+          const currentBalance = await this.codexCoin.balanceOf(creator)
 
-        currentBalance.should.be.bignumber.equal(originalBalance.minus(tokenFee))
+          currentBalance.should.be.bignumber.equal(originalBalance.minus(tokenFee))
+        })
       })
+    })
 
-      shouldBehaveLikeCodexTitle(accounts, metadata, true)
+    describe('and the fee is not paid', function () {
+      payableFunctions.forEach((payableFunction) => {
+        it(`${payableFunction.name} should revert`, async function () {
+          await assertRevert(this.token[payableFunction.name](...payableFunction.args))
+        })
+      })
     })
 
     describe('and tokens are staked', function () {
