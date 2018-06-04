@@ -109,6 +109,7 @@ contract('ERC900BasicStakeContainer', function (accounts) {
 
     describe('and then unstakes tokens', function () {
       beforeEach(async function () {
+        // @TODO: Update this test case to manipulate timestamp so that it can correctly test unstake
         await this.stakeContainer.unstake(web3.toWei('1', 'ether'), 0x0)
       })
 

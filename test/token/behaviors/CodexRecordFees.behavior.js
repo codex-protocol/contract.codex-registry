@@ -1,12 +1,9 @@
 import assertRevert from '../../helpers/assertRevert'
 import getCoreRegistryFunctions from '../../helpers/getCoreRegistryFunctions'
 
-import shouldBehaveLikeCodexRecord from './CodexRecord.behavior'
-
 const { BigNumber } = web3
 
 const CodexCoin = artifacts.require('CodexCoin.sol')
-const ERC900BasicStakeContainer = artifacts.require('ERC900BasicStakeContainer.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -107,24 +104,6 @@ export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) 
           await assertRevert(this.token[payableFunction.name](...payableFunction.args))
         })
       })
-    })
-
-    describe('and tokens are staked', function () {
-      let stakeContainer
-
-      beforeEach(async function () {
-        stakeContainer = await ERC900BasicStakeContainer.new(this.codexCoin.address)
-
-        await this.token.setStakeContainer(stakeContainer.address)
-
-        // @TODO: once the staking logic is updated, approval of both contracts is needed to pay fees since it's a discount only
-        // await this.codexCoin.approve(this.token.address, web3.toWei(100, 'ether'))
-        await this.codexCoin.approve(stakeContainer.address, web3.toWei(100, 'ether'))
-
-        await stakeContainer.stake(web3.toWei(1, 'ether'), '0x0')
-      })
-
-      shouldBehaveLikeCodexRecord(accounts, metadata, true)
     })
   })
 }

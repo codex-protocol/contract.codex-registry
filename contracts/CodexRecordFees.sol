@@ -32,6 +32,11 @@ contract CodexRecordFees is Pausable {
   // Fee to modify tokens. 10^18 = 1 token
   uint256 public modificationFee = 0;
 
+  // Parameters in the polynomial used to calculate discount
+  // Current range of discount is 0-100% (i.e., stake enough tokens for a 100% discount!)
+  uint256 public lowerBound = 0;
+  uint256 public upperBound = 100;
+
   modifier canPayFees(uint256 baseFee) {
     if (feeRecipient != address(0)) {
       // TODO: Update the discount to be based on weight as opposed to just
