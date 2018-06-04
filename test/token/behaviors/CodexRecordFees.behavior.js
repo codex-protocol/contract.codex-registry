@@ -1,7 +1,7 @@
 import assertRevert from '../../helpers/assertRevert'
 import getCoreRegistryFunctions from '../../helpers/getCoreRegistryFunctions'
 
-import shouldBehaveLikeCodexTitle from './CodexTitle.behavior'
+import shouldBehaveLikeCodexRecord from './CodexRecord.behavior'
 
 const { BigNumber } = web3
 
@@ -13,7 +13,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
+export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) {
   const creator = accounts[0]
   const communityFund = accounts[8]
   const firstTokenId = 0
@@ -31,7 +31,7 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
     metadata
   )
 
-  describe('like a CodexTitle with fees', function () {
+  describe('like a CodexRecord with fees', function () {
     beforeEach(async function () {
       this.codexCoin = await CodexCoin.new()
 
@@ -124,7 +124,7 @@ export default function shouldBehaveLikeCodexTitleWithFees(accounts, metadata) {
         await stakeContainer.stake(web3.toWei(1, 'ether'), '0x0')
       })
 
-      shouldBehaveLikeCodexTitle(accounts, metadata, true)
+      shouldBehaveLikeCodexRecord(accounts, metadata, true)
     })
   })
 }

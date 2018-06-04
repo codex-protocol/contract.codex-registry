@@ -1,8 +1,8 @@
 const axios = require('axios')
 const util = require('ethereumjs-util')
 
-const CodexTitle = artifacts.require('./CodexTitle.sol')
-const CodexTitleProxy = artifacts.require('./CodexTitleProxy.sol')
+const CodexRecord = artifacts.require('./CodexRecord.sol')
+const CodexRecordProxy = artifacts.require('./CodexRecordProxy.sol')
 
 // NOTE: If you change this you also need to change the pre-defined images
 //  and the addProvenance script
@@ -97,7 +97,7 @@ const mintTokens = async (contract, authTokens, imageRecords) => {
 
     // eslint-disable-next-line no-await-in-loop
     await axios
-      .post('/users/title-metadata', requestBody, requestOptions)
+      .post('/users/record-metadata', requestBody, requestOptions)
       .then((response) => {
 
         const { result } = response.data
@@ -125,8 +125,8 @@ const mintTokens = async (contract, authTokens, imageRecords) => {
 }
 
 module.exports = async (callback) => {
-  const codexTitleProxy = await CodexTitleProxy.deployed()
-  const codexTitle = CodexTitle.at(codexTitleProxy.address)
+  const codexRecordProxy = await CodexRecordProxy.deployed()
+  const codexRecord = CodexRecord.at(codexRecordProxy.address)
 
   axios.defaults.baseURL = 'http://localhost:3001'
   axios.defaults.headers.common['Content-Type'] = 'application/json'
@@ -140,7 +140,7 @@ module.exports = async (callback) => {
 
   const imageRecords = await fetchImageRecords()
 
-  mintTokens(codexTitle, authTokens, imageRecords)
+  mintTokens(codexRecord, authTokens, imageRecords)
 
   callback()
 }

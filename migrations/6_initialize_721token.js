@@ -1,10 +1,10 @@
 const CodexCoin = artifacts.require('./CodexCoin.sol')
-const CodexTitle = artifacts.require('./CodexTitle.sol')
-const CodexTitleProxy = artifacts.require('./CodexTitleProxy.sol')
+const CodexRecord = artifacts.require('./CodexRecord.sol')
+const CodexRecordProxy = artifacts.require('./CodexRecordProxy.sol')
 const ERC900BasicStakeContainer = artifacts.require('./ERC900BasicStakeContainer.sol')
 
 module.exports = async (deployer, network, accounts) => {
-  const proxiedCodexTitle = CodexTitle.at(CodexTitleProxy.address)
+  const proxiedCodexRecord = CodexRecord.at(CodexRecordProxy.address)
 
   deployer
     .then(async () => {
@@ -31,7 +31,7 @@ module.exports = async (deployer, network, accounts) => {
       }
 
       console.log(`Setting the fees to ${initialFees} at ERC-20 token address: ${erc20TokenAddress}`)
-      await proxiedCodexTitle.setFees(
+      await proxiedCodexRecord.setFees(
         erc20TokenAddress,
         accounts[0],
         initialFees, // creationFee
@@ -39,7 +39,7 @@ module.exports = async (deployer, network, accounts) => {
         initialFees, // modificationFee
       )
 
-      await proxiedCodexTitle.setStakeContainer(
+      await proxiedCodexRecord.setStakeContainer(
         ERC900BasicStakeContainer.address
       )
     })
@@ -56,11 +56,11 @@ module.exports = async (deployer, network, accounts) => {
           break
 
         case 'rinkeby':
-          tokenURIPrefix = 'http://codex-title-api.codexprotocol-staging.com/token-metadata'
+          tokenURIPrefix = 'http://codex-registry-api.codexprotocol-staging.com/token-metadata'
           break
 
         case 'mainnet':
-          tokenURIPrefix = 'http://codex-title-api.codexprotocol.com/token-metadata'
+          tokenURIPrefix = 'http://codex-registry-api.codexprotocol.com/token-metadata'
           break
 
         default:
@@ -68,7 +68,7 @@ module.exports = async (deployer, network, accounts) => {
       }
 
       console.log('Setting the tokenURIPrefix to:', tokenURIPrefix)
-      await proxiedCodexTitle.setTokenURIPrefix(tokenURIPrefix)
+      await proxiedCodexRecord.setTokenURIPrefix(tokenURIPrefix)
     })
     .catch((error) => {
       console.log(error)

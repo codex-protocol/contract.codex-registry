@@ -8,7 +8,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-export default function shouldBehaveLikeCodexTitle(accounts, metadata, feesEnabled) {
+export default function shouldBehaveLikeCodexRecord(accounts, metadata, feesEnabled) {
   const creator = accounts[0]
   const unauthorized = accounts[9]
   const firstTokenId = 0
@@ -21,7 +21,7 @@ export default function shouldBehaveLikeCodexTitle(accounts, metadata, feesEnabl
 
   let modifyMetadataHashes // initialized per-test in beforeEach below
 
-  describe('like a CodexTitle', function () {
+  describe('like a CodexRecord', function () {
     beforeEach(async function () {
       await this.token.mint(
         creator,

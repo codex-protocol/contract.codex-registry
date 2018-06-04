@@ -1,16 +1,16 @@
 import shouldBehaveLikeERC165 from './behaviors/ERC165.behavior'
-import shouldBehaveLikeCodexTitle from './behaviors/CodexTitle.behavior'
-import shouldBehaveLikeCodexTitleWithFees from './behaviors/CodexTitleFees.behavior'
+import shouldBehaveLikeCodexRecord from './behaviors/CodexRecord.behavior'
+import shouldBehaveLikeCodexRecordWithFees from './behaviors/CodexRecordFees.behavior'
 
 const { BigNumber } = web3
-const CodexTitle = artifacts.require('CodexTitle.sol')
+const CodexRecord = artifacts.require('CodexRecord.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-contract('CodexTitle', function (accounts) {
+contract('CodexRecord', function (accounts) {
   const metadata = {
     hashedMetadata: {
       name: web3.sha3('First token'),
@@ -22,15 +22,15 @@ contract('CodexTitle', function (accounts) {
   }
 
   beforeEach(async function () {
-    this.token = await CodexTitle.new()
+    this.token = await CodexRecord.new()
     await this.token.initializeOwnable(accounts[0])
   })
 
   shouldBehaveLikeERC165()
 
   // Base behavior, no fees
-  shouldBehaveLikeCodexTitle(accounts, metadata)
+  shouldBehaveLikeCodexRecord(accounts, metadata)
 
   // Extended functionality & base behavior with fees enabled
-  shouldBehaveLikeCodexTitleWithFees(accounts, metadata)
+  shouldBehaveLikeCodexRecordWithFees(accounts, metadata)
 })

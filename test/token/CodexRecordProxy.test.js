@@ -1,20 +1,20 @@
 import assertRevert from '../helpers/assertRevert'
-import shouldBehaveLikeCodexTitle from './behaviors/CodexTitle.behavior'
-import shouldBehaveLikeCodexTitleWithFees from './behaviors/CodexTitleFees.behavior'
+import shouldBehaveLikeCodexRecord from './behaviors/CodexRecord.behavior'
+import shouldBehaveLikeCodexRecordWithFees from './behaviors/CodexRecordFees.behavior'
 
 const { BigNumber } = web3
 const ERC721Token = artifacts.require('ERC721TokenMock.sol')
 const UpgradedToken = artifacts.require('UpgradedTokenMock.sol')
 const UpgradedTokenV2 = artifacts.require('UpgradedTokenMockV2.sol')
-const CodexTitle = artifacts.require('CodexTitle.sol')
-const CodexTitleProxy = artifacts.require('CodexTitleProxy.sol')
+const CodexRecord = artifacts.require('CodexRecord.sol')
+const CodexRecordProxy = artifacts.require('CodexRecordProxy.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-contract('CodexTitleProxy', async function (accounts) {
+contract('CodexRecordProxy', async function (accounts) {
   const creator = accounts[0]
   const notTheCreator = accounts[1]
 
@@ -28,7 +28,7 @@ contract('CodexTitleProxy', async function (accounts) {
   describe('proxying ERC721Token', function () {
     beforeEach(async function () {
       this.token = await ERC721Token.new(name, symbol)
-      this.proxy = await CodexTitleProxy.new(this.token.address)
+      this.proxy = await CodexRecordProxy.new(this.token.address)
     })
 
     describe('when created', function () {
@@ -164,7 +164,7 @@ contract('CodexTitleProxy', async function (accounts) {
   describe('proxying UpgradedToken', function () {
     beforeEach(async function () {
       const token = await ERC721Token.new(name, symbol)
-      this.proxy = await CodexTitleProxy.new(token.address)
+      this.proxy = await CodexRecordProxy.new(token.address)
 
       const upgradedToken = await UpgradedToken.new(name, symbol)
       await this.proxy.upgradeTo('1.1', upgradedToken.address)
@@ -213,7 +213,7 @@ contract('CodexTitleProxy', async function (accounts) {
     })
   })
 
-  describe('proxying CodexTitle', function () {
+  describe('proxying CodexRecord', function () {
     const metadata = {
       hashedMetadata: {
         name: web3.sha3('First token'),
@@ -225,16 +225,16 @@ contract('CodexTitleProxy', async function (accounts) {
     }
 
     beforeEach(async function () {
-      const token = await CodexTitle.new()
-      this.proxy = await CodexTitleProxy.new(token.address)
+      const token = await CodexRecord.new()
+      this.proxy = await CodexRecordProxy.new(token.address)
 
-      this.token = CodexTitle.at(this.proxy.address)
+      this.token = CodexRecord.at(this.proxy.address)
       await this.token.initializeOwnable(creator)
     })
 
     describe('should behave', function () {
-      shouldBehaveLikeCodexTitle(accounts, metadata)
-      shouldBehaveLikeCodexTitleWithFees(accounts, metadata)
+      shouldBehaveLikeCodexRecord(accounts, metadata)
+      shouldBehaveLikeCodexRecordWithFees(accounts, metadata)
     })
   })
 })

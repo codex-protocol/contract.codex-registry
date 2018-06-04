@@ -2,14 +2,14 @@ import assertRevert from '../helpers/assertRevert'
 import getCoreRegistryFunctions from '../helpers/getCoreRegistryFunctions'
 
 const { BigNumber } = web3
-const CodexTitle = artifacts.require('CodexTitle.sol')
+const CodexRecord = artifacts.require('CodexRecord.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-contract('CodexTitleAccess', async function (accounts) {
+contract('CodexRecordAccess', async function (accounts) {
   const creator = accounts[0]
   const firstTokenId = 0
   const providerId = '1'
@@ -34,7 +34,7 @@ contract('CodexTitleAccess', async function (accounts) {
     let token
 
     beforeEach(async function () {
-      token = await CodexTitle.new()
+      token = await CodexRecord.new()
       await token.initializeOwnable(creator)
 
       await token.mint(

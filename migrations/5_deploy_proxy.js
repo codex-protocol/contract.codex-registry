@@ -1,17 +1,17 @@
-const CodexTitle = artifacts.require('./CodexTitle.sol')
-const CodexTitleProxy = artifacts.require('./CodexTitleProxy.sol')
+const CodexRecord = artifacts.require('./CodexRecord.sol')
+const CodexRecordProxy = artifacts.require('./CodexRecordProxy.sol')
 
 module.exports = async (deployer, network, accounts) => {
 
   deployer
-    .deploy(CodexTitleProxy, CodexTitle.address)
-    .then(async (codexTitleProxy) => {
+    .deploy(CodexRecordProxy, CodexRecord.address)
+    .then(async (codexRecordProxy) => {
 
-      // Initialize the owner of CodexTitle from the perspective of CodexTitleProxy.
-      // This places the owner of CodexTitle into a storage slot of CodexTitleProxy,
+      // Initialize the owner of CodexRecord from the perspective of CodexRecordProxy.
+      // This places the owner of CodexRecord into a storage slot of CodexRecordProxy,
       //  meaning that function calls with the modifier onlyOwner will work as expected.
-      const proxiedCodexTitle = CodexTitle.at(codexTitleProxy.address)
-      await proxiedCodexTitle.initializeOwnable(accounts[0])
+      const proxiedCodexRecord = CodexRecord.at(codexRecordProxy.address)
+      await proxiedCodexRecord.initializeOwnable(accounts[0])
     })
     .catch((error) => {
       console.log(error)
