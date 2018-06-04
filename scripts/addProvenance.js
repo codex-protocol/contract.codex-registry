@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 
-const CodexTitle = artifacts.require('./CodexTitle.sol')
-const CodexTitleProxy = artifacts.require('./CodexTitleProxy.sol')
+const CodexRecord = artifacts.require('./CodexRecord.sol')
+const CodexRecordProxy = artifacts.require('./CodexRecordProxy.sol')
 
 // NOTE: This should be run after 'npm run mint'
 
@@ -27,30 +27,30 @@ const transferTokens = async (contract, from, to, tokenIds) => {
 
 module.exports = async (callback) => {
 
-  const codexTitleProxy = await CodexTitleProxy.deployed()
-  const codexTitle = CodexTitle.at(codexTitleProxy.address)
+  const codexRecordProxy = await CodexRecordProxy.deployed()
+  const codexRecord = CodexRecord.at(codexRecordProxy.address)
 
   const [firstAccount, secondAccount, thirdAccount] = web3.eth.accounts
 
   // since we've already run the mint script, we know that the first 2 accounts have tokens, so let's
   // use that fact to create a bunch of transfer events
-  const firstAccountBalance = await codexTitle.balanceOf(firstAccount)
+  const firstAccountBalance = await codexRecord.balanceOf(firstAccount)
   console.log(`Account ${firstAccount} owns ${firstAccountBalance} tokens`)
 
-  const secondAccountBalance = await codexTitle.balanceOf(secondAccount)
+  const secondAccountBalance = await codexRecord.balanceOf(secondAccount)
   console.log(`Account ${secondAccount} owns ${secondAccountBalance} tokens`)
 
   // Transfer all the tokens from the first account to the third account
-  let tokenIds = await getTokenIds(codexTitle, firstAccount, firstAccountBalance)
-  await transferTokens(codexTitle, firstAccount, thirdAccount, tokenIds)
+  let tokenIds = await getTokenIds(codexRecord, firstAccount, firstAccountBalance)
+  await transferTokens(codexRecord, firstAccount, thirdAccount, tokenIds)
 
   // Transfer all the tokens from the second account to the first account
-  tokenIds = await getTokenIds(codexTitle, secondAccount, secondAccountBalance)
-  await transferTokens(codexTitle, secondAccount, firstAccount, tokenIds)
+  tokenIds = await getTokenIds(codexRecord, secondAccount, secondAccountBalance)
+  await transferTokens(codexRecord, secondAccount, firstAccount, tokenIds)
 
   // Transfer all the tokens from the third account to the second account
-  tokenIds = await getTokenIds(codexTitle, thirdAccount, firstAccountBalance)
-  await transferTokens(codexTitle, thirdAccount, secondAccount, tokenIds)
+  tokenIds = await getTokenIds(codexRecord, thirdAccount, firstAccountBalance)
+  await transferTokens(codexRecord, thirdAccount, secondAccount, tokenIds)
 
   callback()
 

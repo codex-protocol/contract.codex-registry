@@ -1,13 +1,13 @@
 pragma solidity ^0.4.24;
 
-import "./CodexTitleCore.sol";
+import "./CodexRecordCore.sol";
 
 
 /**
- * @title CodexTitleAccess
+ * @title CodexRecordAccess
  * @dev Override contract functions
  */
-contract CodexTitleAccess is CodexTitleCore {
+contract CodexRecordAccess is CodexRecordCore {
 
   /**
   * @dev Make mint() pausable

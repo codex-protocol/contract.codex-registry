@@ -1,14 +1,14 @@
 pragma solidity ^0.4.24;
 
-import "./CodexTitleMetadata.sol";
-import "./CodexTitleFees.sol";
+import "./CodexRecordMetadata.sol";
+import "./CodexRecordFees.sol";
 
 
 /**
- * @title CodexTitleCore
+ * @title CodexRecordCore
  * @dev Core functionality of the token, namely minting.
  */
-contract CodexTitleCore is CodexTitleMetadata, CodexTitleFees {
+contract CodexRecordCore is CodexRecordMetadata, CodexRecordFees {
 
   /**
    * @dev This event is emitted when a new token is minted and allows providers
@@ -54,7 +54,7 @@ contract CodexTitleCore is CodexTitleMetadata, CodexTitleFees {
     // TODO: evaluate gas costs here, it may be more efficient to push each
     //  individual file onto the existing fileHashes array for this index
     //  instead of replacing the array altogether
-    tokenData[newTokenId] = CodexTitleData({
+    tokenData[newTokenId] = CodexRecordData({
       nameHash: _nameHash,
       descriptionHash: _descriptionHash,
       fileHashes: _fileHashes

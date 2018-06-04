@@ -1,23 +1,23 @@
 import shouldBehaveLikeERC721BasicToken from './behaviors/ERC721BasicToken.behavior'
 
 const { BigNumber } = web3
-const CodexTitle = artifacts.require('CodexTitle.sol')
-const CodexTitleProxy = artifacts.require('CodexTitleProxy.sol')
+const CodexRecord = artifacts.require('CodexRecord.sol')
+const CodexRecordProxy = artifacts.require('CodexRecordProxy.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-contract('CodexTitleProxy', async function (accounts) {
+contract('CodexRecordProxy', async function (accounts) {
   const creator = accounts[0]
 
-  describe('proxying CodexTitle', function () {
+  describe('proxying CodexRecord', function () {
     beforeEach(async function () {
-      const token = await CodexTitle.new()
-      this.proxy = await CodexTitleProxy.new(token.address)
+      const token = await CodexRecord.new()
+      this.proxy = await CodexRecordProxy.new(token.address)
 
-      this.token = CodexTitle.at(this.proxy.address)
+      this.token = CodexRecord.at(this.proxy.address)
       await this.token.initializeOwnable(creator)
     })
 

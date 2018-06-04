@@ -7,11 +7,11 @@ import "./library/Pausable.sol";
 
 
 /**
- * @title CodexTitleFees
+ * @title CodexRecordFees
  * @dev Storage, mutators, and modifiers for fees when using the token.
  *  This also includes the Pausable contract for the onlyOwner modifier.
  */
-contract CodexTitleFees is Pausable {
+contract CodexRecordFees is Pausable {
 
   // Implementation of the ERC20 Codex Protocol Token, used for fees in the contract
   ERC20 public codexCoin;

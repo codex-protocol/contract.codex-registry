@@ -1,5 +1,5 @@
-const CodexTitle = artifacts.require('./CodexTitle.sol')
-const CodexTitleProxy = artifacts.require('./CodexTitleProxy.sol')
+const CodexRecord = artifacts.require('./CodexRecord.sol')
+const CodexRecordProxy = artifacts.require('./CodexRecordProxy.sol')
 
 module.exports = async (deployer, network, accounts) => {
 
@@ -26,27 +26,27 @@ module.exports = async (deployer, network, accounts) => {
           throw new Error('No ownership transfer defined for this network')
       }
 
-      // Transfer ownership of CodexTitle from the perspective of CodexTitleProxy.
+      // Transfer ownership of CodexRecord from the perspective of CodexRecordProxy.
       // Initialization of this storage slot has already taken place earlier in migration
       //  because some operations (like setting the tokenURI) require owner permissions.
-      const codexTitleProxy = await CodexTitleProxy.deployed()
-      const proxiedCodexTitle = CodexTitle.at(codexTitleProxy.address)
+      const codexRecordProxy = await CodexRecordProxy.deployed()
+      const proxiedCodexRecord = CodexRecord.at(codexRecordProxy.address)
 
-      console.log('Transferring proxiedCodexTitle ownership to', newOwner)
-      await proxiedCodexTitle.transferOwnership(newOwner)
+      console.log('Transferring proxiedCodexRecord ownership to', newOwner)
+      await proxiedCodexRecord.transferOwnership(newOwner)
 
-      // For security, let's initialize the ownership of CodexTitle to newOwner as well.
-      // This is a defensive action because no one should ever be interacting with CodexTitle
-      //  directly, they should always be going through CodexTitleProxy.
-      const codexTitle = await CodexTitle.deployed()
-      console.log('Transferring codexTitle ownership to', newOwner)
-      await codexTitle.initializeOwnable(newOwner)
+      // For security, let's initialize the ownership of CodexRecord to newOwner as well.
+      // This is a defensive action because no one should ever be interacting with CodexRecord
+      //  directly, they should always be going through CodexRecordProxy.
+      const codexRecord = await CodexRecord.deployed()
+      console.log('Transferring codexRecord ownership to', newOwner)
+      await codexRecord.initializeOwnable(newOwner)
 
-      // Finally, transfer ownership of CodexTitleProxy from deployer to newOwner.
-      // This is a crucial step in the process because the owner of CodexTitleProxy is the one
+      // Finally, transfer ownership of CodexRecordProxy from deployer to newOwner.
+      // This is a crucial step in the process because the owner of CodexRecordProxy is the one
       //  that dictates future upgrades.
-      console.log('Transferring codexTitleProxy proxy ownership to', newOwner)
-      await codexTitleProxy.transferProxyOwnership(newOwner)
+      console.log('Transferring codexRecordProxy proxy ownership to', newOwner)
+      await codexRecordProxy.transferProxyOwnership(newOwner)
     })
     .catch((error) => {
       console.error(error)

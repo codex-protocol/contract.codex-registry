@@ -5,11 +5,11 @@ import "./ERC20/ERC20.sol";
 
 
 /**
- * @title CodexTitleMetadata
- * @dev Storage, mutators, and modifiers for CodexTitle metadata.
+ * @title CodexRecordMetadata
+ * @dev Storage, mutators, and modifiers for CodexRecord metadata.
  */
-contract CodexTitleMetadata is ERC721Token {
-  struct CodexTitleData {
+contract CodexRecordMetadata is ERC721Token {
+  struct CodexRecordData {
     bytes32 nameHash;
     bytes32 descriptionHash;
     bytes32[] fileHashes;
@@ -26,7 +26,7 @@ contract CodexTitleMetadata is ERC721Token {
   );
 
   // Mapping from token ID to token data
-  mapping(uint256 => CodexTitleData) internal tokenData;
+  mapping(uint256 => CodexRecordData) internal tokenData;
 
   // Global tokenURIPrefix prefix. The token ID will be appended to the uri when accessed
   //  via the tokenURI method
@@ -92,7 +92,7 @@ contract CodexTitleMetadata is ERC721Token {
   /**
    * @dev Gets the token given a token ID.
    * @param _tokenId token ID
-   * @return CodexTitleData token data for the given token ID
+   * @return CodexRecordData token data for the given token ID
    */
   function getTokenById(uint256 _tokenId) public view
     returns (bytes32 nameHash, bytes32 descriptionHash, bytes32[] fileHashes)
