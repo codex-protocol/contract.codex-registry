@@ -16,7 +16,7 @@ contract ERC900BasicStakeContainer is ERC900 {
 
   ERC20 stakingToken;
 
-  uint256 public defaultDuration;
+  uint256 public lockInDuration;
 
   mapping (address => StakeContainer) public stakeHolders;
 
@@ -85,7 +85,7 @@ contract ERC900BasicStakeContainer is ERC900 {
     createStake(
       msg.sender,
       _amount,
-      defaultDuration,
+      lockInDuration,
       _data);
   }
 
@@ -93,7 +93,7 @@ contract ERC900BasicStakeContainer is ERC900 {
     createStake(
       _user,
       _amount,
-      defaultDuration,
+      lockInDuration,
       _data);
   }
 

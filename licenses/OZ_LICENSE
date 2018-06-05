@@ -23,9 +23,10 @@ contracts/library/Pausable.sol
 contracts/library/ProxyOwnable.sol
 contracts/library/SafeMath.sol
 
+test/library/DelayedOwnable.test.js
 test/library/Pausable.test.js
-test/library/SafeMath.test.js
 test/library/ProxyOwnable.test.js
+test/library/SafeMath.test.js
 
 test/behaviors/ERC721BasicToken.behavior.js
 test/behaviors/ERC721Mint.behavior.js

@@ -51,6 +51,34 @@ contract('CodexStakeContainer', function (accounts) {
     })
   })
 
+  describe('lockInDuration', function () {
+    it('should be the value passed in the constructor', async function () {
+      const tokenLockInDuration = await this.stakeContainer.lockInDuration()
+      tokenLockInDuration.should.be.bignumber.equal(lockInDuration)
+    })
+
+    describe('when changed', function () {
+      const newLockInDuration = lockInDuration * 2
+
+      beforeEach(async function () {
+        await this.stakeContainer.initializeOwnable(creator)
+      })
+
+      it('should fail when not called by the owner', async function () {
+        await assertRevert(
+          this.stakeContainer.setLockInDuration(newLockInDuration, { from: otherUser })
+        )
+      })
+
+      it('should update when called by the owner', async function () {
+        await this.stakeContainer.setLockInDuration(newLockInDuration)
+
+        const tokenLockInDuration = await this.stakeContainer.lockInDuration()
+        tokenLockInDuration.should.be.bignumber.equal(newLockInDuration)
+      })
+    })
+  })
+
   describe('when a user stakes tokens', function () {
     beforeEach(async function () {
       await this.stakeContainer.stake(web3.toWei('1', 'ether'), 0x0)
@@ -114,8 +142,8 @@ contract('CodexStakeContainer', function (accounts) {
     describe('and then unstakes tokens', function () {
       beforeEach(async function () {
         // Changing the timestamp of the next block so the stake is unlocked
-        const defaultDuration = await this.stakeContainer.defaultDuration()
-        await increaseTime(defaultDuration.toNumber())
+        const tokenLockInDuration = await this.stakeContainer.lockInDuration()
+        await increaseTime(tokenLockInDuration.toNumber())
 
         await this.stakeContainer.unstake(web3.toWei('1', 'ether'), 0x0)
       })
