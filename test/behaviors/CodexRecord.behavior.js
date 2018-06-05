@@ -1,5 +1,5 @@
-import assertRevert from '../../helpers/assertRevert'
-import modifyMetadataHashesUnbound from '../../helpers/modifyMetadataHashes'
+import assertRevert from '../helpers/assertRevert'
+import modifyMetadataHashesUnbound from '../helpers/modifyMetadataHashes'
 
 const { BigNumber } = web3
 
@@ -8,7 +8,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-export default function shouldBehaveLikeCodexRecord(accounts, metadata, feesEnabled) {
+export default function shouldBehaveLikeCodexRecord(accounts, metadata) {
   const creator = accounts[0]
   const unauthorized = accounts[9]
   const firstTokenId = 0
@@ -92,8 +92,6 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata, feesEnab
             providerMetadataId,
 
             expectedFileHashes: hashedMetadata.files,
-
-            feesEnabled,
           })
         })
 
@@ -109,8 +107,6 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata, feesEnab
             expectedNameHash: hashedMetadata.name,
             expectedDescriptionHash: newDescriptionHash,
             expectedFileHashes: hashedMetadata.files,
-
-            feesEnabled,
           })
         })
 
@@ -124,8 +120,6 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata, feesEnab
             providerMetadataId,
 
             expectedDescriptionHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
-
-            feesEnabled,
           })
         })
 
@@ -139,8 +133,6 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata, feesEnab
             providerMetadataId,
 
             expectedNameHash: hashedMetadata.name,
-
-            feesEnabled,
           })
         })
 
@@ -152,8 +144,6 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata, feesEnab
 
             providerId,
             providerMetadataId,
-
-            feesEnabled,
           })
         })
 
@@ -162,58 +152,54 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata, feesEnab
             newNameHash,
             newDescriptionHash,
             newFileHashes,
-
-            feesEnabled,
           })
         })
       })
     })
 
-    if (!feesEnabled) {
-      describe('metadata', function () {
-        it('should have the correct name', async function () {
-          const name = await this.token.name()
-          name.should.be.equal('Codex Title')
+    describe('metadata', function () {
+      it('should have the correct name', async function () {
+        const name = await this.token.name()
+        name.should.be.equal('Codex Title')
+      })
+
+      it('should have the correct symbol', async function () {
+        const symbol = await this.token.symbol()
+        symbol.should.be.equal('CT')
+      })
+
+      describe('tokenURI', function () {
+        it('should be empty by default', async function () {
+          const tokenURI = await this.token.tokenURI(firstTokenId)
+          tokenURI.should.be.equal('')
         })
 
-        it('should have the correct symbol', async function () {
-          const symbol = await this.token.symbol()
-          symbol.should.be.equal('CT')
-        })
+        describe('tokenURIPrefix', function () {
+          const constantTokenURIPrefix = 'https://codexprotocol.com/token/'
 
-        describe('tokenURI', function () {
           it('should be empty by default', async function () {
-            const tokenURI = await this.token.tokenURI(firstTokenId)
-            tokenURI.should.be.equal('')
+            const tokenURIPrefix = await this.token.tokenURIPrefix()
+            tokenURIPrefix.should.be.equal('')
           })
 
-          describe('tokenURIPrefix', function () {
-            const constantTokenURIPrefix = 'https://codexprotocol.com/token/'
+          describe('when set by an address that is not the owner', function () {
+            it('should fail', async function () {
+              await assertRevert(this.token.setTokenURIPrefix(constantTokenURIPrefix, { from: unauthorized }))
+            })
+          })
 
-            it('should be empty by default', async function () {
-              const tokenURIPrefix = await this.token.tokenURIPrefix()
-              tokenURIPrefix.should.be.equal('')
+          describe('when called by the owner', function () {
+            beforeEach(async function () {
+              await this.token.setTokenURIPrefix(constantTokenURIPrefix)
             })
 
-            describe('when set by an address that is not the owner', function () {
-              it('should fail', async function () {
-                await assertRevert(this.token.setTokenURIPrefix(constantTokenURIPrefix, { from: unauthorized }))
-              })
-            })
-
-            describe('when called by the owner', function () {
-              beforeEach(async function () {
-                await this.token.setTokenURIPrefix(constantTokenURIPrefix)
-              })
-
-              it('should update the URI for all tokens', async function () {
-                const tokenURI = await this.token.tokenURI(firstTokenId)
-                tokenURI.should.be.equal(`${constantTokenURIPrefix}${firstTokenId}`)
-              })
+            it('should update the URI for all tokens', async function () {
+              const tokenURI = await this.token.tokenURI(firstTokenId)
+              tokenURI.should.be.equal(`${constantTokenURIPrefix}${firstTokenId}`)
             })
           })
         })
       })
-    }
+    })
   })
 }

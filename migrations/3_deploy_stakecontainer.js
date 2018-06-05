@@ -1,5 +1,5 @@
 const CodexCoin = artifacts.require('./CodexCoin.sol')
-const ERC900BasicStakeContainer = artifacts.require('./ERC900BasicStakeContainer.sol')
+const CodexStakeContainer = artifacts.require('./CodexStakeContainer.sol')
 
 module.exports = (deployer, network) => {
   deployer.then(async () => {
@@ -21,7 +21,9 @@ module.exports = (deployer, network) => {
         throw new Error('No erc20TokenAddress & initialFees defined for this network')
     }
 
-    await deployer.deploy(ERC900BasicStakeContainer, codexCoinAddress)
+    // 90 days (in seconds)
+    const lockInDuration = 7776000
+    await deployer.deploy(CodexStakeContainer, codexCoinAddress, lockInDuration)
   })
 
 }

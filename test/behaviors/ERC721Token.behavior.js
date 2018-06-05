@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import assertRevert from '../../helpers/assertRevert'
+import assertRevert from '../helpers/assertRevert'
 
 const { BigNumber } = web3
 

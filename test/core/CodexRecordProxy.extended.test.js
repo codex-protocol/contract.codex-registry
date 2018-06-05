@@ -1,4 +1,4 @@
-import shouldBehaveLikeERC721BasicToken from './behaviors/ERC721BasicToken.behavior'
+import shouldBehaveLikeERC721BasicToken from '../behaviors/ERC721BasicToken.behavior'
 
 const { BigNumber } = web3
 const CodexRecord = artifacts.require('CodexRecord.sol')

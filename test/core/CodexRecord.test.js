@@ -1,6 +1,6 @@
-import shouldBehaveLikeERC165 from './behaviors/ERC165.behavior'
-import shouldBehaveLikeCodexRecord from './behaviors/CodexRecord.behavior'
-import shouldBehaveLikeCodexRecordWithFees from './behaviors/CodexRecordFees.behavior'
+import shouldBehaveLikeERC165 from '../behaviors/ERC165.behavior'
+import shouldBehaveLikeCodexRecord from '../behaviors/CodexRecord.behavior'
+import shouldBehaveLikeCodexRecordWithFees from '../behaviors/CodexRecordFees.behavior'
 
 const { BigNumber } = web3
 const CodexRecord = artifacts.require('CodexRecord.sol')

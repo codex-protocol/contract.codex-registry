@@ -10,8 +10,6 @@ export default async function modifyMetadataHashes({
   expectedNameHash = newNameHash,
   expectedFileHashes = newFileHashes,
   expectedDescriptionHash = newDescriptionHash,
-
-  feesEnabled = false,
 }) {
 
   if (
@@ -23,10 +21,8 @@ export default async function modifyMetadataHashes({
     return
   }
 
-  // If fees are enabled, a Transfer event is fired in addition to the Modified event
-  const expectedLogsLength = feesEnabled ? 2 : 1
-  const expectedEventIndex = feesEnabled ? 1 : 0
-
+  const expectedLogsLength = 1
+  const expectedEventIndex = 0
   const { logs } = await this.token.modifyMetadataHashes(
     this.tokenId,
     newNameHash,

@@ -1,7 +1,7 @@
 const CodexCoin = artifacts.require('./CodexCoin.sol')
 const CodexRecord = artifacts.require('./CodexRecord.sol')
 const CodexRecordProxy = artifacts.require('./CodexRecordProxy.sol')
-const ERC900BasicStakeContainer = artifacts.require('./ERC900BasicStakeContainer.sol')
+const CodexStakeContainer = artifacts.require('./CodexStakeContainer.sol')
 
 module.exports = async (deployer, network, accounts) => {
   const proxiedCodexRecord = CodexRecord.at(CodexRecordProxy.address)
@@ -40,7 +40,7 @@ module.exports = async (deployer, network, accounts) => {
       )
 
       await proxiedCodexRecord.setStakeContainer(
-        ERC900BasicStakeContainer.address
+        CodexStakeContainer.address
       )
     })
     .then(async () => {

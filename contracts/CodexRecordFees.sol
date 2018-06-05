@@ -32,9 +32,14 @@ contract CodexRecordFees is Pausable {
   // Fee to modify tokens. 10^18 = 1 token
   uint256 public modificationFee = 0;
 
+  // Parameters in the polynomial used to calculate discount
+  // Current range of discount is 0-100% (i.e., stake enough tokens for a 100% discount!)
+  uint256 public lowerBound = 0;
+  uint256 public upperBound = 100;
+
   modifier canPayFees(uint256 baseFee) {
     if (feeRecipient != address(0)) {
-      // TODO: Update the discount to be based on weight as opposed to just
+      // @TODO: Update the discount to be based on weight as opposed to just
       //  a binary on/off value
       uint256 calculatedFee = baseFee;
       if (codexStakeContainer != address(0) &&
@@ -54,11 +59,11 @@ contract CodexRecordFees is Pausable {
   /**
    * @dev Sets the address of the ERC20 token used for fees in the contract.
    *  Fees are in the smallest denomination, e.g., 10^18 is 1 token.
-   * @param _codexCoin The address of the ERC20 Codex Protocol Token
-   * @param _feeRecipient The address where the fees are sent
-   * @param _creationFee The new creation fee.
-   * @param _transferFee The new transfer fee.
-   * @param _modificationFee The new modification fee.
+   * @param _codexCoin ERC20 The address of the ERC20 Codex Protocol Token
+   * @param _feeRecipient address The address where the fees are sent
+   * @param _creationFee uint256 The new creation fee.
+   * @param _transferFee uint256 The new transfer fee.
+   * @param _modificationFee uint256 The new modification fee.
    */
   function setFees(
     ERC20 _codexCoin,

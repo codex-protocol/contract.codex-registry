@@ -21,7 +21,7 @@ contract CodexRecordCore is CodexRecordMetadata, CodexRecordFees {
   /**
    * @dev Sets the global tokenURIPrefix for use when returning token metadata.
    *  Only callable by the owner.
-   * @param _tokenURIPrefix The new tokenURIPrefix
+   * @param _tokenURIPrefix string The new tokenURIPrefix
    */
   function setTokenURIPrefix(string _tokenURIPrefix) external onlyOwner {
     tokenURIPrefix = _tokenURIPrefix;
@@ -29,9 +29,10 @@ contract CodexRecordCore is CodexRecordMetadata, CodexRecordFees {
 
   /**
    * @dev Creates a new token
-   * @param _providerId (optional) An ID that identifies which provider is
+   * @dev @TODO: Fill in the rest of the params
+   * @param _providerId string An ID that identifies which provider is
    *  minting this token
-   * @param _providerMetadataId (optional) An arbitrary provider-defined ID that
+   * @param _providerMetadataId string An arbitrary provider-defined ID that
    *  identifies the metadata record stored by the provider
    */
   function mint(
@@ -39,8 +40,8 @@ contract CodexRecordCore is CodexRecordMetadata, CodexRecordFees {
     bytes32 _nameHash,
     bytes32 _descriptionHash,
     bytes32[] _fileHashes,
-    string _providerId, // TODO: convert to bytes32
-    string _providerMetadataId) // TODO: convert to bytes32
+    string _providerId, // @TODO: convert to bytes32
+    string _providerMetadataId) // @TODO: convert to bytes32
     public
   {
     // For now, all new tokens will be the last entry in the array
@@ -51,7 +52,7 @@ contract CodexRecordCore is CodexRecordMetadata, CodexRecordFees {
 
     // Add metadata to the newly created token
     //
-    // TODO: evaluate gas costs here, it may be more efficient to push each
+    // @TODO: evaluate gas costs here, it may be more efficient to push each
     //  individual file onto the existing fileHashes array for this index
     //  instead of replacing the array altogether
     tokenData[newTokenId] = CodexRecordData({

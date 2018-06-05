@@ -1,5 +1,6 @@
 const CodexRecord = artifacts.require('./CodexRecord.sol')
 const CodexRecordProxy = artifacts.require('./CodexRecordProxy.sol')
+const CodexStakeContainer = artifacts.require('./CodexStakeContainer.sol')
 
 module.exports = async (deployer, network, accounts) => {
 
@@ -25,6 +26,10 @@ module.exports = async (deployer, network, accounts) => {
         default:
           throw new Error('No ownership transfer defined for this network')
       }
+
+      // Transfer ownership of CodexStakeContainer
+      const stakeContainer = await CodexStakeContainer.deployed()
+      await stakeContainer.initializeOwnable(newOwner)
 
       // Transfer ownership of CodexRecord from the perspective of CodexRecordProxy.
       // Initialization of this storage slot has already taken place earlier in migration

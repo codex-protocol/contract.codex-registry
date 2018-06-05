@@ -2,12 +2,12 @@ pragma solidity ^0.4.24;
 
 
 /**
- * Utility library of inline functions on addresses
+ * @title Utility library of inline functions on addresses
  */
 library AddressUtils {
 
   /**
-   * Returns whether there is code in the target address
+   * @notice Returns whether there is code in the target address
    * @dev This function will return false if invoked during the constructor of a contract,
    *  as the code is not actually created until after the constructor finishes.
    * @param addr address address to check
