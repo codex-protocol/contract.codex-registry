@@ -21,7 +21,7 @@ module.exports = (deployer, network) => {
         throw new Error('No erc20TokenAddress & initialFees defined for this network')
     }
 
-    // 3 months (in seconds), based on a 30 day month
+    // 90 days (in seconds)
     const lockInDuration = 7776000
     await deployer.deploy(CodexStakeContainer, codexCoinAddress, lockInDuration)
   })

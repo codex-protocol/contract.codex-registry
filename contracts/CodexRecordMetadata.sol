@@ -40,7 +40,6 @@ contract CodexRecordMetadata is ERC721Token {
     require(
       exists(_tokenId),
       "Token doesn't exist");
-
     _;
   }
 
