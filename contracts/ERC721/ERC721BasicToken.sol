@@ -151,7 +151,8 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
     address _from,
     address _to,
     uint256 _tokenId)
-    public canTransfer(_tokenId)
+    public
+    canTransfer(_tokenId)
   {
     internalTransferFrom(
       _from,
@@ -174,7 +175,8 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
     address _from,
     address _to,
     uint256 _tokenId)
-    public canTransfer(_tokenId)
+    public
+    canTransfer(_tokenId)
   {
     internalSafeTransferFrom(
       _from,
@@ -200,7 +202,8 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
     address _to,
     uint256 _tokenId,
     bytes _data)
-    public canTransfer(_tokenId)
+    public
+    canTransfer(_tokenId)
   {
     internalSafeTransferFrom(
       _from,

@@ -33,6 +33,18 @@ contract CodexRecordMetadata is ERC721Token {
   string public tokenURIPrefix;
 
   /**
+   * @dev Modifier that checks to see if the token exists
+   * @param _tokenId uint256 The token ID
+   */
+  modifier tokenExists(uint256 _tokenId) {
+    require(
+      exists(_tokenId),
+      "Token doesn't exist");
+
+    _;
+  }
+
+  /**
    * @dev Updates token metadata hashes to whatever is passed in
    * @param _providerId (optional) An ID that identifies which provider is
    *  minting this token
@@ -45,13 +57,10 @@ contract CodexRecordMetadata is ERC721Token {
     bytes32 _newDescriptionHash,
     bytes32[] _newFileHashes,
     string _providerId, // TODO: convert to bytes32?
-    string _providerMetadataId // TODO: convert to bytes32?
-  )
+    string _providerMetadataId) // TODO: convert to bytes32?
+    tokenExists(_tokenId)
     public onlyOwnerOf(_tokenId)
   {
-
-    require(exists(_tokenId), "Codex Title with specified tokenId does not exist");
-
     // nameHash is only overridden if it's not a blank string, since name is a
     //  required value
     //
@@ -94,12 +103,12 @@ contract CodexRecordMetadata is ERC721Token {
    * @param _tokenId token ID
    * @return CodexRecordData token data for the given token ID
    */
-  function getTokenById(uint256 _tokenId) public view
+  function getTokenById(uint256 _tokenId)
+    public
+    view
+    tokenExists(_tokenId)
     returns (bytes32 nameHash, bytes32 descriptionHash, bytes32[] fileHashes)
   {
-
-    require(exists(_tokenId), "Codex Title with specified tokenId does not exist");
-
     return (
       tokenData[_tokenId].nameHash,
       tokenData[_tokenId].descriptionHash,
@@ -123,10 +132,12 @@ contract CodexRecordMetadata is ERC721Token {
    *
    * @param _tokenId uint256 ID of the token to query
    */
-  function tokenURI(uint256 _tokenId) public view returns (string) {
-
-    require(exists(_tokenId), "Codex Title with specified tokenId does not exist");
-
+  function tokenURI(uint256 _tokenId)
+    public
+    view
+    tokenExists(_tokenId)
+    returns (string)
+  {
     bytes memory prefix = bytes(tokenURIPrefix);
     if (prefix.length == 0) {
       return "";

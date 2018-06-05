@@ -256,7 +256,9 @@ contract ERC900BasicStakeContainer is ERC900 {
    * @return (uint256[], uint256[], address[]) timestamps array, amounts array, stakedFor array
    */
   function getPersonalStakes(address _address) view private returns(uint256[], uint256[], address[]) {
-    require(stakeHolders[_address].exists, "No stakes at that address");
+    require(
+      stakeHolders[_address].exists,
+      "No stakes at that address");
 
     StakeContainer storage stakeContainer = stakeHolders[_address];
 
