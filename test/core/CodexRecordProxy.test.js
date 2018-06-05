@@ -1,6 +1,6 @@
 import assertRevert from '../helpers/assertRevert'
-import shouldBehaveLikeCodexRecord from './behaviors/CodexRecord.behavior'
-import shouldBehaveLikeCodexRecordWithFees from './behaviors/CodexRecordFees.behavior'
+import shouldBehaveLikeCodexRecord from '../behaviors/CodexRecord.behavior'
+import shouldBehaveLikeCodexRecordWithFees from '../behaviors/CodexRecordFees.behavior'
 
 const { BigNumber } = web3
 const ERC721Token = artifacts.require('ERC721TokenMock.sol')

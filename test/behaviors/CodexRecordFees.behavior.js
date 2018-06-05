@@ -1,5 +1,5 @@
-import assertRevert from '../../helpers/assertRevert'
-import getCoreRegistryFunctions from '../../helpers/getCoreRegistryFunctions'
+import assertRevert from '../helpers/assertRevert'
+import getCoreRegistryFunctions from '../helpers/getCoreRegistryFunctions'
 
 const { BigNumber } = web3
 

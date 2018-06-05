@@ -1,7 +1,7 @@
 import _ from 'lodash'
-import assertRevert from '../../helpers/assertRevert'
-import decodeLogs from '../../helpers/decodeLogs'
-import sendTransaction from '../../helpers/sendTransaction'
+import assertRevert from '../helpers/assertRevert'
+import decodeLogs from '../helpers/decodeLogs'
+import sendTransaction from '../helpers/sendTransaction'
 
 const ERC721Receiver = artifacts.require('ERC721ReceiverMock.sol')
 const { BigNumber } = web3

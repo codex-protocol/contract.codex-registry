@@ -16,16 +16,13 @@ contract ERC900BasicStakeContainer is ERC900 {
 
   ERC20 stakingToken;
 
-  // 3 months (in seconds), based on a 30 day month
-  uint256 constant public DEFAULT_DURATION = 7776000;
+  uint256 public defaultDuration;
 
   mapping (address => StakeContainer) public stakeHolders;
 
   struct Stake {
-    uint256 lockedBlockTimestamp;
-    uint256 unlockedBlockTimestamp;
-    uint256 originalAmount;
-    uint256 currentAmount;
+    uint256 unlockedTimestamp;
+    uint256 amount;
     address stakedFor;
     bool exists;
   }
@@ -61,49 +58,25 @@ contract ERC900BasicStakeContainer is ERC900 {
   }
 
   // @TODO: These accessors functions are needed until https://github.com/ethereum/web3.js/issues/1241 is solved
-  function getPersonalStakeUnlockedBlockTimestamps(address _address) external view returns (uint256[]) {
-    require(stakeHolders[_address].exists, "No stakes at that address");
+  function getPersonalStakeUnlockedTimestamps(address _address) external view returns (uint256[]) {
+    uint256[] memory timestamps;
+    (timestamps,,) = getPersonalStakes(_address);
 
-    StakeContainer storage stakeContainer = stakeHolders[_address];
-
-    uint256 arraySize = stakeContainer.personalStakes.length - stakeContainer.personalStakeIndex;
-    uint256[] memory unlockedBlockTimestamps = new uint256[](arraySize);
-
-    for (uint256 i = stakeContainer.personalStakeIndex; i < stakeContainer.personalStakes.length; i++) {
-      unlockedBlockTimestamps[i] = stakeContainer.personalStakes[i].unlockedBlockTimestamp;
-    }
-
-    return unlockedBlockTimestamps;
+    return timestamps;
   }
 
   // @TODO: These accessors functions are needed until https://github.com/ethereum/web3.js/issues/1241 is solved
   function getPersonalStakeAmounts(address _address) external view returns (uint256[]) {
-    require(stakeHolders[_address].exists, "No stakes at that address");
-
-    StakeContainer storage stakeContainer = stakeHolders[_address];
-
-    uint256 arraySize = stakeContainer.personalStakes.length - stakeContainer.personalStakeIndex;
-    uint256[] memory amounts = new uint256[](arraySize);
-
-    for (uint256 i = stakeContainer.personalStakeIndex; i < stakeContainer.personalStakes.length; i++) {
-      amounts[i] = stakeContainer.personalStakes[i].currentAmount;
-    }
+    uint256[] memory amounts;
+    (,amounts,) = getPersonalStakes(_address);
 
     return amounts;
   }
 
   // @TODO: These accessors functions are needed until https://github.com/ethereum/web3.js/issues/1241 is solved
   function getPersonalStakeForAddresses(address _address) external view returns (address[]) {
-    require(stakeHolders[_address].exists, "No stakes at that address");
-
-    StakeContainer storage stakeContainer = stakeHolders[_address];
-
-    uint256 arraySize = stakeContainer.personalStakes.length - stakeContainer.personalStakeIndex;
-    address[] memory stakedFor = new address[](arraySize);
-
-    for (uint256 i = stakeContainer.personalStakeIndex; i < stakeContainer.personalStakes.length; i++) {
-      stakedFor[i] = stakeContainer.personalStakes[i].stakedFor;
-    }
+    address[] memory stakedFor;
+    (,,stakedFor) = getPersonalStakes(_address);
 
     return stakedFor;
   }
@@ -112,7 +85,7 @@ contract ERC900BasicStakeContainer is ERC900 {
     createStake(
       msg.sender,
       _amount,
-      DEFAULT_DURATION,
+      defaultDuration,
       _data);
   }
 
@@ -120,7 +93,7 @@ contract ERC900BasicStakeContainer is ERC900 {
     createStake(
       _user,
       _amount,
-      DEFAULT_DURATION,
+      defaultDuration,
       _data);
   }
 
@@ -131,11 +104,11 @@ contract ERC900BasicStakeContainer is ERC900 {
     // @TODO: This can be improved by looking at all staked tokens as opposed to the current stake,
     //  but that makes things more complicated to keep track of. Suggest we leave it like this for now.
     require(
-      personalStake.unlockedBlockTimestamp <= block.timestamp,
+      personalStake.unlockedTimestamp <= block.timestamp,
       "The current stake hasn't unlocked yet");
 
     require(
-      personalStake.currentAmount == _amount,
+      personalStake.amount == _amount,
       "The current stake doesn't match the unstake amount");
 
     // Transfer the staked tokens from this contract back to the sender
@@ -145,8 +118,8 @@ contract ERC900BasicStakeContainer is ERC900 {
       stakingToken.transfer(msg.sender, _amount),
       "Unable to withdraw stake");
 
-    stakeHolders[personalStake.stakedFor].totalStakedFor = stakeHolders[personalStake.stakedFor].totalStakedFor.sub(personalStake.currentAmount);
-    personalStake.currentAmount = 0;
+    stakeHolders[personalStake.stakedFor].totalStakedFor = stakeHolders[personalStake.stakedFor].totalStakedFor.sub(personalStake.amount);
+    personalStake.amount = 0;
     stakeHolders[msg.sender].personalStakeIndex++;
 
     emit Unstaked(
@@ -187,9 +160,7 @@ contract ERC900BasicStakeContainer is ERC900 {
     stakeHolders[_address].totalStakedFor = stakeHolders[_address].totalStakedFor.add(_amount);
     stakeHolders[msg.sender].personalStakes.push(
       Stake(
-        block.timestamp,
         block.timestamp.add(_duration),
-        _amount,
         _amount,
         _address,
         true)
@@ -200,5 +171,29 @@ contract ERC900BasicStakeContainer is ERC900 {
       _amount,
       totalStakedFor(_address),
       _data);
+  }
+
+  function getPersonalStakes(address _address) view private returns(uint256[], uint256[], address[]) {
+    require(stakeHolders[_address].exists, "No stakes at that address");
+
+    StakeContainer storage stakeContainer = stakeHolders[_address];
+
+    uint256 arraySize = stakeContainer.personalStakes.length - stakeContainer.personalStakeIndex;
+    uint256[] memory unlockedTimestamps = new uint256[](arraySize);
+    uint256[] memory amounts = new uint256[](arraySize);
+    address[] memory stakedFor = new address[](arraySize);
+
+    for (uint256 i = stakeContainer.personalStakeIndex; i < stakeContainer.personalStakes.length; i++) {
+      uint256 index = i - stakeContainer.personalStakeIndex;
+      unlockedTimestamps[index] = stakeContainer.personalStakes[i].unlockedTimestamp;
+      amounts[index] = stakeContainer.personalStakes[i].amount;
+      stakedFor[index] = stakeContainer.personalStakes[i].stakedFor;
+    }
+
+    return (
+      unlockedTimestamps,
+      amounts,
+      stakedFor
+    );
   }
 }

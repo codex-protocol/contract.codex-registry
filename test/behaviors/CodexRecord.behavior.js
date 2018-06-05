@@ -1,5 +1,5 @@
-import assertRevert from '../../helpers/assertRevert'
-import modifyMetadataHashesUnbound from '../../helpers/modifyMetadataHashes'
+import assertRevert from '../helpers/assertRevert'
+import modifyMetadataHashesUnbound from '../helpers/modifyMetadataHashes'
 
 const { BigNumber } = web3
 

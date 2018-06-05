@@ -6,7 +6,6 @@ contracts/ERC20/ERC20Basic.sol
 contracts/ERC721/ERC721.sol
 contracts/ERC721/ERC721Basic.sol
 contracts/ERC721/ERC721BasicToken.sol
-contracts/ERC721/ERC721Holder.sol
 contracts/ERC721/ERC721Receiver.sol
 contracts/ERC721/ERC721Token.sol
 
@@ -28,9 +27,9 @@ test/library/Pausable.test.js
 test/library/SafeMath.test.js
 test/library/ProxyOwnable.test.js
 
-test/token/behaviors/ERC721BasicToken.behavior.js
-test/token/behaviors/ERC721Mint.behavior.js
-test/token/behaviors/ERC721Token.behavior.js
+test/behaviors/ERC721BasicToken.behavior.js
+test/behaviors/ERC721Mint.behavior.js
+test/behaviors/ERC721Token.behavior.js
 
 test/token/ERC721BasicToken.test.js
 test/token/ERC721Token.test.js
