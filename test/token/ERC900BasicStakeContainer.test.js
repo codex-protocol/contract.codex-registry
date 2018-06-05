@@ -1,3 +1,5 @@
+import increaseTime from '../helpers/increaseTime'
+
 const { BigNumber } = web3
 
 const CodexCoin = artifacts.require('CodexCoin.sol')
@@ -109,7 +111,10 @@ contract('ERC900BasicStakeContainer', function (accounts) {
 
     describe('and then unstakes tokens', function () {
       beforeEach(async function () {
-        // @TODO: Update this test case to manipulate timestamp so that it can correctly test unstake
+        // Changing the timestamp of the next block so the stake is unlocked
+        const defaultDuration = await this.stakeContainer.DEFAULT_DURATION()
+        await increaseTime(defaultDuration.toNumber())
+
         await this.stakeContainer.unstake(web3.toWei('1', 'ether'), 0x0)
       })
 

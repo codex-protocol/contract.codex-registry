@@ -1,3 +1,4 @@
+/* solium-disable security/no-block-members */
 pragma solidity ^0.4.24;
 
 import "./ERC900.sol";
@@ -15,14 +16,14 @@ contract ERC900BasicStakeContainer is ERC900 {
 
   ERC20 stakingToken;
 
-  // 3 months (in blocks), based on a 15s block and a 30 day month
-  uint256 constant public DEFAULT_DURATION = 172800;
+  // 3 months (in seconds), based on a 30 day month
+  uint256 constant public DEFAULT_DURATION = 7776000;
 
   mapping (address => StakeContainer) public stakeHolders;
 
   struct Stake {
-    uint256 lockedBlockNumber;
-    uint256 unlockedBlockNumber;
+    uint256 lockedBlockTimestamp;
+    uint256 unlockedBlockTimestamp;
     uint256 originalAmount;
     uint256 currentAmount;
     address stakedFor;
@@ -60,19 +61,19 @@ contract ERC900BasicStakeContainer is ERC900 {
   }
 
   // @TODO: These accessors functions are needed until https://github.com/ethereum/web3.js/issues/1241 is solved
-  function getPersonalStakeUnlockedBlockNumbers(address _address) external view returns (uint256[]) {
+  function getPersonalStakeUnlockedBlockTimestamps(address _address) external view returns (uint256[]) {
     require(stakeHolders[_address].exists, "No stakes at that address");
 
     StakeContainer storage stakeContainer = stakeHolders[_address];
 
     uint256 arraySize = stakeContainer.personalStakes.length - stakeContainer.personalStakeIndex;
-    uint256[] memory unlockedBlockNumbers = new uint256[](arraySize);
+    uint256[] memory unlockedBlockTimestamps = new uint256[](arraySize);
 
     for (uint256 i = stakeContainer.personalStakeIndex; i < stakeContainer.personalStakes.length; i++) {
-      unlockedBlockNumbers[i] = stakeContainer.personalStakes[i].unlockedBlockNumber;
+      unlockedBlockTimestamps[i] = stakeContainer.personalStakes[i].unlockedBlockTimestamp;
     }
 
-    return unlockedBlockNumbers;
+    return unlockedBlockTimestamps;
   }
 
   // @TODO: These accessors functions are needed until https://github.com/ethereum/web3.js/issues/1241 is solved
@@ -130,7 +131,7 @@ contract ERC900BasicStakeContainer is ERC900 {
     // @TODO: This can be improved by looking at all staked tokens as opposed to the current stake,
     //  but that makes things more complicated to keep track of. Suggest we leave it like this for now.
     require(
-      personalStake.unlockedBlockNumber <= block.number,
+      personalStake.unlockedBlockTimestamp <= block.timestamp,
       "The current stake hasn't unlocked yet");
 
     require(
@@ -186,8 +187,8 @@ contract ERC900BasicStakeContainer is ERC900 {
     stakeHolders[_address].totalStakedFor = stakeHolders[_address].totalStakedFor.add(_amount);
     stakeHolders[msg.sender].personalStakes.push(
       Stake(
-        block.number,
-        block.number.add(_duration),
+        block.timestamp,
+        block.timestamp.add(_duration),
         _amount,
         _amount,
         _address,
