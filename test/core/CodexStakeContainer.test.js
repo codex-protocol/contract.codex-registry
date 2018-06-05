@@ -188,6 +188,8 @@ contract('CodexStakeContainer', function (accounts) {
         personalStakeAmounts.length.should.be.bignumber.equal(1)
         personalStakeAmounts[0].should.be.bignumber.equal(stakeAmount)
       })
+
+      it('should emit a Staked event')
     })
 
     describe('when multiple stakes are created', function () {
@@ -202,6 +204,38 @@ contract('CodexStakeContainer', function (accounts) {
       await assertRevert(
         anotherStakeContainer.stake(web3.toWei('1', 'ether'), 0x0)
       )
+    })
+  })
+
+  describe('stakeFor', function () {
+    describe('when a user stakes on behalf of another user', function () {
+      it('should create a personal stake for the staker')
+      it('should not change the number of tokens staked for the user')
+      it('should increase the number of tokens staked for the other user')
+      it('should emit a Staked event')
+    })
+  })
+
+  describe('unstake', function () {
+    describe('when the stake is locked', function () {
+      it('should revert')
+    })
+
+    describe('when the unstake amount is incorrect', function () {
+      it('should revert')
+    })
+
+    describe('when the transfer from the contract fails', function () {
+      // TODO: Probably have to pause the token contract to get this one to assert
+      it('should revert')
+    })
+
+    describe('when called correctly', function () {
+      it('should succeed')
+
+      it('should decrement the number of the personal stakes')
+
+      it('should return the tokens back to the user')
     })
   })
 })

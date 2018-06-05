@@ -96,6 +96,8 @@ export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) 
           currentBalance.should.be.bignumber.equal(originalBalance.minus(tokenFee))
         })
       })
+
+      // @TODO: Add some test cases to test the discount structure when tokens are staked
     })
 
     describe('and the fee is not paid', function () {
