@@ -1,6 +1,9 @@
 pragma solidity ^0.4.24;
 
-
+/**
+ * @title Migrations
+ * @dev Truffle migrations contract, used for deployment only
+ */
 contract Migrations {
   address public owner;
   uint256 public lastCompletedMigration;

@@ -2,8 +2,8 @@ pragma solidity ^0.4.24;
 
 
 /**
- * @title ERC900 interface
- * @dev see https://github.com/ethereum/EIPs/issues/900
+ * @title ERC900 Simple Staking Interface
+ * @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-900.md
  */
 contract ERC900 {
   event Staked(address indexed user, uint256 amount, uint256 total, bytes data);

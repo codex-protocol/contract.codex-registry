@@ -3,13 +3,11 @@ pragma solidity ^0.4.24;
 
 /**
  * @dev A standard for detecting smart contract interfaces.
- *   See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-165.md
+ * @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-165.md
  */
 contract ERC165 {
 
-  /*
-    bytes4(keccak256('supportsInterface(bytes4)'));
-  */
+  // bytes4(keccak256('supportsInterface(bytes4)'));
   bytes4 constant INTERFACE_ERC165 = 0x01ffc9a7;
 
   /**

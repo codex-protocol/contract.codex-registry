@@ -5,8 +5,6 @@ pragma solidity ^0.4.24;
  * @title ProxyOwnable
  * @dev Essentially the Ownable contract, renamed for the purposes of separating it from the
  *  DelayedOwnable contract (the owner of the token contract).
- * @dev The Ownable contract has an owner address, and provides basic authorization control
- * functions, this simplifies the implementation of "user permissions".
  */
 contract ProxyOwnable {
   address public proxyOwner;

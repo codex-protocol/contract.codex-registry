@@ -10,8 +10,8 @@ import "./CodexRecordCore.sol";
 contract CodexRecordAccess is CodexRecordCore {
 
   /**
-  * @dev Make mint() pausable
-  */
+   * @dev Make mint() pausable
+   */
   function mint(
     address _to,
     bytes32 _nameHash,
@@ -34,8 +34,8 @@ contract CodexRecordAccess is CodexRecordCore {
   }
 
   /**
-  * @dev Make trasferFrom() pausable
-  */
+   * @dev Make trasferFrom() pausable
+   */
   function transferFrom(
     address _from,
     address _to,
@@ -48,8 +48,8 @@ contract CodexRecordAccess is CodexRecordCore {
   }
 
   /**
-  * @dev Make safeTrasferFrom() pausable
-  */
+   * @dev Make safeTrasferFrom() pausable
+   */
   function safeTransferFrom(
     address _from,
     address _to,
@@ -62,8 +62,8 @@ contract CodexRecordAccess is CodexRecordCore {
   }
 
   /**
-  * @dev Make safeTrasferFrom() pausable
-  */
+   * @dev Make safeTrasferFrom() pausable
+   */
   function safeTransferFrom(
     address _from,
     address _to,
@@ -82,8 +82,8 @@ contract CodexRecordAccess is CodexRecordCore {
   }
 
   /**
-  * @dev Make modifyMetadataHashes() pausable
-  */
+   * @dev Make modifyMetadataHashes() pausable
+   */
   function modifyMetadataHashes(
     uint256 _tokenId,
     bytes32 _newNameHash,
@@ -104,5 +104,4 @@ contract CodexRecordAccess is CodexRecordCore {
       _providerMetadataId
     );
   }
-
 }
