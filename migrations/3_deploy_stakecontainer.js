@@ -4,12 +4,21 @@ const CodexStakeContainer = artifacts.require('./CodexStakeContainer.sol')
 module.exports = (deployer, network) => {
   deployer.then(async () => {
     let codexCoinAddress
+    let lockInDuration
+    let annualizedInterestRate
+
     switch (network) {
       case 'ganache':
       case 'develop':
       case 'test':
       case 'coverage':
         codexCoinAddress = CodexCoin.address
+
+        // 90 days (in seconds)
+        lockInDuration = 7776000
+
+        // 10% annually
+        annualizedInterestRate = web3.toWei(0.1, 'ether')
         break
 
       case 'rinkeby': {
@@ -21,9 +30,12 @@ module.exports = (deployer, network) => {
         throw new Error('No erc20TokenAddress & initialFees defined for this network')
     }
 
-    // 90 days (in seconds)
-    const lockInDuration = 7776000
-    await deployer.deploy(CodexStakeContainer, codexCoinAddress, lockInDuration)
+    await deployer.deploy(
+      CodexStakeContainer,
+      codexCoinAddress,
+      lockInDuration,
+      annualizedInterestRate,
+    )
   })
 
 }

@@ -18,7 +18,8 @@ contract CodexRecordAccess is CodexRecordCore {
     bytes32 _descriptionHash,
     bytes32[] _fileHashes,
     string _providerId, // TODO: convert to bytes32
-    string _providerMetadataId) // TODO: convert to bytes32
+    string _providerMetadataId // TODO: convert to bytes32
+  )
     public
     whenNotPaused
     canPayFees(creationFee)
@@ -39,7 +40,8 @@ contract CodexRecordAccess is CodexRecordCore {
   function transferFrom(
     address _from,
     address _to,
-    uint256 _tokenId)
+    uint256 _tokenId
+  )
     public
     whenNotPaused
     canPayFees(transferFee)
@@ -53,7 +55,8 @@ contract CodexRecordAccess is CodexRecordCore {
   function safeTransferFrom(
     address _from,
     address _to,
-    uint256 _tokenId)
+    uint256 _tokenId
+  )
     public
     whenNotPaused
     canPayFees(transferFee)
@@ -68,7 +71,8 @@ contract CodexRecordAccess is CodexRecordCore {
     address _from,
     address _to,
     uint256 _tokenId,
-    bytes _data)
+    bytes _data
+  )
     public
     whenNotPaused
     canPayFees(transferFee)
@@ -90,7 +94,8 @@ contract CodexRecordAccess is CodexRecordCore {
     bytes32 _newDescriptionHash,
     bytes32[] _newFileHashes,
     string _providerId, // TODO: convert to bytes32?
-    string _providerMetadataId) // TODO: convert to bytes32?
+    string _providerMetadataId // TODO: convert to bytes32?
+  )
     public
     whenNotPaused
     canPayFees(modificationFee)

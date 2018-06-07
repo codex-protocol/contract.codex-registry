@@ -21,23 +21,34 @@ contract ERC900BasicStakeContainer is ERC900 {
   // The duration of stake lock-in (in seconds)
   uint256 public lockInDuration;
 
-  // To save on gas, rather than create a separate mapping for amountStakedFor & personalStake,
+  // For token staked longer than a year, they will become more valuable by this coefficient
+  //  e.g., if interestRate is 10, after 1 year the perceived stake is 10% more valuable.
+  // Stakeholders will have to ping the contract via updatePerceivedStakeAmounts to have
+  //  the contract update the perceived amounts of their stakes.
+  uint256 public annualizedInterestRate;
+
+  // The number of seconds in a year (365.25 days)
+  // Used for determining when stakes are eligible for interest
+  uint256 constant public YEAR_IN_SECONDS = 31557600;
+
+  // To save on gas, rather than create a separate mapping for totalStakedFor & personalStakes,
   //  both data structures are stored in a single mapping for a given addresses.
   //
-  // totalStakedFor consists of all tokens staked for a given address.
-  // personalStake is the stake made by a given address.
-  //
-  // It's possible to have a non-existing personalStake, but have tokens in amountStakedFor
+  // It's possible to have a non-existing personalStakes, but have tokens in totalStakedFor
   //  if other users are staking on behalf of a given address.
   mapping (address => StakeContainer) public stakeHolders;
 
   // Struct for personal stakes (i.e., stakes made by this address)
+  // lastUpdatedTimestamp - when the perceivedAmount of the stake was last updated
   // unlockedTimestamp - when the stake unlocks (in seconds since Unix epoch)
-  // amount - the amount of tokens in the stake
+  // actualAmount - the amount of tokens in the stake
+  // perceivedAmount - the weighted amount of tokens in the stake
   // stakedFor - the address the stake was staked for
   struct Stake {
+    uint256 lastUpdatedTimestamp;
     uint256 unlockedTimestamp;
-    uint256 amount;
+    uint256 actualAmount;
+    uint256 perceivedAmount;
     address stakedFor;
   }
 
@@ -87,22 +98,35 @@ contract ERC900BasicStakeContainer is ERC900 {
    */
   function getPersonalStakeUnlockedTimestamps(address _address) external view returns (uint256[]) {
     uint256[] memory timestamps;
-    (timestamps,,) = getPersonalStakes(_address);
+    (timestamps,,,) = getPersonalStakes(_address);
 
     return timestamps;
   }
 
   /**
-   * @dev Returns the stake amounts for active personal stakes for an address
+   * @dev Returns the stake actualAmount for active personal stakes for an address
    * @dev These accessors functions are needed until https://github.com/ethereum/web3.js/issues/1241 is solved
    * @param _address address that created the stakes
-   * @return uint256[] array of amounts
+   * @return uint256[] array of actualAmounts
    */
-  function getPersonalStakeAmounts(address _address) external view returns (uint256[]) {
-    uint256[] memory amounts;
-    (,amounts,) = getPersonalStakes(_address);
+  function getPersonalStakeActualAmounts(address _address) external view returns (uint256[]) {
+    uint256[] memory actualAmounts;
+    (,actualAmounts,,) = getPersonalStakes(_address);
 
-    return amounts;
+    return actualAmounts;
+  }
+
+  /**
+   * @dev Returns the stake perceivedAmount for active personal stakes for an address
+   * @dev These accessors functions are needed until https://github.com/ethereum/web3.js/issues/1241 is solved
+   * @param _address address that created the stakes
+   * @return uint256[] array of perceivedAmounts
+   */
+  function getPersonalStakePerceivedAmounts(address _address) external view returns (uint256[]) {
+    uint256[] memory perceivedAmounts;
+    (,,perceivedAmounts,) = getPersonalStakes(_address);
+
+    return perceivedAmounts;
   }
 
   /**
@@ -113,9 +137,46 @@ contract ERC900BasicStakeContainer is ERC900 {
    */
   function getPersonalStakeForAddresses(address _address) external view returns (address[]) {
     address[] memory stakedFor;
-    (,,stakedFor) = getPersonalStakes(_address);
+    (,,,stakedFor) = getPersonalStakes(_address);
 
     return stakedFor;
+  }
+
+  /**
+   * @dev Updates the perceivedAmount for all personal stakes at the given address
+   * @param _address The address to update personal stakes
+   */
+  function updatePerceivedStakeAmounts(address _address) external {
+    StakeContainer storage stakeContainer = stakeHolders[_address];
+
+    for (uint256 i = stakeContainer.personalStakeIndex; i < stakeContainer.personalStakes.length; i++) {
+      Stake storage currentStake = stakeContainer.personalStakes[i];
+      uint256 lastUpdatedTimestamp = currentStake.lastUpdatedTimestamp;
+
+      // If interest has accrued over multiple years, the actual interest received will be higher than the
+      //  annualized interest rate, so we use a loop to accrue this over multiple years
+      // @TODO: There are some gas optimizations that can be made here (i.e., calculated the compoundedInterest rate)
+      while (block.timestamp.sub(lastUpdatedTimestamp) >= YEAR_IN_SECONDS) {
+        uint256 unit = 1 ether;
+
+        uint256 newAmount = currentStake.perceivedAmount.mul(annualizedInterestRate.add(unit)).div(unit);
+        uint256 difference = newAmount.sub(currentStake.perceivedAmount);
+
+        // Update the totalStakedFor with the interest received
+        stakeHolders[currentStake.stakedFor].totalStakedFor = stakeHolders[currentStake.stakedFor].totalStakedFor.add(difference);
+
+        // Update the perceivedAmount with the interest received
+        currentStake.perceivedAmount = newAmount;
+
+        // SafeMath not needed here
+        lastUpdatedTimestamp += YEAR_IN_SECONDS;
+      }
+
+      // Update the timestamp, so this stake is only eligible for interest a year from now
+      if (currentStake.lastUpdatedTimestamp != lastUpdatedTimestamp) {
+        currentStake.lastUpdatedTimestamp = block.timestamp;
+      }
+    }
   }
 
   /**
@@ -163,8 +224,8 @@ contract ERC900BasicStakeContainer is ERC900 {
       "The current stake hasn't unlocked yet");
 
     require(
-      personalStake.amount == _amount,
-      "The current stake doesn't match the unstake amount");
+      personalStake.actualAmount == _amount,
+      "The unstake amount does not match the current stake");
 
     // Transfer the staked tokens from this contract back to the sender
     // Notice that we are using transfer instead of transferFrom here, so
@@ -173,8 +234,13 @@ contract ERC900BasicStakeContainer is ERC900 {
       stakingToken.transfer(msg.sender, _amount),
       "Unable to withdraw stake");
 
-    stakeHolders[personalStake.stakedFor].totalStakedFor = stakeHolders[personalStake.stakedFor].totalStakedFor.sub(personalStake.amount);
-    personalStake.amount = 0;
+    // Notice that we are reducing totalStakedFor by the perceivedAmount of tokens in case any interest had accrued
+    //  in the stakes for that address
+    stakeHolders[personalStake.stakedFor].totalStakedFor = stakeHolders[personalStake.stakedFor]
+      .totalStakedFor.sub(personalStake.perceivedAmount);
+
+    personalStake.actualAmount = 0;
+    personalStake.perceivedAmount = 0;
     stakeHolders[msg.sender].personalStakeIndex++;
 
     emit Unstaked(
@@ -227,7 +293,8 @@ contract ERC900BasicStakeContainer is ERC900 {
   function createStake(
     address _address,
     uint256 _amount,
-    bytes _data)
+    bytes _data
+  )
     internal
     canStake(msg.sender, _amount)
   {
@@ -238,7 +305,9 @@ contract ERC900BasicStakeContainer is ERC900 {
     stakeHolders[_address].totalStakedFor = stakeHolders[_address].totalStakedFor.add(_amount);
     stakeHolders[msg.sender].personalStakes.push(
       Stake(
+        block.timestamp,
         block.timestamp.add(lockInDuration),
+        _amount,
         _amount,
         _address)
       );
@@ -253,26 +322,36 @@ contract ERC900BasicStakeContainer is ERC900 {
   /**
    * @dev Helper function to get specific properties of all of the personal stakes created by an address
    * @param _address address The address to query
-   * @return (uint256[], uint256[], address[]) timestamps array, amounts array, stakedFor array
+   * @return (uint256[], uint256[], uint256[], address[])
+   *  timestamps array, actualAmounts array, perceivedAmounts array, stakedFor array
    */
-  function getPersonalStakes(address _address) view private returns(uint256[], uint256[], address[]) {
+  function getPersonalStakes(
+    address _address
+  )
+    view
+    private
+    returns(uint256[], uint256[], uint256[], address[])
+  {
     StakeContainer storage stakeContainer = stakeHolders[_address];
 
     uint256 arraySize = stakeContainer.personalStakes.length - stakeContainer.personalStakeIndex;
     uint256[] memory unlockedTimestamps = new uint256[](arraySize);
-    uint256[] memory amounts = new uint256[](arraySize);
+    uint256[] memory actualAmounts = new uint256[](arraySize);
+    uint256[] memory perceivedAmounts = new uint256[](arraySize);
     address[] memory stakedFor = new address[](arraySize);
 
     for (uint256 i = stakeContainer.personalStakeIndex; i < stakeContainer.personalStakes.length; i++) {
       uint256 index = i - stakeContainer.personalStakeIndex;
       unlockedTimestamps[index] = stakeContainer.personalStakes[i].unlockedTimestamp;
-      amounts[index] = stakeContainer.personalStakes[i].amount;
+      actualAmounts[index] = stakeContainer.personalStakes[i].actualAmount;
+      perceivedAmounts[index] = stakeContainer.personalStakes[i].perceivedAmount;
       stakedFor[index] = stakeContainer.personalStakes[i].stakedFor;
     }
 
     return (
       unlockedTimestamps,
-      amounts,
+      actualAmounts,
+      perceivedAmounts,
       stakedFor
     );
   }

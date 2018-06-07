@@ -8,7 +8,7 @@ import "./CodexRecordFees.sol";
  * @title CodexRecordCore
  * @dev Core functionality of the token, namely minting.
  */
-contract CodexRecordCore is CodexRecordMetadata, CodexRecordFees {
+contract CodexRecordCore is CodexRecordFees {
 
   /**
    * @dev This event is emitted when a new token is minted and allows providers
@@ -29,7 +29,9 @@ contract CodexRecordCore is CodexRecordMetadata, CodexRecordFees {
 
   /**
    * @dev Creates a new token
-   * @dev @TODO: Fill in the rest of the params
+   * @param _to address The address the token will get transferred to after minting
+   * @param _nameHash bytes32 The sha3 hash of the name
+   * @param _descriptionHash bytes32 The sha3 hash of the description
    * @param _providerId string An ID that identifies which provider is
    *  minting this token
    * @param _providerMetadataId string An arbitrary provider-defined ID that
@@ -41,7 +43,8 @@ contract CodexRecordCore is CodexRecordMetadata, CodexRecordFees {
     bytes32 _descriptionHash,
     bytes32[] _fileHashes,
     string _providerId, // @TODO: convert to bytes32
-    string _providerMetadataId) // @TODO: convert to bytes32
+    string _providerMetadataId  // @TODO: convert to bytes32
+  )
     public
   {
     // For now, all new tokens will be the last entry in the array

@@ -45,9 +45,13 @@ contract CodexRecordMetadata is ERC721Token {
 
   /**
    * @dev Updates token metadata hashes to whatever is passed in
-   * @param _providerId (optional) An ID that identifies which provider is
+   * @param _tokenId uint256 The token ID
+   * @param _newNameHash bytes32 The new sha3 hash of the name
+   * @param _newDescriptionHash bytes32 The new sha3 hash of the description
+   * @param _newFileHashes bytes32[] The new sha3 hashes of the files associated with the token
+   * @param _providerId (optional) string An ID that identifies which provider is
    *  minting this token
-   * @param _providerMetadataId (optional) An arbitrary provider-defined ID that
+   * @param _providerMetadataId (optional) string An arbitrary provider-defined ID that
    *  identifies the metadata record stored by the provider
    */
   function modifyMetadataHashes(
@@ -56,7 +60,8 @@ contract CodexRecordMetadata is ERC721Token {
     bytes32 _newDescriptionHash,
     bytes32[] _newFileHashes,
     string _providerId, // TODO: convert to bytes32?
-    string _providerMetadataId) // TODO: convert to bytes32?
+    string _providerMetadataId  // TODO: convert to bytes32?
+  )
     tokenExists(_tokenId)
     public onlyOwnerOf(_tokenId)
   {
@@ -102,7 +107,9 @@ contract CodexRecordMetadata is ERC721Token {
    * @param _tokenId token ID
    * @return CodexRecordData token data for the given token ID
    */
-  function getTokenById(uint256 _tokenId)
+  function getTokenById(
+    uint256 _tokenId
+  )
     public
     view
     tokenExists(_tokenId)
@@ -131,7 +138,9 @@ contract CodexRecordMetadata is ERC721Token {
    *
    * @param _tokenId uint256 ID of the token to query
    */
-  function tokenURI(uint256 _tokenId)
+  function tokenURI(
+    uint256 _tokenId
+  )
     public
     view
     tokenExists(_tokenId)

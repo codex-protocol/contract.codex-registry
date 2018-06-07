@@ -10,6 +10,7 @@ contracts/ERC721/ERC721Receiver.sol
 contracts/ERC721/ERC721Token.sol
 
 contracts/mocks/ERC20/BasicToken.sol
+contracts/mocks/ERC20/PausableToken.sol
 contracts/mocks/ERC20/StandardToken.sol
 contracts/mocks/ERC721/ERC721BasicTokenMock.sol
 contracts/mocks/ERC721/ERC721ReceiverMock.sol
