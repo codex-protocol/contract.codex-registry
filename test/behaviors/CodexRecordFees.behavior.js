@@ -104,7 +104,7 @@ export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) 
       let stakeContainer
 
       beforeEach(async function () {
-        stakeContainer = await CodexStakeContainer.new(this.codexCoin.address, 7776000)
+        stakeContainer = await CodexStakeContainer.new(this.codexCoin.address, 7776000, web3.toWei(0.1, 'ether'))
 
         await this.token.setStakeContainer(stakeContainer.address)
         await this.token.setTokensNeededForFullDiscount(web3.toWei(10, 'ether'))

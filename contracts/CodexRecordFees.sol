@@ -83,7 +83,8 @@ contract CodexRecordFees is CodexRecordMetadata, Pausable {
     address _feeRecipient,
     uint256 _creationFee,
     uint256 _transferFee,
-    uint256 _modificationFee)
+    uint256 _modificationFee
+  )
     external
     onlyOwner
   {
@@ -104,7 +105,8 @@ contract CodexRecordFees is CodexRecordMetadata, Pausable {
    * @param _tokensNeededForFullDiscount uint256 The number of tokens needed
    */
   function setTokensNeededForFullDiscount(
-    uint256 _tokensNeededForFullDiscount)
+    uint256 _tokensNeededForFullDiscount
+  )
     external
     onlyOwner
   {

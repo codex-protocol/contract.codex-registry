@@ -41,7 +41,8 @@ contract CodexRecordCore is CodexRecordFees {
     bytes32 _descriptionHash,
     bytes32[] _fileHashes,
     string _providerId, // @TODO: convert to bytes32
-    string _providerMetadataId) // @TODO: convert to bytes32
+    string _providerMetadataId  // @TODO: convert to bytes32
+  )
     public
   {
     // For now, all new tokens will be the last entry in the array

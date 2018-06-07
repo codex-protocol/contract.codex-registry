@@ -14,11 +14,13 @@ contract CodexStakeContainer is ERC900BasicStakeContainer, Pausable {
    * @dev Constructor function
    * @param _stakingToken ERC20 The address of the token used for staking
    * @param _lockInDuration uint256 The duration (in seconds) that stakes are required to be locked for
+   * @param _annualizedInterestRate uint256 The interest rate (in wei) that stakes can receive on a yearly basis
    */
-  constructor(ERC20 _stakingToken, uint256 _lockInDuration) public
+  constructor(ERC20 _stakingToken, uint256 _lockInDuration, uint256 _annualizedInterestRate) public
     ERC900BasicStakeContainer(_stakingToken)
   {
     lockInDuration = _lockInDuration;
+    annualizedInterestRate = _annualizedInterestRate;
   }
 
   /**
@@ -27,5 +29,13 @@ contract CodexStakeContainer is ERC900BasicStakeContainer, Pausable {
    */
   function setLockInDuration(uint256 _lockInDuration) external onlyOwner {
     lockInDuration = _lockInDuration;
+  }
+
+  /**
+   * @dev Sets the interest rate for the perceivedAmount on stakes. Only callable by the owner.
+   * @param _annualizedInterestRate uint256 The annualized interest rate (in wei)
+   */
+  function setAnnualizedInterestRate(uint256 _annualizedInterestRate) external onlyOwner {
+    annualizedInterestRate = _annualizedInterestRate;
   }
 }

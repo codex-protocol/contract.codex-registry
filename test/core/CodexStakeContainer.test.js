@@ -15,10 +15,11 @@ contract('CodexStakeContainer', function (accounts) {
   const creator = accounts[0]
   const otherUser = accounts[1]
   const lockInDuration = 7776000
+  const annualizedInterestRate = web3.toWei(0.1, 'ether')
 
   beforeEach(async function () {
     this.codexCoin = await CodexCoin.new()
-    this.stakeContainer = await CodexStakeContainer.new(this.codexCoin.address, lockInDuration)
+    this.stakeContainer = await CodexStakeContainer.new(this.codexCoin.address, lockInDuration, annualizedInterestRate)
 
     await this.codexCoin.approve(this.stakeContainer.address, web3.toWei(100, 'ether'))
   })
@@ -48,6 +49,19 @@ contract('CodexStakeContainer', function (accounts) {
     it('should return false', async function () {
       const supportsHistory = await this.stakeContainer.supportsHistory()
       supportsHistory.should.be.equal(false)
+    })
+  })
+
+  describe('annualizedInterestRate', function () {
+    it('should exist', async function () {
+      const interestRate = await this.stakeContainer.annualizedInterestRate()
+      interestRate.should.be.bignumber.equal(annualizedInterestRate)
+    })
+
+    it('should fail when not called by the owner', async function () {
+      await assertRevert(
+        this.stakeContainer.setAnnualizedInterestRate(web3.toWei(0.5, 'ether'), { from: otherUser })
+      )
     })
   })
 
@@ -185,7 +199,7 @@ contract('CodexStakeContainer', function (accounts) {
         personalStakeForAddresses.length.should.be.bignumber.equal(1)
         personalStakeForAddresses[0].should.be.equal(creator)
 
-        const personalStakeAmounts = await this.stakeContainer.getPersonalStakeAmounts(creator)
+        const personalStakeAmounts = await this.stakeContainer.getPersonalStakeActualAmounts(creator)
         personalStakeAmounts.length.should.be.bignumber.equal(1)
         personalStakeAmounts[0].should.be.bignumber.equal(stakeAmount)
       })
@@ -197,6 +211,25 @@ contract('CodexStakeContainer', function (accounts) {
         logs.length.should.be.equal(1)
         logs[0].event.should.be.equal('Staked')
       })
+
+      it('should be eligible for interest after 1 year', async function () {
+        const yearInSeconds = await this.stakeContainer.YEAR_IN_SECONDS()
+        await increaseTime(yearInSeconds.toNumber() + 500) // adding some extra buffer
+
+        const originalPerceivedAmounts = await this.stakeContainer.getPersonalStakePerceivedAmounts(creator)
+        originalPerceivedAmounts.length.should.be.bignumber.equal(1)
+        originalPerceivedAmounts[0].should.be.bignumber.equal(stakeAmount)
+
+        await this.stakeContainer.updatePerceivedStakeAmounts(creator)
+
+        const intendedInterestRate = 1.1 // 10% interest rate
+        const interestRate = await this.stakeContainer.annualizedInterestRate()
+        interestRate.should.be.bignumber.equal(web3.toWei(0.1, 'ether'))
+
+        const newPerceivedAmounts = await this.stakeContainer.getPersonalStakePerceivedAmounts(creator)
+        newPerceivedAmounts.length.should.be.bignumber.equal(1)
+        newPerceivedAmounts[0].should.be.bignumber.equal(originalPerceivedAmounts[0].times(intendedInterestRate))
+      })
     })
 
     describe('when multiple stakes are created', function () {
@@ -206,7 +239,7 @@ contract('CodexStakeContainer', function (accounts) {
     })
 
     it('should revert when the contract is not approved', async function () {
-      const anotherStakeContainer = await CodexStakeContainer.new(this.codexCoin.address, lockInDuration)
+      const anotherStakeContainer = await CodexStakeContainer.new(this.codexCoin.address, lockInDuration, 10)
 
       await assertRevert(
         anotherStakeContainer.stake(web3.toWei(1, 'ether'), 0x0)
@@ -318,5 +351,17 @@ contract('CodexStakeContainer', function (accounts) {
         newBalance.should.be.bignumber.equal(originalBalance.add(web3.toWei(10, 'ether')))
       })
     })
+  })
+
+  describe('updatePerceivedStakeAmounts', function () {
+    it('should not change the perceivedAmount for stakes that are not a year old')
+    it('should not change the perceivedAmount for stakes that have just received interest')
+    it('should update the perceivedAmount for all personalStakes that are eligible for interest')
+
+    // @TODO: Should this be compounding? Trying to optimize for gas here
+    it('should receive interest for every additional year of age (not compounding)')
+    it('should update the tokensStakedFor of the intended recipient')
+    it('should not update the totalStaked tokens in the contract')
+    it('should not update the actualAmount of tokens staked')
   })
 })
