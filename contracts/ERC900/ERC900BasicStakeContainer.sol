@@ -151,8 +151,12 @@ contract ERC900BasicStakeContainer is ERC900 {
 
     for (uint256 i = stakeContainer.personalStakeIndex; i < stakeContainer.personalStakes.length; i++) {
       Stake storage currentStake = stakeContainer.personalStakes[i];
+      uint256 lastUpdatedTimestamp = currentStake.lastUpdatedTimestamp;
 
-      if (block.timestamp.sub(currentStake.lastUpdatedTimestamp) > YEAR_IN_SECONDS) {
+      // If interest has accrued over multiple years, the actual interest received will be higher than the
+      //  annualized interest rate, so we use a loop to accrue this over multiple years
+      // @TODO: There are some gas optimizations that can be made here (i.e., calculated the compoundedInterest rate)
+      while (block.timestamp.sub(lastUpdatedTimestamp) > YEAR_IN_SECONDS) {
         uint256 unit = 1 ether;
 
         uint256 newAmount = currentStake.perceivedAmount.mul(annualizedInterestRate.add(unit)).div(unit);
@@ -164,8 +168,12 @@ contract ERC900BasicStakeContainer is ERC900 {
         // Update the perceivedAmount with the interest received
         currentStake.perceivedAmount = newAmount;
 
-        // Update the timestamp, so this stake is only eligible for interest a year from now
-        // @TODO: The logic isn't great right now. If my stake exists for 3 years, but I only ping once, I only receive 10% interest.
+        // SafeMath not needed here
+        lastUpdatedTimestamp += YEAR_IN_SECONDS;
+      }
+
+      // Update the timestamp, so this stake is only eligible for interest a year from now
+      if (currentStake.lastUpdatedTimestamp != lastUpdatedTimestamp) {
         currentStake.lastUpdatedTimestamp = block.timestamp;
       }
     }

@@ -29,7 +29,9 @@ contract CodexRecordCore is CodexRecordFees {
 
   /**
    * @dev Creates a new token
-   * @dev @TODO: Fill in the rest of the params
+   * @param _to address The address the token will get transferred to after minting
+   * @param _nameHash bytes32 The sha3 hash of the name
+   * @param _descriptionHash bytes32 The sha3 hash of the description
    * @param _providerId string An ID that identifies which provider is
    *  minting this token
    * @param _providerMetadataId string An arbitrary provider-defined ID that

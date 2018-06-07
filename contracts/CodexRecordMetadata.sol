@@ -45,9 +45,13 @@ contract CodexRecordMetadata is ERC721Token {
 
   /**
    * @dev Updates token metadata hashes to whatever is passed in
-   * @param _providerId (optional) An ID that identifies which provider is
+   * @param _tokenId uint256 The token ID
+   * @param _newNameHash bytes32 The new sha3 hash of the name
+   * @param _newDescriptionHash bytes32 The new sha3 hash of the description
+   * @param _newFileHashes bytes32[] The new sha3 hashes of the files associated with the token
+   * @param _providerId (optional) string An ID that identifies which provider is
    *  minting this token
-   * @param _providerMetadataId (optional) An arbitrary provider-defined ID that
+   * @param _providerMetadataId (optional) string An arbitrary provider-defined ID that
    *  identifies the metadata record stored by the provider
    */
   function modifyMetadataHashes(
