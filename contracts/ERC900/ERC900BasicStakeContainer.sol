@@ -209,7 +209,9 @@ contract ERC900BasicStakeContainer is ERC900 {
   /**
    * @notice Unstakes a certain amount of tokens, this SHOULD return the given amount of tokens to the user, if unstaking is currently not possible the function MUST revert
    * @notice MUST trigger Unstaked event
-   * @dev @TODO: Fill in dev details here. Functionality is still in flux.
+   * @dev Unstaking tokens is an atomic operation—either all of the tokens in a stake, or none of the tokens.
+   * @dev Users can only unstake a single stake at a time, it is must be their oldest active stake. Upon releasing that stake, the tokens will be
+   *  transferred back to their account, and their personalStakeIndex will increment to the next active stake.
    * @param _amount uint256 the amount of tokens to unstake
    * @param _data bytes optional data to include in the Unstake event
    */
@@ -217,8 +219,6 @@ contract ERC900BasicStakeContainer is ERC900 {
     Stake storage personalStake = stakeHolders[msg.sender].personalStakes[stakeHolders[msg.sender].personalStakeIndex];
 
     // Check that the current stake has unlocked & matches the unstake amount
-    // @TODO: This can be improved by looking at all staked tokens as opposed to the current stake,
-    //  but that makes things more complicated to keep track of. Suggest we leave it like this for now.
     require(
       personalStake.unlockedTimestamp <= block.timestamp,
       "The current stake hasn't unlocked yet");
