@@ -43,7 +43,10 @@ contract CodexRecordFees is CodexRecordMetadata, Pausable {
       if (codexStakeContainer != address(0) && tokensNeededForFullDiscount > 0) {
         uint256 totalStakedFor = codexStakeContainer.totalStakedFor(msg.sender);
 
-        if (totalStakedFor > 0) {
+        // Discounts are capped at 100% :)
+        if (totalStakedFor > tokensNeededForFullDiscount) {
+          calculatedFee = 0;
+        } else if (totalStakedFor > 0) {
           // Since floating point operations aren't supported in the EVM, we need to use a divisor to simulate fractions
           uint256 divisor = 1 ether;
 

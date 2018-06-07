@@ -152,7 +152,12 @@ export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) 
         const currentBalance = await codexCoin.balanceOf(creator)
         const amountPaid = balanceAfterStaking.minus(currentBalance)
 
-        amountPaid.should.be.bignumber.equal(undiscountedFee.times(1 - expectedDiscount))
+        let discountMultiplier = 1 - expectedDiscount
+        if (expectedDiscount > 1) {
+          discountMultiplier = 0 // 100% discount
+        }
+
+        amountPaid.should.be.bignumber.equal(undiscountedFee.times(discountMultiplier))
       }
 
       it('should not reduce the fees paid if no tokens are staked', async function () {
@@ -165,6 +170,10 @@ export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) 
 
       it('should eliminate fees if enough tokens are staked', async function () {
         await testDiscount(this.codexCoin, this.token, 1)
+      })
+
+      it('should eliminate fees if more than enough tokens are staked', async function () {
+        await testDiscount(this.codexCoin, this.token, 2)
       })
     })
 
