@@ -17,10 +17,10 @@ contract('CodexStakeContainer', function (accounts) {
   const lockInDuration = 7776000
 
   beforeEach(async function () {
-    this.token = await CodexCoin.new()
-    this.stakeContainer = await CodexStakeContainer.new(this.token.address, lockInDuration)
+    this.codexCoin = await CodexCoin.new()
+    this.stakeContainer = await CodexStakeContainer.new(this.codexCoin.address, lockInDuration)
 
-    await this.token.approve(this.stakeContainer.address, web3.toWei('100', 'ether'))
+    await this.codexCoin.approve(this.stakeContainer.address, web3.toWei(100, 'ether'))
   })
 
   describe('totalStaked', function () {
@@ -40,7 +40,7 @@ contract('CodexStakeContainer', function (accounts) {
   describe('token', function () {
     it('should return the address of the ERC20 token used for staking', async function () {
       const tokenAddress = await this.stakeContainer.token()
-      tokenAddress.should.be.equal(this.token.address)
+      tokenAddress.should.be.equal(this.codexCoin.address)
     })
   })
 
@@ -81,61 +81,61 @@ contract('CodexStakeContainer', function (accounts) {
 
   describe('when a user stakes tokens', function () {
     beforeEach(async function () {
-      await this.stakeContainer.stake(web3.toWei('1', 'ether'), 0x0)
+      await this.stakeContainer.stake(web3.toWei(1, 'ether'), 0x0)
     })
 
     describe('totalStaked', function () {
       it('should increase', async function () {
         const totalStaked = await this.stakeContainer.totalStaked()
-        totalStaked.should.be.bignumber.equal(web3.toWei('1', 'ether'))
+        totalStaked.should.be.bignumber.equal(web3.toWei(1, 'ether'))
       })
 
       it('should be equivalent to balanceOf on the token contract', async function () {
         const totalStaked = await this.stakeContainer.totalStaked()
-        const balanceOf = await this.token.balanceOf(this.stakeContainer.address)
+        const balanceOf = await this.codexCoin.balanceOf(this.stakeContainer.address)
         totalStaked.should.be.bignumber.equal(balanceOf)
       })
 
       it('should increase when another user stakes tokens', async function () {
-        await this.token.transfer(otherUser, web3.toWei('50', 'ether'))
+        await this.codexCoin.transfer(otherUser, web3.toWei(50, 'ether'))
 
-        await this.token.approve(
+        await this.codexCoin.approve(
           this.stakeContainer.address,
-          web3.toWei('100', 'ether'),
+          web3.toWei(100, 'ether'),
           { from: otherUser }
         )
 
-        await this.stakeContainer.stake(web3.toWei('1', 'ether'), 0x0, { from: otherUser })
+        await this.stakeContainer.stake(web3.toWei(1, 'ether'), 0x0, { from: otherUser })
 
         const totalStaked = await this.stakeContainer.totalStaked()
-        totalStaked.should.be.bignumber.equal(web3.toWei('2', 'ether'))
+        totalStaked.should.be.bignumber.equal(web3.toWei(2, 'ether'))
       })
     })
 
     describe('totalStakedFor', function () {
       it('should increase', async function () {
         const totalStakedFor = await this.stakeContainer.totalStakedFor(creator)
-        totalStakedFor.should.be.bignumber.equal(web3.toWei('1', 'ether'))
+        totalStakedFor.should.be.bignumber.equal(web3.toWei(1, 'ether'))
       })
 
       it('should increase when another user stakes tokens on their behalf', async function () {
-        await this.token.transfer(otherUser, web3.toWei('50', 'ether'))
+        await this.codexCoin.transfer(otherUser, web3.toWei(50, 'ether'))
 
-        await this.token.approve(
+        await this.codexCoin.approve(
           this.stakeContainer.address,
-          web3.toWei('100', 'ether'),
+          web3.toWei(100, 'ether'),
           { from: otherUser }
         )
 
         await this.stakeContainer.stakeFor(
           creator,
-          web3.toWei('1', 'ether'),
+          web3.toWei(1, 'ether'),
           0x0,
           { from: otherUser }
         )
 
         const totalStakedFor = await this.stakeContainer.totalStakedFor(creator)
-        totalStakedFor.should.be.bignumber.equal(web3.toWei('2', 'ether'))
+        totalStakedFor.should.be.bignumber.equal(web3.toWei(2, 'ether'))
       })
     })
 
@@ -145,7 +145,7 @@ contract('CodexStakeContainer', function (accounts) {
         const tokenLockInDuration = await this.stakeContainer.lockInDuration()
         await increaseTime(tokenLockInDuration.toNumber())
 
-        await this.stakeContainer.unstake(web3.toWei('1', 'ether'), 0x0)
+        await this.stakeContainer.unstake(web3.toWei(1, 'ether'), 0x0)
       })
 
       describe('totalStaked', function () {
@@ -166,12 +166,13 @@ contract('CodexStakeContainer', function (accounts) {
 
   describe('stake', function () {
     describe('when a single stake is created', function () {
-      const stakeAmount = web3.toWei('1', 'ether')
+      const stakeAmount = web3.toWei(1, 'ether')
       let blockTimestamp
+      let tx
 
       beforeEach(async function () {
-        const result = await this.stakeContainer.stake(stakeAmount, 0x0)
-        const { blockNumber } = result.logs[0]
+        tx = await this.stakeContainer.stake(stakeAmount, 0x0)
+        const { blockNumber } = tx.logs[0]
         blockTimestamp = web3.eth.getBlock(blockNumber).timestamp
       })
 
@@ -189,53 +190,133 @@ contract('CodexStakeContainer', function (accounts) {
         personalStakeAmounts[0].should.be.bignumber.equal(stakeAmount)
       })
 
-      it('should emit a Staked event')
+      it('should emit a Staked event', async function () {
+        const { logs } = tx
+
+        // @TODO validate other params
+        logs.length.should.be.equal(1)
+        logs[0].event.should.be.equal('Staked')
+      })
     })
 
     describe('when multiple stakes are created', function () {
       it('should allow a user to create multiple stakes', async function () {
-        this.stakeContainer.stake()
+        await this.stakeContainer.stake(web3.toWei(1, 'ether'), 0x0)
       })
     })
 
     it('should revert when the contract is not approved', async function () {
-      const anotherStakeContainer = await CodexStakeContainer.new(this.token.address, lockInDuration)
+      const anotherStakeContainer = await CodexStakeContainer.new(this.codexCoin.address, lockInDuration)
 
       await assertRevert(
-        anotherStakeContainer.stake(web3.toWei('1', 'ether'), 0x0)
+        anotherStakeContainer.stake(web3.toWei(1, 'ether'), 0x0)
       )
     })
   })
 
   describe('stakeFor', function () {
     describe('when a user stakes on behalf of another user', function () {
-      it('should create a personal stake for the staker')
-      it('should not change the number of tokens staked for the user')
-      it('should increase the number of tokens staked for the other user')
-      it('should emit a Staked event')
+      let originalTotalStakedFor
+      let tx
+
+      beforeEach(async function () {
+        originalTotalStakedFor = await this.stakeContainer.totalStakedFor(creator)
+        tx = await this.stakeContainer.stakeFor(otherUser, web3.toWei(1, 'ether'), 0x0)
+      })
+
+      it('should create a personal stake for the staker', async function () {
+        const personalStakeForAddresses = await this.stakeContainer.getPersonalStakeForAddresses(creator)
+        personalStakeForAddresses.length.should.be.bignumber.equal(1)
+        personalStakeForAddresses[0].should.be.equal(otherUser)
+      })
+
+      it('should not change the number of tokens staked for the user', async function () {
+        const totalStakedFor = await this.stakeContainer.totalStakedFor(creator)
+        totalStakedFor.should.be.bignumber.equal(originalTotalStakedFor)
+      })
+
+      it('should increase the number of tokens staked for the other user', async function () {
+        const totalStakedForOtherUser = await this.stakeContainer.totalStakedFor(otherUser)
+        totalStakedForOtherUser.should.be.bignumber.equal(web3.toWei(1, 'ether'))
+      })
+
+      it('should emit a Staked event', async function () {
+        const { logs } = tx
+
+        // @TODO validate other params
+        logs.length.should.be.equal(1)
+        logs[0].event.should.be.equal('Staked')
+      })
     })
   })
 
   describe('unstake', function () {
+    beforeEach(async function () {
+      await this.stakeContainer.stake(web3.toWei(10, 'ether'), 0x0)
+    })
+
     describe('when the stake is locked', function () {
-      it('should revert')
+      it('should revert', async function () {
+        await assertRevert(
+          this.stakeContainer.unstake(web3.toWei(10, 'ether'), 0x0)
+        )
+      })
     })
 
     describe('when the unstake amount is incorrect', function () {
-      it('should revert')
+      it('should revert', async function () {
+        await assertRevert(
+          this.stakeContainer.unstake(web3.toWei(1, 'ether'), 0x0)
+        )
+      })
     })
 
     describe('when the transfer from the contract fails', function () {
-      // TODO: Probably have to pause the token contract to get this one to assert
-      it('should revert')
+      it('should revert', async function () {
+        // Pausing the token contract so that the transfer will fail
+        await this.codexCoin.initializeOwnable(creator)
+        await this.codexCoin.pause()
+
+        // Changing the timestamp of the next block so the stake is unlocked
+        const tokenLockInDuration = await this.stakeContainer.lockInDuration()
+        await increaseTime(tokenLockInDuration.toNumber())
+
+        await assertRevert(
+          this.stakeContainer.unstake(web3.toWei(10, 'ether'), 0x0)
+        )
+      })
     })
 
     describe('when called correctly', function () {
-      it('should succeed')
+      let tx
+      let originalBalance
 
-      it('should decrement the number of the personal stakes')
+      beforeEach(async function () {
+        const tokenLockInDuration = await this.stakeContainer.lockInDuration()
+        await increaseTime(tokenLockInDuration.toNumber())
 
-      it('should return the tokens back to the user')
+        originalBalance = await this.codexCoin.balanceOf(creator)
+
+        tx = await this.stakeContainer.unstake(web3.toWei(10, 'ether'), 0x0)
+      })
+
+      it('should emit an Unstaked event', async function () {
+        const { logs } = tx
+
+        // @TODO validate other params
+        logs.length.should.be.equal(1)
+        logs[0].event.should.be.equal('Unstaked')
+      })
+
+      it('should decrement the number of the personal stakes', async function () {
+        const personalStakeUnlockedTimestamps = await this.stakeContainer.getPersonalStakeUnlockedTimestamps(creator)
+        personalStakeUnlockedTimestamps.length.should.be.bignumber.equal(0)
+      })
+
+      it('should return the tokens back to the user', async function () {
+        const newBalance = await this.codexCoin.balanceOf(creator)
+        newBalance.should.be.bignumber.equal(originalBalance.add(web3.toWei(10, 'ether')))
+      })
     })
   })
 })

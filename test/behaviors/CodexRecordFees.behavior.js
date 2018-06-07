@@ -13,6 +13,7 @@ require('chai')
 
 export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) {
   const creator = accounts[0]
+  const otherUser = accounts[1]
   const communityFund = accounts[8]
   const firstTokenId = 0
   let originalBalance
@@ -111,6 +112,26 @@ export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) 
         await this.codexCoin.approve(stakeContainer.address, web3.toWei(100, 'ether'))
       })
 
+      describe('stakeContainer', function () {
+        it('exists', async function () {
+          const codexStakeContainer = await this.token.codexStakeContainer()
+          codexStakeContainer.should.be.equal(stakeContainer.address)
+        })
+      })
+
+      describe('tokensNeededForFullDiscount', async function () {
+        it('exists', async function () {
+          const tokensNeededForFullDiscount = await this.token.tokensNeededForFullDiscount()
+          tokensNeededForFullDiscount.should.be.bignumber.equal(web3.toWei(10, 'ether'))
+        })
+
+        it('fails to update if called by an unauthorized address', async function () {
+          await assertRevert(
+            this.token.setTokensNeededForFullDiscount(web3.toWei(100, 'ether'), { from: otherUser })
+          )
+        })
+      })
+
       const testDiscount = async (codexCoin, token, expectedDiscount) => {
         if (expectedDiscount < 1) {
           // Since we aren't expecting fees to be completely eliminated, the token contract
@@ -125,7 +146,7 @@ export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) 
         const balanceAfterStaking = await codexCoin.balanceOf(creator)
 
         // Perform an operation that incurs fees
-        await token.transferFrom(creator, accounts[1], firstTokenId)
+        await token.transferFrom(creator, otherUser, firstTokenId)
 
         const undiscountedFee = await token.transferFee()
         const currentBalance = await codexCoin.balanceOf(creator)
