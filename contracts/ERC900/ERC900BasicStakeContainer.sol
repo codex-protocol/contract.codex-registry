@@ -156,7 +156,7 @@ contract ERC900BasicStakeContainer is ERC900 {
       // If interest has accrued over multiple years, the actual interest received will be higher than the
       //  annualized interest rate, so we use a loop to accrue this over multiple years
       // @TODO: There are some gas optimizations that can be made here (i.e., calculated the compoundedInterest rate)
-      while (block.timestamp.sub(lastUpdatedTimestamp) > YEAR_IN_SECONDS) {
+      while (block.timestamp.sub(lastUpdatedTimestamp) >= YEAR_IN_SECONDS) {
         uint256 unit = 1 ether;
 
         uint256 newAmount = currentStake.perceivedAmount.mul(annualizedInterestRate.add(unit)).div(unit);

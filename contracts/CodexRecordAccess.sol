@@ -18,8 +18,8 @@ contract CodexRecordAccess is CodexRecordCore {
     bytes32 _descriptionHash,
     bytes32[] _fileHashes,
     string _providerId, // TODO: convert to bytes32
-    string _providerMetadataId ) // TODO: convert to bytes32
-
+    string _providerMetadataId // TODO: convert to bytes32
+  )
     public
     whenNotPaused
     canPayFees(creationFee)
