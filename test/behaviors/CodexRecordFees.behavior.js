@@ -4,6 +4,7 @@ import getCoreRegistryFunctions from '../helpers/getCoreRegistryFunctions'
 const { BigNumber } = web3
 
 const CodexCoin = artifacts.require('CodexCoin.sol')
+const CodexStakeContainer = artifacts.require('CodexStakeContainer.sol')
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -96,8 +97,54 @@ export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) 
           currentBalance.should.be.bignumber.equal(originalBalance.minus(tokenFee))
         })
       })
+    })
 
-      // @TODO: Add some test cases to test the discount structure when tokens are staked
+    describe('and staking is incorporated', function () {
+      let stakeContainer
+
+      beforeEach(async function () {
+        stakeContainer = await CodexStakeContainer.new(this.codexCoin.address, 7776000)
+
+        await this.token.setStakeContainer(stakeContainer.address)
+        await this.token.setTokensNeededForFullDiscount(web3.toWei(10, 'ether'))
+
+        await this.codexCoin.approve(stakeContainer.address, web3.toWei(100, 'ether'))
+      })
+
+      const testDiscount = async (codexCoin, token, expectedDiscount) => {
+        if (expectedDiscount < 1) {
+          // Since we aren't expecting fees to be completely eliminated, the token contract
+          // still needs to get approved to withdraw some of the fees
+          await codexCoin.approve(token.address, web3.toWei(100, 'ether'))
+        }
+
+        const tokensNeededForFullDiscount = await token.tokensNeededForFullDiscount()
+        const amountToStake = tokensNeededForFullDiscount.times(expectedDiscount)
+        await stakeContainer.stake(amountToStake, 0x0)
+
+        const balanceAfterStaking = await codexCoin.balanceOf(creator)
+
+        // Perform an operation that incurs fees
+        await token.transferFrom(creator, accounts[1], firstTokenId)
+
+        const undiscountedFee = await token.transferFee()
+        const currentBalance = await codexCoin.balanceOf(creator)
+        const amountPaid = balanceAfterStaking.minus(currentBalance)
+
+        amountPaid.should.be.bignumber.equal(undiscountedFee.times(1 - expectedDiscount))
+      }
+
+      it('should not reduce the fees paid if no tokens are staked', async function () {
+        await testDiscount(this.codexCoin, this.token, 0)
+      })
+
+      it('should reduce the fees paid if some tokens are staked', async function () {
+        await testDiscount(this.codexCoin, this.token, 0.50)
+      })
+
+      it('should eliminate fees if enough tokens are staked', async function () {
+        await testDiscount(this.codexCoin, this.token, 1)
+      })
     })
 
     describe('and the fee is not paid', function () {

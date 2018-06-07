@@ -8,7 +8,7 @@ import "./CodexRecordFees.sol";
  * @title CodexRecordCore
  * @dev Core functionality of the token, namely minting.
  */
-contract CodexRecordCore is CodexRecordMetadata, CodexRecordFees {
+contract CodexRecordCore is CodexRecordFees {
 
   /**
    * @dev This event is emitted when a new token is minted and allows providers

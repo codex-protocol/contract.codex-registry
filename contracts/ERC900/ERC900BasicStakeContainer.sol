@@ -21,6 +21,11 @@ contract ERC900BasicStakeContainer is ERC900 {
   // The duration of stake lock-in (in seconds)
   uint256 public lockInDuration;
 
+  // For token staked longer than a year, they will become more valuable by this coefficient
+  // e.g., if inflationRate is 10, after 1 year the perceived stake is 10% more valuable
+  // @TODO: come back to this
+  // uint256 public inflationRate;
+
   // To save on gas, rather than create a separate mapping for amountStakedFor & personalStake,
   //  both data structures are stored in a single mapping for a given addresses.
   //

@@ -10,20 +10,22 @@ module.exports = async (deployer, network, accounts) => {
     .then(async () => {
       let initialFees
       let erc20TokenAddress
+      let tokensNeededForFullDiscount
 
       switch (network) {
         case 'ganache':
         case 'develop':
         case 'test':
         case 'coverage': {
-          erc20TokenAddress = CodexCoin.address
           initialFees = 0
+          erc20TokenAddress = CodexCoin.address
+          tokensNeededForFullDiscount = web3.toWei(10000, 'ether')
           break
         }
 
         case 'rinkeby':
-          erc20TokenAddress = '0xb902c00f8e5aced53e2a513903fd831d32dd1097'
           initialFees = web3.toWei(1, 'ether')
+          erc20TokenAddress = '0xb902c00f8e5aced53e2a513903fd831d32dd1097'
           break
 
         default:
@@ -37,6 +39,10 @@ module.exports = async (deployer, network, accounts) => {
         initialFees, // creationFee
         initialFees, // transferFee
         initialFees, // modificationFee
+      )
+
+      await proxiedCodexRecord.setTokensNeededForFullDiscount(
+        tokensNeededForFullDiscount
       )
 
       await proxiedCodexRecord.setStakeContainer(
