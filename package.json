@@ -57,7 +57,7 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0",
     "ganache-cli": "^6.1.0",
-    "solc": "^0.4.24",
+    "solc": "0.4.24",
     "solidity-coverage": "^0.5.4",
     "solium": "^1.1.7"
   },
@@ -69,7 +69,7 @@
     "ethereumjs-util": "^5.2.0",
     "ethjs-abi": "^0.2.1",
     "lodash": "^4.17.10",
-    "truffle": "^4.1.11",
+    "truffle": "4.1.11",
     "truffle-hdwallet-provider": "0.0.3"
   }
 }

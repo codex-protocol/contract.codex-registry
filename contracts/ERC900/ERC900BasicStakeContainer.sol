@@ -1,5 +1,5 @@
 /* solium-disable security/no-block-members */
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "./ERC900.sol";
 import "../ERC20/ERC20.sol";
