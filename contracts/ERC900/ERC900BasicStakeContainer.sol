@@ -285,6 +285,43 @@ contract ERC900BasicStakeContainer is ERC900 {
   }
 
   /**
+   * @dev Helper function to get specific properties of all of the personal stakes created by an address
+   * @param _address address The address to query
+   * @return (uint256[], uint256[], uint256[], address[])
+   *  timestamps array, actualAmounts array, perceivedAmounts array, stakedFor array
+   */
+  function getPersonalStakes(
+    address _address
+  )
+    view
+    public
+    returns(uint256[], uint256[], uint256[], address[])
+  {
+    StakeContainer storage stakeContainer = stakeHolders[_address];
+
+    uint256 arraySize = stakeContainer.personalStakes.length - stakeContainer.personalStakeIndex;
+    uint256[] memory unlockedTimestamps = new uint256[](arraySize);
+    uint256[] memory actualAmounts = new uint256[](arraySize);
+    uint256[] memory perceivedAmounts = new uint256[](arraySize);
+    address[] memory stakedFor = new address[](arraySize);
+
+    for (uint256 i = stakeContainer.personalStakeIndex; i < stakeContainer.personalStakes.length; i++) {
+      uint256 index = i - stakeContainer.personalStakeIndex;
+      unlockedTimestamps[index] = stakeContainer.personalStakes[i].unlockedTimestamp;
+      actualAmounts[index] = stakeContainer.personalStakes[i].actualAmount;
+      perceivedAmounts[index] = stakeContainer.personalStakes[i].perceivedAmount;
+      stakedFor[index] = stakeContainer.personalStakes[i].stakedFor;
+    }
+
+    return (
+      unlockedTimestamps,
+      actualAmounts,
+      perceivedAmounts,
+      stakedFor
+    );
+  }
+
+  /**
    * @dev Helper function to create stakes for a given address
    * @param _address address The address the stake is being created for
    * @param _amount uint256 The number of tokens being staked
@@ -317,42 +354,5 @@ contract ERC900BasicStakeContainer is ERC900 {
       _amount,
       totalStakedFor(_address),
       _data);
-  }
-
-  /**
-   * @dev Helper function to get specific properties of all of the personal stakes created by an address
-   * @param _address address The address to query
-   * @return (uint256[], uint256[], uint256[], address[])
-   *  timestamps array, actualAmounts array, perceivedAmounts array, stakedFor array
-   */
-  function getPersonalStakes(
-    address _address
-  )
-    view
-    private
-    returns(uint256[], uint256[], uint256[], address[])
-  {
-    StakeContainer storage stakeContainer = stakeHolders[_address];
-
-    uint256 arraySize = stakeContainer.personalStakes.length - stakeContainer.personalStakeIndex;
-    uint256[] memory unlockedTimestamps = new uint256[](arraySize);
-    uint256[] memory actualAmounts = new uint256[](arraySize);
-    uint256[] memory perceivedAmounts = new uint256[](arraySize);
-    address[] memory stakedFor = new address[](arraySize);
-
-    for (uint256 i = stakeContainer.personalStakeIndex; i < stakeContainer.personalStakes.length; i++) {
-      uint256 index = i - stakeContainer.personalStakeIndex;
-      unlockedTimestamps[index] = stakeContainer.personalStakes[i].unlockedTimestamp;
-      actualAmounts[index] = stakeContainer.personalStakes[i].actualAmount;
-      perceivedAmounts[index] = stakeContainer.personalStakes[i].perceivedAmount;
-      stakedFor[index] = stakeContainer.personalStakes[i].stakedFor;
-    }
-
-    return (
-      unlockedTimestamps,
-      actualAmounts,
-      perceivedAmounts,
-      stakedFor
-    );
   }
 }
