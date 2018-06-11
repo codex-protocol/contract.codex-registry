@@ -1,6 +1,7 @@
 const axios = require('axios')
 const util = require('ethereumjs-util')
 
+const CodexCoin = artifacts.require('./CodexCoin.sol')
 const CodexRecord = artifacts.require('./CodexRecord.sol')
 const CodexRecordProxy = artifacts.require('./CodexRecordProxy.sol')
 
@@ -10,6 +11,7 @@ const tokensToMint = 20
 
 // Using this mnemonic (DON'T USE IN PRODUCTION!):
 // candy maple cake sugar pudding cream honey rich smooth crumble sweet treat
+const faucetAccount = web3.eth.accounts[2]
 const ganachePrivateKeys = [
   'c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3',
   'ae6ae8e5ccbfb04590405997ee2d52d2b330726137b875053c36d94e974d162f',
@@ -124,6 +126,21 @@ const mintTokens = async (contract, authTokens, imageRecords) => {
   }
 }
 
+const approveContractAndGetCodexCoin = async (codexRecordAddress) => {
+  const codexCoin = await CodexCoin.deployed()
+
+  /* eslint-disable no-await-in-loop */
+  for (let i = 0; i < ganachePrivateKeys.length; i++) {
+
+    // arbitrary approval amount, should be sufficient for the purposes of local dev
+    await codexCoin.approve(codexRecordAddress, web3.toWei(100000, 'ether'))
+
+    // moving some tokens from the faucet to the accounts that we'll be minting from
+    await codexCoin.transfer(web3.eth.accounts[i], web3.toWei(10000, 'ether'), { from: faucetAccount })
+  }
+  /* eslint-enable */
+}
+
 module.exports = async (callback) => {
   const codexRecordProxy = await CodexRecordProxy.deployed()
   const codexRecord = CodexRecord.at(codexRecordProxy.address)
@@ -140,7 +157,8 @@ module.exports = async (callback) => {
 
   const imageRecords = await fetchImageRecords()
 
-  mintTokens(codexRecord, authTokens, imageRecords)
+  await approveContractAndGetCodexCoin(codexRecord.address)
+  await mintTokens(codexRecord, authTokens, imageRecords)
 
   callback()
 }
