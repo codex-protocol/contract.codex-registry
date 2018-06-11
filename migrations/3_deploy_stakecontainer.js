@@ -4,8 +4,12 @@ const CodexStakeContainer = artifacts.require('./CodexStakeContainer.sol')
 module.exports = (deployer, network) => {
   deployer.then(async () => {
     let codexCoinAddress
-    let lockInDuration
-    let annualizedInterestRate
+
+    // 90 days (in seconds)
+    const lockInDuration = 7776000
+
+    // 10% annually
+    const annualizedInterestRate = web3.toWei(0.1, 'ether')
 
     switch (network) {
       case 'ganache':
@@ -13,16 +17,10 @@ module.exports = (deployer, network) => {
       case 'test':
       case 'coverage':
         codexCoinAddress = CodexCoin.address
-
-        // 90 days (in seconds)
-        lockInDuration = 7776000
-
-        // 10% annually
-        annualizedInterestRate = web3.toWei(0.1, 'ether')
         break
 
       case 'rinkeby': {
-        codexCoinAddress = '0xb902c00f8e5aced53e2a513903fd831d32dd1097'
+        codexCoinAddress = '0xb7f7848507a6af9c6d7560da89d4778aa1043d69'
         break
       }
 
