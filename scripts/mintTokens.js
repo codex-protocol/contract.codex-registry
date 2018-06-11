@@ -133,7 +133,7 @@ const approveContractAndGetCodexCoin = async (codexRecordAddress) => {
   for (let i = 0; i < ganachePrivateKeys.length; i++) {
 
     // arbitrary approval amount, should be sufficient for the purposes of local dev
-    await codexCoin.approve(codexRecordAddress, web3.toWei(100000, 'ether'))
+    await codexCoin.approve(codexRecordAddress, web3.toWei(100000, 'ether'), { from: web3.eth.accounts[i] })
 
     // moving some tokens from the faucet to the accounts that we'll be minting from
     await codexCoin.transfer(web3.eth.accounts[i], web3.toWei(10000, 'ether'), { from: faucetAccount })
