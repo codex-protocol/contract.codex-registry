@@ -34,6 +34,11 @@ module.exports = {
       network_id: '*', // eslint-disable-line camelcase
       gasPrice: 0x01,
     },
+    ropsten: {
+      provider: infuraProvider('ropsten'),
+      network_id: '3', // eslint-disable-line camelcase
+      gasPrice: 5000000000, // 5 gwei
+    },
     rinkeby: {
       provider: infuraProvider('rinkeby'),
       network_id: '4', // eslint-disable-line camelcase

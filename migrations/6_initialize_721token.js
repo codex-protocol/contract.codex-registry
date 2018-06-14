@@ -13,15 +13,20 @@ module.exports = async (deployer, network, accounts) => {
       let tokensNeededForFullDiscount
 
       switch (network) {
+        case 'test':
         case 'ganache':
         case 'develop':
-        case 'test':
-        case 'coverage': {
+        case 'coverage':
           initialFees = web3.toWei(1, 'ether')
           erc20TokenAddress = CodexCoin.address
           tokensNeededForFullDiscount = web3.toWei(10000, 'ether')
           break
-        }
+
+        case 'ropsten':
+          initialFees = 0
+          erc20TokenAddress = '0x2226895704448e5f579654d1d95e853e24a4c929'
+          tokensNeededForFullDiscount = web3.toWei(10000, 'ether')
+          break
 
         case 'rinkeby':
           initialFees = 0
@@ -62,6 +67,7 @@ module.exports = async (deployer, network, accounts) => {
           tokenURIPrefix = 'http://localhost:3001/token-metadata'
           break
 
+        case 'ropsten':
         case 'rinkeby':
           tokenURIPrefix = 'http://codex-registry-api.codexprotocol-staging.com/token-metadata'
           break
