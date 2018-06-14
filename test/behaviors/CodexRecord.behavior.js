@@ -160,12 +160,12 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata) {
     describe('metadata', function () {
       it('should have the correct name', async function () {
         const name = await this.token.name()
-        name.should.be.equal('Codex Title')
+        name.should.be.equal('Codex Record')
       })
 
       it('should have the correct symbol', async function () {
         const symbol = await this.token.symbol()
-        symbol.should.be.equal('CT')
+        symbol.should.be.equal('CR')
       })
 
       describe('tokenURI', function () {

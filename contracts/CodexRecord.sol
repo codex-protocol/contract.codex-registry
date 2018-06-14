@@ -14,5 +14,5 @@ contract CodexRecord is CodexRecordAccess {
   /**
    * @dev Constructor function
    */
-  constructor() public ERC721Token("Codex Title", "CT") { }
+  constructor() public ERC721Token("Codex Record", "CR") { }
 }

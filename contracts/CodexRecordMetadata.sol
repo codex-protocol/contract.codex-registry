@@ -132,9 +132,9 @@ contract CodexRecordMetadata is ERC721Token {
    *  the physical asset the token represents.
    *
    * @dev This metadata will be a JSON blob that includes:
-   *  name - Codex Title
+   *  name - Codex Record
    *  description - Information about the Provider that is hosting the off-chain metadata
-   *  imageUri - A generic Codex Title image
+   *  imageUri - A generic Codex Record image
    *
    * @param _tokenId uint256 ID of the token to query
    */
