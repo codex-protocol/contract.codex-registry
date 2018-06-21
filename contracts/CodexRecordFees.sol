@@ -33,9 +33,6 @@ contract CodexRecordFees is CodexRecordMetadata, DelayedPausable {
   // Fee to modify tokens. 10^18 = 1 token
   uint256 public modificationFee = 0;
 
-  // To receive a full discount on the protocol fees, stake this number of tokens
-  uint256 public tokensNeededForFullDiscount;
-
   modifier canPayFees(uint256 _baseFee) {
     if (feeRecipient != address(0) && _baseFee > 0) {
 
@@ -83,19 +80,5 @@ contract CodexRecordFees is CodexRecordMetadata, DelayedPausable {
 
   function setStakeContainer(CodexStakeContainerInterface _codexStakeContainer) external onlyOwner {
     codexStakeContainer = _codexStakeContainer;
-  }
-
-  /**
-   * @dev Sets the number of tokens needed to be staked in order to
-   * receive a 100% discount on the contract fees. 10^18 is 1 token.
-   * @param _tokensNeededForFullDiscount uint256 The number of tokens needed
-   */
-  function setTokensNeededForFullDiscount(
-    uint256 _tokensNeededForFullDiscount
-  )
-    external
-    onlyOwner
-  {
-    tokensNeededForFullDiscount = _tokensNeededForFullDiscount;
   }
 }

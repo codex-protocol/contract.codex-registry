@@ -6,10 +6,7 @@ module.exports = (deployer, network) => {
     let codexCoinAddress
 
     // 90 days (in seconds)
-    const lockInDuration = 7776000
-
-    // 10% annually
-    const annualizedInterestRate = web3.toWei(0.1, 'ether')
+    const defaultLockInDuration = 7776000
 
     switch (network) {
       case 'ganache':
@@ -34,8 +31,7 @@ module.exports = (deployer, network) => {
     await deployer.deploy(
       CodexStakeContainer,
       codexCoinAddress,
-      lockInDuration,
-      annualizedInterestRate,
+      defaultLockInDuration,
     )
   })
 

@@ -16,29 +16,29 @@ contract CodexStakeContainer is CodexStakeContainerInterface, ERC900BasicStakeCo
   /**
    * @dev Constructor function
    * @param _stakingToken ERC20 The address of the token used for staking
-   * @param _lockInDuration uint256 The duration (in seconds) that stakes are required to be locked for
+   * @param _defaultLockInDuration uint256 The duration (in seconds) that stakes are required to be locked for
    */
   constructor(
     ERC20 _stakingToken,
-    uint256 _lockInDuration
+    uint256 _defaultLockInDuration
   )
     public
     ERC900BasicStakeContainer(_stakingToken)
   {
-    lockInDuration = _lockInDuration;
+    defaultLockInDuration = _defaultLockInDuration;
   }
 
   /**
    * @dev Sets the lockInDuration for stakes. Only callable by the owner
-   * @param _lockInDuration uint256 The duration (in seconds) that stakes are required to be locked for
+   * @param _defaultLockInDuration uint256 The duration (in seconds) that stakes are required to be locked for
    */
-  function setLockInDuration(
-    uint256 _lockInDuration
+  function setDefaultLockInDuration(
+    uint256 _defaultLockInDuration
   )
     external
     onlyOwner
   {
-    lockInDuration = _lockInDuration;
+    defaultLockInDuration = _defaultLockInDuration;
   }
 
   function creditBalanceOf(
@@ -74,7 +74,7 @@ contract CodexStakeContainer is CodexStakeContainerInterface, ERC900BasicStakeCo
       _amount,
       _data);
 
-    uint256 creditsAwarded = calculateCreditAward(_amount, lockInDuration);
+    uint256 creditsAwarded = calculateCreditAward(_amount, defaultLockInDuration);
     creditBalances[msg.sender] = creditBalances[msg.sender].add(creditsAwarded);
   }
 
@@ -90,7 +90,7 @@ contract CodexStakeContainer is CodexStakeContainerInterface, ERC900BasicStakeCo
       _amount,
       _data);
 
-    uint256 creditsAwarded = calculateCreditAward(_amount, lockInDuration);
+    uint256 creditsAwarded = calculateCreditAward(_amount, defaultLockInDuration);
     creditBalances[_user] = creditBalances[_user].add(creditsAwarded);
   }
 
@@ -108,7 +108,7 @@ contract CodexStakeContainer is CodexStakeContainerInterface, ERC900BasicStakeCo
       _lockInDuration,
       _data);
 
-    uint256 creditsAwarded = calculateCreditAward(_amount, lockInDuration);
+    uint256 creditsAwarded = calculateCreditAward(_amount, _lockInDuration);
     creditBalances[_user] = creditBalances[_user].add(creditsAwarded);
   }
 

@@ -18,8 +18,8 @@ contract ERC900BasicStakeContainer is ERC900 {
   // Token used for staking
   ERC20 stakingToken;
 
-  // The duration of stake lock-in (in seconds)
-  uint256 public lockInDuration;
+  // The default duration of stake lock-in (in seconds)
+  uint256 public defaultLockInDuration;
 
   // To save on gas, rather than create a separate mapping for totalStakedFor & personalStakes,
   //  both data structures are stored in a single mapping for a given addresses.
@@ -128,7 +128,7 @@ contract ERC900BasicStakeContainer is ERC900 {
     createStake(
       msg.sender,
       _amount,
-      lockInDuration,
+      defaultLockInDuration,
       _data);
   }
 
@@ -143,7 +143,7 @@ contract ERC900BasicStakeContainer is ERC900 {
     createStake(
       _user,
       _amount,
-      lockInDuration,
+      defaultLockInDuration,
       _data);
   }
 
