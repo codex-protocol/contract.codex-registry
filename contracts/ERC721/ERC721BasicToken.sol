@@ -6,19 +6,20 @@ import "../ERC165/ERC165.sol";
 
 import "../library/SafeMath.sol";
 import "../library/AddressUtils.sol";
+import "../library/Debuggable.sol";
 
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic implementation
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
-contract ERC721BasicToken is ERC721Basic, ERC165 {
+contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
   using SafeMath for uint256;
   using AddressUtils for address;
 
-  // Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
+  // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
-  bytes4 constant ERC721_RECEIVED = 0xf0b9e5ba;
+  bytes4 constant ERC721_RECEIVED = 0x150b7a02;
 
   // Mapping from token ID to owner
   mapping (uint256 => address) internal tokenOwner;
@@ -164,7 +165,7 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -189,7 +190,7 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
    * @dev Safely transfers the ownership of a given token ID to another address
    * @dev If the target address is a contract, it must implement `onERC721Received`,
    *  which is called upon a safe transfer, and return the magic value
-   *  `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`; otherwise,
+   *  `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
    *  the transfer is reverted.
    * @dev Requires the msg sender to be the owner, approved, or operator
    * @param _from current owner of the token
@@ -280,7 +281,6 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
     require(ownerOf(_tokenId) == _owner);
     if (tokenApprovals[_tokenId] != address(0)) {
       tokenApprovals[_tokenId] = address(0);
-      emit Approval(_owner, address(0), _tokenId);
     }
   }
 
@@ -316,13 +316,24 @@ contract ERC721BasicToken is ERC721Basic, ERC165 {
    * @return whether the call correctly returned the expected magic value
    */
   function checkAndCallSafeTransfer(
-    address _from, address _to, uint256 _tokenId, bytes _data) internal returns (bool)
+    address _from,
+    address _to,
+    uint256 _tokenId,
+    bytes _data)
+    internal returns (bool)
   {
     if (!_to.isContract()) {
       return true;
     }
 
-    bytes4 retval = ERC721Receiver(_to).onERC721Received(_from, _tokenId, _data);
+    bytes4 retval = ERC721Receiver(_to)
+      .onERC721Received(
+        msg.sender,
+        _from,
+        _tokenId,
+        _data
+      );
+
     return (retval == ERC721_RECEIVED);
   }
 }

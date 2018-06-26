@@ -17,9 +17,9 @@ contract ERC721Basic {
   // bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'));
   bytes4 constant INTERFACE_ERC721 = 0x80ac58cd;
 
-  event Transfer(address indexed _from, address indexed _to, uint256 _tokenId);
-  event Approval(address indexed _owner, address indexed _approved, uint256 _tokenId);
-  event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
+  event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
+  event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
+  event ApprovalForAll(address indexed _owner, address indexed _operator, bool indexed _approved);
 
   function balanceOf(address _owner) public view returns (uint256 _balance);
   function ownerOf(uint256 _tokenId) public view returns (address _owner);
