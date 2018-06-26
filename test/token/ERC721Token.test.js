@@ -21,7 +21,7 @@ contract('ERC721Token should behave', function (accounts) {
   })
 
   shouldBehaveLikeERC721BasicToken(accounts)
-  // shouldMintERC721Token(accounts)
-  // shouldBehaveLikeERC721Token(name, symbol, creator, accounts)
-  // shouldBehaveLikeERC165()
+  shouldMintERC721Token(accounts)
+  shouldBehaveLikeERC721Token(name, symbol, creator, accounts)
+  shouldBehaveLikeERC165()
 })
