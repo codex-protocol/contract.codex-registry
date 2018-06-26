@@ -9,6 +9,14 @@ contracts/ERC721/ERC721BasicToken.sol
 contracts/ERC721/ERC721Receiver.sol
 contracts/ERC721/ERC721Token.sol
 
+contracts/library/AddressUtils.sol
+contracts/library/DelayedOwnable.sol
+contracts/library/DelayedPausable.sol
+contracts/library/Ownable.sol
+contracts/library/Pausable.sol
+contracts/library/ProxyOwnable.sol
+contracts/library/SafeMath.sol
+
 contracts/mocks/ERC20/BasicToken.sol
 contracts/mocks/ERC20/PausableToken.sol
 contracts/mocks/ERC20/StandardToken.sol
@@ -18,13 +26,8 @@ contracts/mocks/ERC721/ERC721TokenMock.sol
 contracts/mocks/PausableMock.sol
 contracts/mocks/SafeMathMock.sol
 
-contracts/library/AddressUtils.sol
-contracts/library/DelayedOwnable.sol
-contracts/library/Pausable.sol
-contracts/library/ProxyOwnable.sol
-contracts/library/SafeMath.sol
-
 test/library/DelayedOwnable.test.js
+test/library/DelayedPausable.test.js
 test/library/Pausable.test.js
 test/library/ProxyOwnable.test.js
 test/library/SafeMath.test.js
