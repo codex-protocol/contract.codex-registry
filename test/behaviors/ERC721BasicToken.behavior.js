@@ -111,7 +111,7 @@ export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFun
         await this.token.setApprovalForAll(operator, true, { from: owner })
       })
 
-      const transferWasSuccessful = function (expctedOwner, expectedTokenId) {
+      const transferWasSuccessful = function (expectedOwner, expectedTokenId) {
         it('transfers the ownership of the given token ID to the given address', async function () {
           const newOwner = await this.token.ownerOf(expectedTokenId)
           newOwner.should.be.equal(this.to)
@@ -125,7 +125,7 @@ export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFun
         it('emits only a transfer event', async function () {
           logs.length.should.be.equal(1)
           logs[0].event.should.be.eq('Transfer')
-          logs[0].args._from.should.be.equal(expctedOwner)
+          logs[0].args._from.should.be.equal(expectedOwner)
           logs[0].args._to.should.be.equal(this.to)
           logs[0].args._tokenId.should.be.bignumber.equal(expectedTokenId)
         })
@@ -134,7 +134,7 @@ export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFun
           const newOwnerBalance = await this.token.balanceOf(this.to)
           newOwnerBalance.should.be.bignumber.equal(1)
 
-          const previousOwnerBalance = await this.token.balanceOf(expctedOwner)
+          const previousOwnerBalance = await this.token.balanceOf(expectedOwner)
           previousOwnerBalance.should.be.bignumber.equal(1)
         })
 
@@ -144,7 +144,7 @@ export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFun
           const newOwnerToken = await this.token.tokenOfOwnerByIndex(this.to, 0)
           newOwnerToken.toNumber().should.be.equal(expectedTokenId)
 
-          const previousOwnerToken = await this.token.tokenOfOwnerByIndex(expctedOwner, 0)
+          const previousOwnerToken = await this.token.tokenOfOwnerByIndex(expectedOwner, 0)
           previousOwnerToken.toNumber().should.not.be.equal(expectedTokenId)
         })
       }

@@ -142,7 +142,8 @@ contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
   function transferFrom(
     address _from,
     address _to,
-    uint256 _tokenId)
+    uint256 _tokenId
+  )
     public
   {
     internalTransferFrom(
@@ -165,7 +166,8 @@ contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
   function safeTransferFrom(
     address _from,
     address _to,
-    uint256 _tokenId)
+    uint256 _tokenId
+  )
     public
   {
     internalSafeTransferFrom(
@@ -191,7 +193,8 @@ contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
     address _from,
     address _to,
     uint256 _tokenId,
-    bytes _data)
+    bytes _data
+  )
     public
   {
     internalSafeTransferFrom(
@@ -204,16 +207,29 @@ contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
   function internalTransferFrom(
     address _from,
     address _to,
-    uint256 _tokenId)
+    uint256 _tokenId
+  )
     internal
   {
-    require(isApprovedOrOwner(msg.sender, _tokenId));
-    require(_from != address(0));
+    address owner = ownerOf(_tokenId);
+    require(_from == owner);
     require(_to != address(0));
 
-    clearApproval(_from, _tokenId);
-    removeTokenFrom(_from, _tokenId);
-    addTokenTo(_to, _tokenId);
+    address sender = msg.sender;
+
+    require(
+      sender == owner || isApprovedForAll(owner, sender) || getApproved(_tokenId) == sender,
+      "Not authorized to transfer"
+    );
+
+    // Resetting the approved address if it's set
+    if (tokenApprovals[_tokenId] != address(0)) {
+      tokenApprovals[_tokenId] = address(0);
+    }
+
+    tokenOwner[_tokenId] = _to;
+    ownedTokensCount[_from] = ownedTokensCount[_from].sub(1);
+    ownedTokensCount[_to] = ownedTokensCount[_to].add(1);
 
     emit Transfer(_from, _to, _tokenId);
   }
@@ -222,7 +238,8 @@ contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
     address _from,
     address _to,
     uint256 _tokenId,
-    bytes _data)
+    bytes _data
+  )
     internal
   {
     internalTransferFrom(_from, _to, _tokenId);
@@ -234,65 +251,6 @@ contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
         _tokenId,
         _data)
     );
-  }
-
-  /**
-   * @dev Returns whether the given spender can transfer a given token ID
-   * @param _spender address of the spender to query
-   * @param _tokenId uint256 ID of the token to be transferred
-   * @return bool whether the msg.sender is approved for the given token ID,
-   *  is an operator of the owner, or is the owner of the token
-   */
-  function isApprovedOrOwner(address _spender, uint256 _tokenId) internal view returns (bool) {
-    address owner = ownerOf(_tokenId);
-    return _spender == owner || getApproved(_tokenId) == _spender || isApprovedForAll(owner, _spender);
-  }
-
-  /**
-   * @dev Internal function to mint a new token
-   * @dev Reverts if the given token ID already exists
-   * @param _to The address that will own the minted token
-   * @param _tokenId uint256 ID of the token to be minted by the msg.sender
-   */
-  function _mint(address _to, uint256 _tokenId) internal {
-    require(_to != address(0));
-    addTokenTo(_to, _tokenId);
-    emit Transfer(address(0), _to, _tokenId);
-  }
-
-  /**
-   * @dev Internal function to clear current approval of a given token ID
-   * @dev Reverts if the given address is not indeed the owner of the token
-   * @param _owner owner of the token
-   * @param _tokenId uint256 ID of the token to be transferred
-   */
-  function clearApproval(address _owner, uint256 _tokenId) internal {
-    require(ownerOf(_tokenId) == _owner);
-    if (tokenApprovals[_tokenId] != address(0)) {
-      tokenApprovals[_tokenId] = address(0);
-    }
-  }
-
-  /**
-   * @dev Internal function to add a token ID to the list of a given address
-   * @param _to address representing the new owner of the given token ID
-   * @param _tokenId uint256 ID of the token to be added to the tokens list of the given address
-   */
-  function addTokenTo(address _to, uint256 _tokenId) internal {
-    require(tokenOwner[_tokenId] == address(0));
-    tokenOwner[_tokenId] = _to;
-    ownedTokensCount[_to] = ownedTokensCount[_to].add(1);
-  }
-
-  /**
-   * @dev Internal function to remove a token ID from the list of a given address
-   * @param _from address representing the previous owner of the given token ID
-   * @param _tokenId uint256 ID of the token to be removed from the tokens list of the given address
-   */
-  function removeTokenFrom(address _from, uint256 _tokenId) internal {
-    require(ownerOf(_tokenId) == _from);
-    ownedTokensCount[_from] = ownedTokensCount[_from].sub(1);
-    tokenOwner[_tokenId] = address(0);
   }
 
   /**
@@ -308,8 +266,10 @@ contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
     address _from,
     address _to,
     uint256 _tokenId,
-    bytes _data)
-    internal returns (bool)
+    bytes _data
+  )
+    internal
+    returns (bool)
   {
     if (!_to.isContract()) {
       return true;

@@ -13,7 +13,18 @@ contract ERC721TokenMock is ERC721Token {
   { }
 
   function mint(address _to, uint256 _tokenId) payable public {
-    super._mint(_to, _tokenId);
+    require(_to != address(0));
+    require(!exists(_tokenId));
+
+    tokenOwner[_tokenId] = _to;
+    ownedTokensCount[_to] = ownedTokensCount[_to].add(1);
+
+    ownedTokensIndex[_tokenId] = ownedTokens[_to].length;
+    ownedTokens[_to].push(_tokenId);
+
+    allTokens.push(_tokenId);
+
+    emit Transfer(address(0), _to, _tokenId);
   }
 
   function setTokenURI(uint256 _tokenId, string _uri) public {
