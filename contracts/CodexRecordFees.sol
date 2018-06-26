@@ -4,15 +4,15 @@ import "./CodexRecordMetadata.sol";
 import "./ERC20/ERC20.sol";
 import "./ERC900/ERC900.sol";
 
-import "./library/Pausable.sol";
+import "./library/DelayedPausable.sol";
 
 
 /**
  * @title CodexRecordFees
  * @dev Storage, mutators, and modifiers for fees when using the token.
- *  This also includes the Pausable contract for the onlyOwner modifier.
+ *  This also includes the DelayedPausable contract for the onlyOwner modifier.
  */
-contract CodexRecordFees is CodexRecordMetadata, Pausable {
+contract CodexRecordFees is CodexRecordMetadata, DelayedPausable {
 
   // Implementation of the ERC20 Codex Protocol Token, used for fees in the contract
   ERC20 public codexCoin;

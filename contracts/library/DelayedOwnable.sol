@@ -23,8 +23,11 @@ contract DelayedOwnable {
   }
 
   function initializeOwnable(address _owner) external {
-    require(!isInitialized, "The owner has already been set");
+    require(
+      !isInitialized,
+      "The owner has already been set");
 
+    isInitialized = true;
     owner = _owner;
   }
 

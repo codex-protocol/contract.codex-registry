@@ -74,10 +74,6 @@ contract('CodexStakeContainer', function (accounts) {
     describe('when changed', function () {
       const newLockInDuration = lockInDuration * 2
 
-      beforeEach(async function () {
-        await this.stakeContainer.initializeOwnable(creator)
-      })
-
       it('should fail when not called by the owner', async function () {
         await assertRevert(
           this.stakeContainer.setLockInDuration(newLockInDuration, { from: otherUser })
@@ -314,7 +310,6 @@ contract('CodexStakeContainer', function (accounts) {
     describe('when the transfer from the contract fails', function () {
       it('should revert', async function () {
         // Pausing the token contract so that the transfer will fail
-        await this.codexCoin.initializeOwnable(creator)
         await this.codexCoin.pause()
 
         // Changing the timestamp of the next block so the stake is unlocked

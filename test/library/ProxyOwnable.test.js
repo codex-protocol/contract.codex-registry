@@ -1,4 +1,3 @@
-
 import assertRevert from '../helpers/assertRevert'
 
 const ProxyOwnable = artifacts.require('ProxyOwnable')
