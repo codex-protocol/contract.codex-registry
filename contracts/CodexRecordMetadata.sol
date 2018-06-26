@@ -33,17 +33,6 @@ contract CodexRecordMetadata is ERC721Token {
   string public tokenURIPrefix;
 
   /**
-   * @dev Modifier that checks to see if the token exists
-   * @param _tokenId uint256 The token ID
-   */
-  modifier tokenExists(uint256 _tokenId) {
-    require(
-      exists(_tokenId),
-      "Token doesn't exist");
-    _;
-  }
-
-  /**
    * @dev Updates token metadata hashes to whatever is passed in
    * @param _tokenId uint256 The token ID
    * @param _newNameHash bytes32 The new sha3 hash of the name
@@ -62,8 +51,8 @@ contract CodexRecordMetadata is ERC721Token {
     string _providerId, // TODO: convert to bytes32?
     string _providerMetadataId  // TODO: convert to bytes32?
   )
-    tokenExists(_tokenId)
-    public onlyOwnerOf(_tokenId)
+    public
+    onlyOwnerOf(_tokenId)
   {
     // nameHash is only overridden if it's not a blank string, since name is a
     //  required value
@@ -112,7 +101,6 @@ contract CodexRecordMetadata is ERC721Token {
   )
     public
     view
-    tokenExists(_tokenId)
     returns (bytes32 nameHash, bytes32 descriptionHash, bytes32[] fileHashes)
   {
     return (
@@ -143,7 +131,6 @@ contract CodexRecordMetadata is ERC721Token {
   )
     public
     view
-    tokenExists(_tokenId)
     returns (string)
   {
     bytes memory prefix = bytes(tokenURIPrefix);

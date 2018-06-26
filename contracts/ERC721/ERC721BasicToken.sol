@@ -43,15 +43,6 @@ contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
   }
 
   /**
-   * @dev Checks msg.sender can transfer a token, by being owner, approved, or operator
-   * @param _tokenId uint256 ID of the token to validate
-   */
-  modifier canTransfer(uint256 _tokenId) {
-    require(isApprovedOrOwner(msg.sender, _tokenId));
-    _;
-  }
-
-  /**
    * @dev Checks if the smart contract includes a specific interface.
    * @param _interfaceID The interface identifier, as specified in ERC-165.
    */
@@ -153,7 +144,6 @@ contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
     address _to,
     uint256 _tokenId)
     public
-    canTransfer(_tokenId)
   {
     internalTransferFrom(
       _from,
@@ -177,7 +167,6 @@ contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
     address _to,
     uint256 _tokenId)
     public
-    canTransfer(_tokenId)
   {
     internalSafeTransferFrom(
       _from,
@@ -204,7 +193,6 @@ contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
     uint256 _tokenId,
     bytes _data)
     public
-    canTransfer(_tokenId)
   {
     internalSafeTransferFrom(
       _from,
@@ -219,6 +207,7 @@ contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
     uint256 _tokenId)
     internal
   {
+    require(isApprovedOrOwner(msg.sender, _tokenId));
     require(_from != address(0));
     require(_to != address(0));
 
