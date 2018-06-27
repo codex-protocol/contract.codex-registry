@@ -6,14 +6,13 @@ import "../ERC165/ERC165.sol";
 
 import "../library/SafeMath.sol";
 import "../library/AddressUtils.sol";
-import "../library/Debuggable.sol";
 
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic implementation
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
-contract ERC721BasicToken is ERC721Basic, ERC165, Debuggable {
+contract ERC721BasicToken is ERC721Basic, ERC165 {
   using SafeMath for uint256;
   using AddressUtils for address;
 
