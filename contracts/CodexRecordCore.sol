@@ -47,11 +47,9 @@ contract CodexRecordCore is CodexRecordFees {
   )
     public
   {
-    // For now, all new tokens will be the last entry in the array
+    // All new tokens will be the last entry in the array
     uint256 newTokenId = allTokens.length;
-
-    // Add a new token to the allTokens array
-    super._mint(_to, newTokenId);
+    internalMint(_to, newTokenId);
 
     // Add metadata to the newly created token
     //
@@ -67,5 +65,19 @@ contract CodexRecordCore is CodexRecordFees {
     if (bytes(_providerId).length != 0 && bytes(_providerMetadataId).length != 0) {
       emit Minted(newTokenId, _providerId, _providerMetadataId);
     }
+  }
+
+  function internalMint(address _to, uint256 _tokenId) internal {
+    require(_to != address(0));
+
+    tokenOwner[_tokenId] = _to;
+    ownedTokensCount[_to] = ownedTokensCount[_to].add(1);
+
+    ownedTokensIndex[_tokenId] = ownedTokens[_to].length;
+    ownedTokens[_to].push(_tokenId);
+
+    allTokens.push(_tokenId);
+
+    emit Transfer(address(0), _to, _tokenId);
   }
 }

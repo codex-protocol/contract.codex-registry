@@ -101,6 +101,27 @@ contract ERC721Token is ERC721, ERC721BasicToken {
     return allTokens[_index];
   }
 
+  function internalTransferFrom(
+    address _from,
+    address _to,
+    uint256 _tokenId
+  )
+    internal
+  {
+    super.internalTransferFrom(_from, _to, _tokenId);
+
+    uint256 removeTokenIndex = ownedTokensIndex[_tokenId];
+    uint256 lastTokenIndex = ownedTokens[_from].length.sub(1);
+    uint256 lastToken = ownedTokens[_from][lastTokenIndex];
+
+    ownedTokens[_from][removeTokenIndex] = lastToken;
+    ownedTokens[_from].length--;
+    ownedTokensIndex[lastToken] = removeTokenIndex;
+
+    ownedTokens[_to].push(_tokenId);
+    ownedTokensIndex[_tokenId] = ownedTokens[_to].length - 1;
+  }
+
   /**
    * @dev Internal function to set the token URI for a given token
    * @dev Reverts if the token ID does not exist
@@ -110,52 +131,5 @@ contract ERC721Token is ERC721, ERC721BasicToken {
   function _setTokenURI(uint256 _tokenId, string _uri) internal {
     require(exists(_tokenId));
     tokenURIs[_tokenId] = _uri;
-  }
-
-  /**
-   * @dev Internal function to add a token ID to the list of a given address
-   * @param _to address representing the new owner of the given token ID
-   * @param _tokenId uint256 ID of the token to be added to the tokens list of the given address
-   */
-  function addTokenTo(address _to, uint256 _tokenId) internal {
-    super.addTokenTo(_to, _tokenId);
-    uint256 length = ownedTokens[_to].length;
-    ownedTokens[_to].push(_tokenId);
-    ownedTokensIndex[_tokenId] = length;
-  }
-
-  /**
-   * @dev Internal function to remove a token ID from the list of a given address
-   * @param _from address representing the previous owner of the given token ID
-   * @param _tokenId uint256 ID of the token to be removed from the tokens list of the given address
-   */
-  function removeTokenFrom(address _from, uint256 _tokenId) internal {
-    super.removeTokenFrom(_from, _tokenId);
-
-    uint256 tokenIndex = ownedTokensIndex[_tokenId];
-    uint256 lastTokenIndex = ownedTokens[_from].length.sub(1);
-    uint256 lastToken = ownedTokens[_from][lastTokenIndex];
-
-    ownedTokens[_from][tokenIndex] = lastToken;
-    ownedTokens[_from][lastTokenIndex] = 0;
-    // Note that this will handle single-element arrays. In that case, both tokenIndex and lastTokenIndex are going to
-    // be zero. Then we can make sure that we will remove _tokenId from the ownedTokens list since we are first swapping
-    // the lastToken to the first position, and then dropping the element placed in the last position of the list
-
-    ownedTokens[_from].length--;
-    ownedTokensIndex[_tokenId] = 0;
-    ownedTokensIndex[lastToken] = tokenIndex;
-  }
-
-  /**
-   * @dev Internal function to mint a new token
-   * @dev Reverts if the given token ID already exists
-   * @param _to address the beneficiary that will own the minted token
-   * @param _tokenId uint256 ID of the token to be minted by the msg.sender
-   */
-  function _mint(address _to, uint256 _tokenId) internal {
-    super._mint(_to, _tokenId);
-
-    allTokens.push(_tokenId);
   }
 }

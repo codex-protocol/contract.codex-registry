@@ -9,6 +9,11 @@ import "../../ERC721/ERC721BasicToken.sol";
  */
 contract ERC721BasicTokenMock is ERC721BasicToken {
   function mint(address _to, uint256 _tokenId) public {
-    super._mint(_to, _tokenId);
+    require(_to != address(0));
+    require(!exists(_tokenId));
+
+    tokenOwner[_tokenId] = _to;
+    ownedTokensCount[_to] = ownedTokensCount[_to].add(1);
+    emit Transfer(address(0), _to, _tokenId);
   }
 }

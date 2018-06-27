@@ -2,14 +2,13 @@ pragma solidity 0.4.24;
 
 import "./ERC900/ERC900BasicStakeContainer.sol";
 
-// @TODO: Add Pausable functionality to prevent staking/unstaking?
-import "./library/Pausable.sol";
+import "./library/Ownable.sol";
 
 
 /**
  * @title CodexStakeContainer
  */
-contract CodexStakeContainer is ERC900BasicStakeContainer, Pausable {
+contract CodexStakeContainer is ERC900BasicStakeContainer, Ownable {
   /**
    * @dev Constructor function
    * @param _stakingToken ERC20 The address of the token used for staking

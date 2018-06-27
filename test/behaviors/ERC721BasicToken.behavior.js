@@ -17,7 +17,7 @@ export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFun
   const unknownTokenId = 2
   const creator = accounts[0]
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
-  const RECEIVER_MAGIC_VALUE = '0xf0b9e5ba'
+  const RECEIVER_MAGIC_VALUE = '0x150b7a02'
 
   let mintFunction
   if (customMintFunction) {
@@ -111,7 +111,7 @@ export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFun
         await this.token.setApprovalForAll(operator, true, { from: owner })
       })
 
-      const transferWasSuccessful = function (expctedOwner, expectedTokenId, expectedApproved) {
+      const transferWasSuccessful = function (expectedOwner, expectedTokenId) {
         it('transfers the ownership of the given token ID to the given address', async function () {
           const newOwner = await this.token.ownerOf(expectedTokenId)
           newOwner.should.be.equal(this.to)
@@ -122,34 +122,19 @@ export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFun
           approvedAccount.should.be.equal(ZERO_ADDRESS)
         })
 
-        if (expectedApproved) {
-          it('emits an approval and transfer events', async function () {
-            logs.length.should.be.equal(2)
-            logs[0].event.should.be.eq('Approval')
-            logs[0].args._owner.should.be.equal(expctedOwner)
-            logs[0].args._approved.should.be.equal(ZERO_ADDRESS)
-            logs[0].args._tokenId.should.be.bignumber.equal(expectedTokenId)
-
-            logs[1].event.should.be.eq('Transfer')
-            logs[1].args._from.should.be.equal(expctedOwner)
-            logs[1].args._to.should.be.equal(this.to)
-            logs[1].args._tokenId.should.be.bignumber.equal(expectedTokenId)
-          })
-        } else {
-          it('emits only a transfer event', async function () {
-            logs.length.should.be.equal(1)
-            logs[0].event.should.be.eq('Transfer')
-            logs[0].args._from.should.be.equal(expctedOwner)
-            logs[0].args._to.should.be.equal(this.to)
-            logs[0].args._tokenId.should.be.bignumber.equal(expectedTokenId)
-          })
-        }
+        it('emits only a transfer event', async function () {
+          logs.length.should.be.equal(1)
+          logs[0].event.should.be.eq('Transfer')
+          logs[0].args._from.should.be.equal(expectedOwner)
+          logs[0].args._to.should.be.equal(this.to)
+          logs[0].args._tokenId.should.be.bignumber.equal(expectedTokenId)
+        })
 
         it('adjusts owners balances', async function () {
           const newOwnerBalance = await this.token.balanceOf(this.to)
           newOwnerBalance.should.be.bignumber.equal(1)
 
-          const previousOwnerBalance = await this.token.balanceOf(expctedOwner)
+          const previousOwnerBalance = await this.token.balanceOf(expectedOwner)
           previousOwnerBalance.should.be.bignumber.equal(1)
         })
 
@@ -159,7 +144,7 @@ export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFun
           const newOwnerToken = await this.token.tokenOfOwnerByIndex(this.to, 0)
           newOwnerToken.toNumber().should.be.equal(expectedTokenId)
 
-          const previousOwnerToken = await this.token.tokenOfOwnerByIndex(expctedOwner, 0)
+          const previousOwnerToken = await this.token.tokenOfOwnerByIndex(expectedOwner, 0)
           previousOwnerToken.toNumber().should.not.be.equal(expectedTokenId)
         })
       }
@@ -169,21 +154,21 @@ export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFun
           beforeEach(async function () {
             ({ logs } = await transferFunction.call(this, owner, this.to, tokenId, { from: owner }))
           })
-          transferWasSuccessful(owner, tokenId, approved)
+          transferWasSuccessful(owner, tokenId)
         })
 
         describe('when called by the approved individual', function () {
           beforeEach(async function () {
             ({ logs } = await transferFunction.call(this, owner, this.to, tokenId, { from: approved }))
           })
-          transferWasSuccessful(owner, tokenId, approved)
+          transferWasSuccessful(owner, tokenId)
         })
 
         describe('when called by the operator', function () {
           beforeEach(async function () {
             ({ logs } = await transferFunction.call(this, owner, this.to, tokenId, { from: operator }))
           })
-          transferWasSuccessful(owner, tokenId, approved)
+          transferWasSuccessful(owner, tokenId)
         })
 
         describe('when called by the owner without an approved user', function () {
@@ -191,7 +176,7 @@ export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFun
             await this.token.approve(ZERO_ADDRESS, tokenId, { from: owner })
             ;({ logs } = await transferFunction.call(this, owner, this.to, tokenId, { from: operator }))
           })
-          transferWasSuccessful(owner, tokenId, null)
+          transferWasSuccessful(owner, tokenId)
         })
 
         describe('when sent to the owner', function () {
@@ -209,17 +194,12 @@ export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFun
             approvedAccount.should.be.equal(ZERO_ADDRESS)
           })
 
-          it('emits an approval and transfer events', async function () {
-            logs.length.should.be.equal(2)
-            logs[0].event.should.be.eq('Approval')
-            logs[0].args._owner.should.be.equal(owner)
-            logs[0].args._approved.should.be.equal(ZERO_ADDRESS)
+          it('emits only a transfer events', async function () {
+            logs.length.should.be.equal(1)
+            logs[0].event.should.be.eq('Transfer')
+            logs[0].args._from.should.be.equal(owner)
+            logs[0].args._to.should.be.equal(owner)
             logs[0].args._tokenId.should.be.bignumber.equal(tokenId)
-
-            logs[1].event.should.be.eq('Transfer')
-            logs[1].args._from.should.be.equal(owner)
-            logs[1].args._to.should.be.equal(owner)
-            logs[1].args._tokenId.should.be.bignumber.equal(tokenId)
           })
 
           it('keeps the owner balance', async function () {
@@ -295,10 +275,22 @@ export default function shouldBehaveLikeERC721BasicToken(accounts, customMintFun
 
             it('should call onERC721Received', async function () {
               const result = await transferFun.call(this, owner, this.to, tokenId, { from: owner })
-              result.receipt.logs.length.should.be.equal(3)
-              const [log] = decodeLogs([result.receipt.logs[2]], ERC721Receiver, this.receiver.address)
+              result.receipt.logs.length.should.be.equal(2)
+              const [log] = decodeLogs([result.receipt.logs[1]], ERC721Receiver, this.receiver.address)
               log.event.should.be.eq('Received')
-              log.args._address.should.be.equal(owner)
+              log.args._operator.should.be.equal(owner)
+              log.args._from.should.be.equal(owner)
+              log.args._tokenId.toNumber().should.be.equal(tokenId)
+              log.args._data.should.be.equal(transferData)
+            })
+
+            it('should call onERC721Received from approved', async function () {
+              const result = await transferFun.call(this, owner, this.to, tokenId, { from: approved })
+              result.receipt.logs.length.should.be.equal(2)
+              const [log] = decodeLogs([result.receipt.logs[1]], ERC721Receiver, this.receiver.address)
+              log.event.should.be.eq('Received')
+              log.args._operator.should.be.equal(approved)
+              log.args._from.should.be.equal(owner)
               log.args._tokenId.toNumber().should.be.equal(tokenId)
               log.args._data.should.be.equal(transferData)
             })
