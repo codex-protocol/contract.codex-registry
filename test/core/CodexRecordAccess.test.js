@@ -48,8 +48,7 @@ contract('CodexRecordAccess', async function (accounts) {
         hashedMetadata.name,
         hashedMetadata.description,
         hashedMetadata.files,
-        providerId,
-        providerMetadataId,
+        dataAsBytes,
       )
 
       await token.pause()
