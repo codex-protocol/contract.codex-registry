@@ -50,7 +50,7 @@ contract CodexRecordMetadata is ERC721Token {
     onlyOwnerOf(_tokenId)
   {
     // nameHash is only overridden if it's not a blank string, since name is a
-    //  required value
+    //  required value. Emptiness is determined if the first element is the null-byte
     if (_newNameHash[0] != 0x0) {
       tokenData[_tokenId].nameHash = _newNameHash;
     }
