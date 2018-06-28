@@ -1,8 +1,8 @@
 const convertDataToBytes = (data) => {
   let concatenatedString = ''
 
-  Object.keys(data).forEach((key) => {
-    concatenatedString += `${data[key]}:::`
+  Object.values(data).forEach((value) => {
+    concatenatedString += `${value}::`
   })
 
   const buffer = Buffer.from(concatenatedString.substring(0, concatenatedString.length - 3))

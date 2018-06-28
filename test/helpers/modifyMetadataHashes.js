@@ -49,11 +49,11 @@ export default async function modifyMetadataHashes({
 
   if (rawData && dataAsBytes !== '0x') {
     const buffer = Buffer.from(data.substring(2), 'hex')
-    const tokenizedData = buffer.toString('utf8').split(':::')
+    const tokenizedData = buffer.toString('utf8').split('::')
     let tokenIndex = 0
 
-    Object.keys(rawData).forEach((key) => {
-      rawData[key].should.be.equal(tokenizedData[tokenIndex])
+    Object.values(rawData).forEach((value) => {
+      value.should.be.equal(tokenizedData[tokenIndex])
       tokenIndex += 1
     })
   }
