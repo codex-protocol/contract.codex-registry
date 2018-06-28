@@ -1,12 +1,6 @@
-const getCoreRegistryFunctions = (accounts, firstTokenId, metadata) => {
+const getCoreRegistryFunctions = (accounts, firstTokenId, hashedMetadata, dataAsBytes) => {
   const creator = accounts[0]
   const another = accounts[1]
-
-  const {
-    hashedMetadata,
-    providerId,
-    providerMetadataId,
-  } = metadata
 
   return [{
     name: 'mint',
@@ -16,8 +10,7 @@ const getCoreRegistryFunctions = (accounts, firstTokenId, metadata) => {
       hashedMetadata.name,
       hashedMetadata.description,
       hashedMetadata.files,
-      providerId,
-      providerMetadataId,
+      dataAsBytes,
     ],
   }, {
     name: 'transferFrom',
@@ -52,8 +45,7 @@ const getCoreRegistryFunctions = (accounts, firstTokenId, metadata) => {
       hashedMetadata.name,
       hashedMetadata.description,
       hashedMetadata.files,
-      providerId,
-      providerMetadataId,
+      dataAsBytes,
     ],
   }]
 }

@@ -4,8 +4,8 @@ export default async function modifyMetadataHashes({
   newFileHashes,
   newDescriptionHash,
 
-  providerId = '',
-  providerMetadataId = '',
+  rawData,
+  dataAsBytes,
 
   expectedNameHash = newNameHash,
   expectedFileHashes = newFileHashes,
@@ -28,30 +28,33 @@ export default async function modifyMetadataHashes({
     newNameHash,
     newDescriptionHash,
     newFileHashes,
-    providerId,
-    providerMetadataId,
+    dataAsBytes,
   )
 
   const tokenData = await this.token.getTokenById(this.tokenId)
-
   tokenData[0].should.be.equal(expectedNameHash)
   tokenData[1].should.be.equal(expectedDescriptionHash)
   tokenData[2].should.deep.equal(expectedFileHashes)
 
-  // no Modified event is emitted when no provider details are specified
-  if (!providerId && !providerMetadataId) {
-    logs.length.should.be.equal(expectedLogsLength - 1)
-    return
-  }
-
   logs.length.should.be.equal(expectedLogsLength)
-
   logs[expectedEventIndex].event.should.be.eq('Modified')
   logs[expectedEventIndex].args._from.should.be.equal(this.creator)
   logs[expectedEventIndex].args._tokenId.should.be.bignumber.equal(this.tokenId)
   logs[expectedEventIndex].args._newNameHash.should.be.equal(tokenData[0])
   logs[expectedEventIndex].args._newDescriptionHash.should.be.equal(tokenData[1])
   logs[expectedEventIndex].args._newFileHashes.should.deep.equal(tokenData[2])
-  logs[expectedEventIndex].args._providerId.should.be.equal(providerId)
-  logs[expectedEventIndex].args._providerMetadataId.should.be.equal(providerMetadataId)
+
+  const data = logs[expectedEventIndex].args._data
+  data.should.be.equal(dataAsBytes)
+
+  if (rawData && dataAsBytes !== '0x') {
+    const buffer = Buffer.from(data.substring(2), 'hex')
+    const tokenizedData = buffer.toString('utf8').split(':::')
+    let tokenIndex = 0
+
+    Object.keys(rawData).forEach((key) => {
+      rawData[key].should.be.equal(tokenizedData[tokenIndex])
+      tokenIndex += 1
+    })
+  }
 }

@@ -1,4 +1,5 @@
 import assertRevert from '../helpers/assertRevert'
+import convertDataToBytes from '../helpers/convertDataToBytes'
 import modifyMetadataHashesUnbound from '../helpers/modifyMetadataHashes'
 
 const { BigNumber } = web3
@@ -8,16 +9,19 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-export default function shouldBehaveLikeCodexRecord(accounts, metadata) {
+export default function shouldBehaveLikeCodexRecord(accounts, inputs) {
   const creator = accounts[0]
   const unauthorized = accounts[9]
   const firstTokenId = 0
 
   const {
     hashedMetadata,
-    providerId,
-    providerMetadataId,
-  } = metadata
+    data,
+  } = inputs
+
+  const dataAsBytes = convertDataToBytes(data)
+
+  console.log(dataAsBytes)
 
   let modifyMetadataHashes // initialized per-test in beforeEach below
 
@@ -28,8 +32,7 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata) {
         hashedMetadata.name,
         hashedMetadata.description,
         hashedMetadata.files,
-        providerId,
-        providerMetadataId
+        dataAsBytes,
       )
 
       const numTokens = await this.token.totalSupply()
@@ -72,8 +75,7 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata) {
               newNameHash,
               newDescriptionHash,
               newFileHashes,
-              providerId,
-              providerMetadataId,
+              dataAsBytes,
               { from: unauthorized },
             ),
           )
@@ -88,8 +90,8 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata) {
             newDescriptionHash: hashedMetadata.description,
             newFileHashes: [],
 
-            providerId,
-            providerMetadataId,
+            rawData: data,
+            dataAsBytes,
 
             expectedFileHashes: hashedMetadata.files,
           })
@@ -101,8 +103,8 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata) {
             newDescriptionHash,
             newFileHashes: [],
 
-            providerId,
-            providerMetadataId,
+            rawData: data,
+            dataAsBytes,
 
             expectedNameHash: hashedMetadata.name,
             expectedDescriptionHash: newDescriptionHash,
@@ -116,8 +118,8 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata) {
             newDescriptionHash: '',
             newFileHashes: hashedMetadata.files,
 
-            providerId,
-            providerMetadataId,
+            rawData: data,
+            dataAsBytes,
 
             expectedDescriptionHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
           })
@@ -129,8 +131,8 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata) {
             newDescriptionHash: hashedMetadata.description,
             newFileHashes,
 
-            providerId,
-            providerMetadataId,
+            rawData: data,
+            dataAsBytes,
 
             expectedNameHash: hashedMetadata.name,
           })
@@ -141,17 +143,16 @@ export default function shouldBehaveLikeCodexRecord(accounts, metadata) {
             newNameHash,
             newDescriptionHash,
             newFileHashes,
-
-            providerId,
-            providerMetadataId,
+            dataAsBytes,
           })
         })
 
-        it('should update all hashes when no providerId & providerMetadataId are provided', async function () {
+        it('should update all hashes when empty data is provided', async function () {
           await modifyMetadataHashes({
             newNameHash,
             newDescriptionHash,
             newFileHashes,
+            dataAsBytes: '0x',
           })
         })
       })

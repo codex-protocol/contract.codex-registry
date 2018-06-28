@@ -1,4 +1,5 @@
 import assertRevert from '../helpers/assertRevert'
+import convertDataToBytes from '../helpers/convertDataToBytes'
 import getCoreRegistryFunctions from '../helpers/getCoreRegistryFunctions'
 
 const { BigNumber } = web3
@@ -11,7 +12,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) {
+export default function shouldBehaveLikeCodexRecordWithFees(accounts, inputs) {
   const creator = accounts[0]
   const otherUser = accounts[1]
   const communityFund = accounts[8]
@@ -24,10 +25,18 @@ export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) 
     modification: web3.toWei(1, 'ether'),
   }
 
+  const {
+    hashedMetadata,
+    data,
+  } = inputs
+
+  const dataAsBytes = convertDataToBytes(data)
+
   const payableFunctions = getCoreRegistryFunctions(
     accounts,
     firstTokenId,
-    metadata
+    hashedMetadata,
+    dataAsBytes,
   )
 
   describe('like a CodexRecord with fees', function () {
@@ -37,11 +46,10 @@ export default function shouldBehaveLikeCodexRecordWithFees(accounts, metadata) 
       // pre-minting a token for use in some of the transfer tests
       await this.token.mint(
         creator,
-        metadata.hashedMetadata.name,
-        metadata.hashedMetadata.description,
-        metadata.hashedMetadata.files,
-        metadata.providerId,
-        metadata.providerMetadataId,
+        hashedMetadata.name,
+        hashedMetadata.description,
+        hashedMetadata.files,
+        dataAsBytes,
       )
 
       // Set contract fees, sent to the community fund

@@ -17,8 +17,7 @@ contract CodexRecordAccess is CodexRecordCore {
     bytes32 _nameHash,
     bytes32 _descriptionHash,
     bytes32[] _fileHashes,
-    string _providerId, // TODO: convert to bytes32
-    string _providerMetadataId // TODO: convert to bytes32
+    bytes _data
   )
     public
     whenNotPaused
@@ -29,9 +28,7 @@ contract CodexRecordAccess is CodexRecordCore {
       _nameHash,
       _descriptionHash,
       _fileHashes,
-      _providerId,
-      _providerMetadataId
-    );
+      _data);
   }
 
   /**
@@ -46,7 +43,10 @@ contract CodexRecordAccess is CodexRecordCore {
     whenNotPaused
     canPayFees(transferFee)
   {
-    return super.transferFrom(_from, _to, _tokenId);
+    return super.transferFrom(
+      _from,
+      _to,
+      _tokenId);
   }
 
   /**
@@ -61,7 +61,10 @@ contract CodexRecordAccess is CodexRecordCore {
     whenNotPaused
     canPayFees(transferFee)
   {
-    return super.safeTransferFrom(_from, _to, _tokenId);
+    return super.safeTransferFrom(
+      _from,
+      _to,
+      _tokenId);
   }
 
   /**
@@ -93,8 +96,7 @@ contract CodexRecordAccess is CodexRecordCore {
     bytes32 _newNameHash,
     bytes32 _newDescriptionHash,
     bytes32[] _newFileHashes,
-    string _providerId, // TODO: convert to bytes32?
-    string _providerMetadataId // TODO: convert to bytes32?
+    bytes _data
   )
     public
     whenNotPaused
@@ -105,8 +107,6 @@ contract CodexRecordAccess is CodexRecordCore {
       _newNameHash,
       _newDescriptionHash,
       _newFileHashes,
-      _providerId,
-      _providerMetadataId
-    );
+      _data);
   }
 }

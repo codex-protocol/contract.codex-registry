@@ -21,8 +21,7 @@ contract CodexRecordMetadata is ERC721Token {
     bytes32 _newNameHash,
     bytes32 _newDescriptionHash,
     bytes32[] _newFileHashes,
-    string _providerId, // TODO: convert to bytes32?
-    string _providerMetadataId // TODO: convert to bytes32?
+    bytes _data
   );
 
   // Mapping from token ID to token data
@@ -38,29 +37,21 @@ contract CodexRecordMetadata is ERC721Token {
    * @param _newNameHash bytes32 The new sha3 hash of the name
    * @param _newDescriptionHash bytes32 The new sha3 hash of the description
    * @param _newFileHashes bytes32[] The new sha3 hashes of the files associated with the token
-   * @param _providerId (optional) string An ID that identifies which provider is
-   *  minting this token
-   * @param _providerMetadataId (optional) string An arbitrary provider-defined ID that
-   *  identifies the metadata record stored by the provider
+   * @param _data (optional) bytes Additional data that will be emitted with the Modified event
    */
   function modifyMetadataHashes(
     uint256 _tokenId,
     bytes32 _newNameHash,
     bytes32 _newDescriptionHash,
     bytes32[] _newFileHashes,
-    string _providerId, // TODO: convert to bytes32?
-    string _providerMetadataId  // TODO: convert to bytes32?
+    bytes _data
   )
     public
     onlyOwnerOf(_tokenId)
   {
     // nameHash is only overridden if it's not a blank string, since name is a
     //  required value
-    //
-    // NOTE: is this the best way to check for an empty bytes32 array?
-    //  would (_newNameHash != "") be better in any way?
-    //  see: https://ethereum.stackexchange.com/questions/27227/why-does-require-length-of-bytes32-0-not-work
-    if (_newNameHash[0] != 0) {
+    if (_newNameHash[0] != 0x0) {
       tokenData[_tokenId].nameHash = _newNameHash;
     }
 
@@ -70,25 +61,18 @@ contract CodexRecordMetadata is ERC721Token {
 
     // fileHashes is only overridden if it has more than one value, since at
     //  least one file (i.e. mainImage) is required
-    //
-    // NOTE: is this the best way to check for an empty bytes32 array?
-    //  would (_newNameHash != "") be better in any way?
-    //  see: https://ethereum.stackexchange.com/questions/27227/why-does-require-length-of-bytes32-0-not-work
-    if (_newFileHashes.length > 0 && _newFileHashes[0][0] != 0) {
+    if (_newFileHashes.length > 0 && _newFileHashes[0][0] != 0x0) {
       tokenData[_tokenId].fileHashes = _newFileHashes;
     }
 
-    if (bytes(_providerId).length != 0 && bytes(_providerMetadataId).length != 0) {
-      emit Modified(
-        msg.sender,
-        _tokenId,
-        tokenData[_tokenId].nameHash,
-        tokenData[_tokenId].descriptionHash,
-        tokenData[_tokenId].fileHashes,
-        _providerId,
-        _providerMetadataId
-      );
-    }
+    emit Modified(
+      msg.sender,
+      _tokenId,
+      tokenData[_tokenId].nameHash,
+      tokenData[_tokenId].descriptionHash,
+      tokenData[_tokenId].fileHashes,
+      _data
+    );
   }
 
   /**
@@ -117,7 +101,7 @@ contract CodexRecordMetadata is ERC721Token {
    * @dev To save on gas, we will host a standard metadata endpoint for each token.
    *  For Collector privacy, specific token metadata is stored off chain, which means
    *  the metadata returned by this endpoint cannot include specific details about
-   *  the physical asset the token represents.
+   *  the physical asset the token represents unless the Collector has made it public.
    *
    * @dev This metadata will be a JSON blob that includes:
    *  name - Codex Record
