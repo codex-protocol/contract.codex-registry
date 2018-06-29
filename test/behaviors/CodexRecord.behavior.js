@@ -20,9 +20,6 @@ export default function shouldBehaveLikeCodexRecord(accounts, inputs) {
   } = inputs
 
   const dataAsBytes = convertDataToBytes(data)
-
-  console.log(dataAsBytes)
-
   let modifyMetadataHashes // initialized per-test in beforeEach below
 
   describe('like a CodexRecord', function () {
