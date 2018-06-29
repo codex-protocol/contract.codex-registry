@@ -1,6 +1,7 @@
 import assertRevert from '../helpers/assertRevert'
 import shouldBehaveLikeCodexRecord from '../behaviors/CodexRecord.behavior'
 import shouldBehaveLikeCodexRecordWithFees from '../behaviors/CodexRecordFees.behavior'
+import shouldBehaveLikeCodexRecordWithFeesExtended from '../behaviors/CodexRecordFees.extended.behavior'
 
 const { BigNumber } = web3
 const ERC721Token = artifacts.require('ERC721TokenMock.sol')
@@ -237,6 +238,7 @@ contract('CodexRecordProxy', async function (accounts) {
     describe('should behave', function () {
       shouldBehaveLikeCodexRecord(accounts, inputs)
       shouldBehaveLikeCodexRecordWithFees(accounts, inputs)
+      shouldBehaveLikeCodexRecordWithFeesExtended(accounts, inputs)
     })
   })
 })

@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
 import "./CodexRecordMetadata.sol";
-import "./CodexStakeContainerInterface.sol";
+import "./CodexStakeContractInterface.sol";
 import "./ERC20/ERC20.sol";
 
 import "./library/DelayedPausable.sol";
@@ -19,7 +19,7 @@ contract CodexRecordFees is CodexRecordMetadata, DelayedPausable {
 
   // Implementation of the ERC900 Codex Protocol Stake Container,
   //  used to calculate discounts on fees
-  CodexStakeContainerInterface public codexStakeContainer;
+  CodexStakeContractInterface public codexStakeContract;
 
   // Address where all contract fees are sent, i.e., the Community Fund
   address public feeRecipient;
@@ -36,11 +36,11 @@ contract CodexRecordFees is CodexRecordMetadata, DelayedPausable {
   modifier canPayFees(uint256 _baseFee) {
     if (feeRecipient != address(0) && _baseFee > 0) {
 
-      if (codexStakeContainer != address(0)) {
+      if (codexStakeContract != address(0)) {
 
-        uint256 discountCredits = codexStakeContainer.creditBalanceOf(msg.sender);
+        uint256 discountCredits = codexStakeContract.creditBalanceOf(msg.sender);
         if (discountCredits >= _baseFee) {
-          codexStakeContainer.spendCredits(msg.sender, _baseFee);
+          codexStakeContract.spendCredits(msg.sender, _baseFee);
         } else {
           require(
             codexCoin.transferFrom(msg.sender, feeRecipient, _baseFee),
@@ -78,7 +78,7 @@ contract CodexRecordFees is CodexRecordMetadata, DelayedPausable {
     modificationFee = _modificationFee;
   }
 
-  function setStakeContainer(CodexStakeContainerInterface _codexStakeContainer) external onlyOwner {
-    codexStakeContainer = _codexStakeContainer;
+  function setStakeContract(CodexStakeContractInterface _codexStakeContract) external onlyOwner {
+    codexStakeContract = _codexStakeContract;
   }
 }

@@ -1,5 +1,5 @@
 const CodexCoin = artifacts.require('./CodexCoin.sol')
-const CodexStakeContainer = artifacts.require('./CodexStakeContainer.sol')
+const CodexStakeContract = artifacts.require('./CodexStakeContract.sol')
 
 module.exports = (deployer, network) => {
   deployer.then(async () => {
@@ -29,7 +29,7 @@ module.exports = (deployer, network) => {
     }
 
     await deployer.deploy(
-      CodexStakeContainer,
+      CodexStakeContract,
       codexCoinAddress,
       defaultLockInDuration,
     )
