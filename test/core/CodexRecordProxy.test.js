@@ -214,14 +214,16 @@ contract('CodexRecordProxy', async function (accounts) {
   })
 
   describe('proxying CodexRecord', function () {
-    const metadata = {
+    const inputs = {
       hashedMetadata: {
         name: web3.sha3('First token'),
         description: web3.sha3('This is the first token'),
         files: [web3.sha3('file data')],
       },
-      providerId: '1',
-      providerMetadataId: '10',
+      data: {
+        providerId: '1',
+        providerMetadataId: '10',
+      },
     }
 
     beforeEach(async function () {
@@ -233,8 +235,8 @@ contract('CodexRecordProxy', async function (accounts) {
     })
 
     describe('should behave', function () {
-      shouldBehaveLikeCodexRecord(accounts, metadata)
-      shouldBehaveLikeCodexRecordWithFees(accounts, metadata)
+      shouldBehaveLikeCodexRecord(accounts, inputs)
+      shouldBehaveLikeCodexRecordWithFees(accounts, inputs)
     })
   })
 })

@@ -1,3 +1,4 @@
+import convertDataToBytes from '../helpers/convertDataToBytes'
 import shouldBehaveLikeERC721BasicToken from '../behaviors/ERC721BasicToken.behavior'
 
 const { BigNumber } = web3
@@ -22,14 +23,20 @@ contract('CodexRecordProxy', async function (accounts) {
     })
 
     describe('should behave', function () {
+      const data = {
+        providerId: '1',
+        providerMetadataId: '10',
+      }
+
+      const dataAsBytes = convertDataToBytes(data)
+
       async function mintToken(tokenToMint, tokenCreator) {
         await tokenToMint.mint(
           tokenCreator,
           web3.sha3('name'),
           web3.sha3('description'),
           [web3.sha3('file data')],
-          '1',
-          '10'
+          dataAsBytes,
         )
       }
 

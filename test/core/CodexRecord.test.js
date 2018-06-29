@@ -11,14 +11,16 @@ require('chai')
   .should()
 
 contract('CodexRecord', function (accounts) {
-  const metadata = {
+  const inputs = {
     hashedMetadata: {
       name: web3.sha3('First token'),
       description: web3.sha3('This is the first token'),
       files: [web3.sha3('file data')],
     },
-    providerId: '1',
-    providerMetadataId: '10',
+    data: {
+      providerId: '1',
+      providerMetadataId: '10',
+    },
   }
 
   beforeEach(async function () {
@@ -29,8 +31,8 @@ contract('CodexRecord', function (accounts) {
   shouldBehaveLikeERC165()
 
   // Base behavior, no fees
-  shouldBehaveLikeCodexRecord(accounts, metadata)
+  shouldBehaveLikeCodexRecord(accounts, inputs)
 
   // Extended functionality & base behavior with fees enabled
-  shouldBehaveLikeCodexRecordWithFees(accounts, metadata)
+  shouldBehaveLikeCodexRecordWithFees(accounts, inputs)
 })

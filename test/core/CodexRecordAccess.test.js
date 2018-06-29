@@ -1,4 +1,5 @@
 import assertRevert from '../helpers/assertRevert'
+import convertDataToBytes from '../helpers/convertDataToBytes'
 import getCoreRegistryFunctions from '../helpers/getCoreRegistryFunctions'
 
 const { BigNumber } = web3
@@ -21,13 +22,18 @@ contract('CodexRecordAccess', async function (accounts) {
     files: [web3.sha3('file data')],
   }
 
+  const data = {
+    providerId,
+    providerMetadataId,
+  }
+
+  const dataAsBytes = convertDataToBytes(data)
+
   const pausableFunctions = getCoreRegistryFunctions(
     accounts,
-    firstTokenId, {
-      hashedMetadata,
-      providerId,
-      providerMetadataId,
-    }
+    firstTokenId,
+    hashedMetadata,
+    dataAsBytes,
   )
 
   describe('when the contract is paused', function () {
@@ -42,8 +48,7 @@ contract('CodexRecordAccess', async function (accounts) {
         hashedMetadata.name,
         hashedMetadata.description,
         hashedMetadata.files,
-        providerId,
-        providerMetadataId,
+        dataAsBytes,
       )
 
       await token.pause()
