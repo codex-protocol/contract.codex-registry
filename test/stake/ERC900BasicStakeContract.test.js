@@ -2,7 +2,7 @@ import shouldBehaveLikeBasicStakeContract from '../behaviors/ERC900BasicStakeCon
 
 const { BigNumber } = web3
 
-const Erc20Token = artifacts.require('PausableTokenMock.sol')
+const Erc20Token = artifacts.require('CodexCoin.sol')
 const BasicStakeContract = artifacts.require('BasicStakeContractMock.sol')
 
 require('chai')

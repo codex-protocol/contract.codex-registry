@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "./ERC900BasicStakeContract.sol";
 
@@ -22,6 +22,11 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
   // Users cannot own fractional credits
   mapping (address => uint256) public creditBalances;
 
+  /**
+   * @dev Returns the balance of credits at a user's address.
+   * @param _user address The address to check.
+   * @return uint256 The credit balance.
+   */
   function creditBalanceOf(
     address _user
   )
@@ -32,6 +37,12 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
     return creditBalances[_user];
   }
 
+  /**
+   * @dev Spends credits for a user. Only callable by the owner. Reverts if the
+   *  user doesn't have enough credits.
+   * @param _user address The address that owns the credits being spent.
+   * @param _amount uint256 The number of credits to spend.
+   */
   function spendCredits(
     address _user,
     uint256 _amount
@@ -46,6 +57,12 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
     creditBalances[_user] = creditBalances[_user].sub(_amount);
   }
 
+  /**
+   * @dev Stakes tokens for the caller and rewards them with credits. Reverts
+   *  if less than 1 token is being staked.
+   * @param _amount uint256 The number of tokens to stake
+   * @param _data bytes optional data to include in the Stake event
+   */
   function stake(
     uint256 _amount,
     bytes _data
@@ -62,6 +79,13 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
       defaultLockInDuration);
   }
 
+  /**
+   * Stakes tokens from the caller for a particular user, and rewards that user with credits.
+   * Reverts if less than 1 token is being staked.
+   * @param _user address The address the tokens are staked for
+   * @param _amount uint256 The number of tokens to stake
+   * @param _data bytes optional data to include in the Stake event
+   */
   function stakeFor(
     address _user,
     uint256 _amount,
@@ -80,6 +104,14 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
       defaultLockInDuration);
   }
 
+  /**
+   * @dev Stakes tokens from the caller for a given user & duration, and rewards that user with credits.
+   * Reverts if less than 1 token is being staked, or if the duration specified is less than the default.
+   * @param _user address The address the tokens are staked for
+   * @param _amount uint256 The number of tokens to stake
+   * @param _lockInDuration uint256 The duration (in seconds) that the stake should be locked for
+   * @param _data bytes optional data to be included in the Stake event
+   */
   function stakeForDuration(
     address _user,
     uint256 _amount,
@@ -109,13 +141,19 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
       _data);
   }
 
+  /**
+   * @dev Internal function to update the credit balance of a user when staking tokens.
+   *  Users are rewarded with more tokens the longer they stake for.
+   * @param _user address The address to award credits to
+   * @param _amount uint256 The number of tokens being staked
+   * @param _lockInDuration uint256 The duration (in seconds) that the stake should be locked for
+   */
   function updateCreditBalance(
     address _user,
     uint256 _amount,
     uint256 _lockInDuration
   )
     internal
-    returns (uint256)
   {
     uint256 divisor = 1 ether;
 

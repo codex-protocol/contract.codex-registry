@@ -3,7 +3,7 @@ import shouldBehaveLikeCreditsStakeContract from '../behaviors/ERC900CreditsStak
 
 const { BigNumber } = web3
 
-const Erc20Token = artifacts.require('PausableTokenMock.sol')
+const Erc20Token = artifacts.require('CodexCoin.sol')
 const CreditsStakeContract = artifacts.require('CreditsStakeContract.sol')
 
 require('chai')
