@@ -100,7 +100,6 @@ export default function shouldBehaveLikeCodexRecordWithFees(accounts, inputs) {
 
           const tokenFee = await this.token[`${payableFunction.fee}Fee`]()
           const currentBalance = await this.codexCoin.balanceOf(creator)
-
           currentBalance.should.be.bignumber.equal(originalBalance.minus(tokenFee))
         })
       })

@@ -8,7 +8,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should()
 
-export default function shouldBehaveLikeERC900CreditsStakeContract(accounts) {
+export default function shouldBehaveLikeERC900CreditsStakeContract(accounts, lockInDuration) {
 
   describe('like a CreditsStakeContract', function () {
     const creator = accounts[0]
@@ -28,7 +28,13 @@ export default function shouldBehaveLikeERC900CreditsStakeContract(accounts) {
       })
 
       it('should issue credits when a stake is created', function () {
-        balance.should.be.bignumber.gt(0)
+        balance.should.be.bignumber.equal(1)
+      })
+
+      it('should revert if less than 1 token is staked', async function () {
+        await assertRevert(
+          this.stakeContract.stake(web3.toWei(0.5, 'ether'), 0x0)
+        )
       })
 
       it('should not remove credits when a stake is withdrawn', async function () {
@@ -52,7 +58,13 @@ export default function shouldBehaveLikeERC900CreditsStakeContract(accounts) {
       })
 
       it('should issue credits to another user when a stake is created for them', function () {
-        balance.should.be.bignumber.gt(0)
+        balance.should.be.bignumber.equal(1)
+      })
+
+      it('should revert if less than 1 token is staked', async function () {
+        await assertRevert(
+          this.stakeContract.stakeFor(otherUser, web3.toWei(0.5, 'ether'), 0x0)
+        )
       })
 
       it('should not remove credits when a stake for another user is withdrawn', async function () {
@@ -68,14 +80,37 @@ export default function shouldBehaveLikeERC900CreditsStakeContract(accounts) {
     })
 
     describe('stakeForDuration', function () {
-      it('should issue more credits when a stake is created with a longer lock-in duration', async function () {
-        await this.stakeContract.stakeForDuration(creator, web3.toWei(1, 'ether'), 1000, 0x0)
-        await this.stakeContract.stakeForDuration(otherUser, web3.toWei(1, 'ether'), 100000, 0x0)
+      it('should issue exactly 1 credit if 1 token is staked for the default duration', async function () {
+        await this.stakeContract.stakeForDuration(creator, web3.toWei(1, 'ether'), lockInDuration, 0x0)
 
-        const creatorBalance = await this.stakeContract.creditBalanceOf(creator)
-        const otherUserBalance = await this.stakeContract.creditBalanceOf(otherUser)
+        const balance = await this.stakeContract.creditBalanceOf(creator)
+        balance.should.be.bignumber.equal(1)
+      })
 
-        otherUserBalance.should.be.bignumber.gt(creatorBalance)
+      it('should issue exactly 2 credits if 1 token is staked for 2x the default duration', async function () {
+        await this.stakeContract.stakeForDuration(creator, web3.toWei(1, 'ether'), lockInDuration * 2, 0x0)
+
+        const balance = await this.stakeContract.creditBalanceOf(creator)
+        balance.should.be.bignumber.equal(2)
+      })
+
+      it('should only ever issue integer values for credits', async function () {
+        await this.stakeContract.stakeForDuration(creator, web3.toWei(33.7818237129837, 'ether'), lockInDuration * 2, 0x0)
+
+        const balance = await this.stakeContract.creditBalanceOf(creator)
+        balance.should.be.bignumber.equal(67)
+      })
+
+      it('should revert if the duration specified is less than the default', async function () {
+        await assertRevert(
+          this.stakeContract.stakeForDuration(creator, web3.toWei(1, 'ether'), lockInDuration / 2, 0x0)
+        )
+      })
+
+      it('should revert if less than 1 token is staked', async function () {
+        await assertRevert(
+          this.stakeContract.stakeForDuration(creator, web3.toWei(0.5, 'ether'), lockInDuration, 0x0)
+        )
       })
     })
 
@@ -89,41 +124,42 @@ export default function shouldBehaveLikeERC900CreditsStakeContract(accounts) {
         await this.stakeContract.stake(web3.toWei(1, 'ether'), 0x0)
 
         const balance = await this.stakeContract.creditBalanceOf(creator)
-        balance.should.be.bignumber.gt(0)
+        balance.should.be.bignumber.equal(1)
       })
 
       it('should decrease when credits are spent', async function () {
         await this.stakeContract.stake(web3.toWei(1, 'ether'), 0x0)
-
-        const originalBalance = await this.stakeContract.creditBalanceOf(creator)
-
-        await this.stakeContract.spendCredits(creator, web3.toWei(0.5, 'ether'), { from: platform })
+        await this.stakeContract.spendCredits(creator, 1, { from: platform })
 
         const newBalance = await this.stakeContract.creditBalanceOf(creator)
-        newBalance.should.be.bignumber.lt(originalBalance)
+        newBalance.should.be.bignumber.equal(0)
       })
     })
 
     describe('spendCredits', function () {
+      let originalBalance
+
       beforeEach(async function () {
         await this.stakeContract.stake(web3.toWei(1, 'ether'), 0x0)
+        originalBalance = await this.stakeContract.creditBalanceOf(creator)
       })
 
       it('should decrease the number of credits in a user\'s balance', async function () {
-        await this.stakeContract.spendCredits(creator, web3.toWei(1, 'ether'), { from: platform })
+        await this.stakeContract.spendCredits(creator, 1, { from: platform })
+
+        const newBalance = await this.stakeContract.creditBalanceOf(creator)
+        newBalance.should.be.bignumber.equal(0)
       })
 
       it('should revert if not called by the owner', async function () {
         await assertRevert(
-          this.stakeContract.spendCredits(creator, web3.toWei(1, 'ether'))
+          this.stakeContract.spendCredits(creator, 1)
         )
       })
 
       it('should revert if a user has insufficient credits', async function () {
-        const balance = await this.stakeContract.creditBalanceOf(creator)
-
         await assertRevert(
-          this.stakeContract.spendCredits(creator, balance * 2, { from: platform })
+          this.stakeContract.spendCredits(creator, originalBalance * 2, { from: platform })
         )
       })
     })

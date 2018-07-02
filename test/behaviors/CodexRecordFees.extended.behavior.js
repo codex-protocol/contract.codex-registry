@@ -38,8 +38,6 @@ export default function shouldBehaveLikeCodexRecordWithFeesExtended(accounts, in
   )
 
   describe('like a CodexRecord with fees & staking', function () {
-    let stakeContract
-
     beforeEach(async function () {
       this.codexCoin = await CodexCoin.new()
 
@@ -61,43 +59,41 @@ export default function shouldBehaveLikeCodexRecordWithFeesExtended(accounts, in
         fees.modification,
       )
 
-      stakeContract = await CodexStakeContract.new(this.codexCoin.address, 7776000)
-      await stakeContract.transferOwnership(this.token.address)
+      this.stakeContract = await CodexStakeContract.new(this.codexCoin.address, 7776000)
+      await this.stakeContract.transferOwnership(this.token.address)
 
-      await this.token.setStakeContract(stakeContract.address)
-      await this.codexCoin.approve(stakeContract.address, web3.toWei(100, 'ether'))
+      await this.token.setStakeContract(this.stakeContract.address)
+      await this.codexCoin.approve(this.stakeContract.address, web3.toWei(100, 'ether'))
     })
 
-    describe('stakeContract', function () {
+    describe('this.stakeContract', function () {
       it('exists', async function () {
         const codexStakeContract = await this.token.codexStakeContract()
-        codexStakeContract.should.be.equal(stakeContract.address)
+        codexStakeContract.should.be.equal(this.stakeContract.address)
       })
     })
 
     describe('and CodexRecord is not approved to withdraw CODX', function () {
-      describe('and the user has enough credits', function () {
+      describe('and the user has credits', function () {
         let originalBalance
 
         beforeEach(async function () {
-          await stakeContract.stake(web3.toWei(1, 'ether'), 0x0)
+          await this.stakeContract.stake(web3.toWei(2, 'ether'), 0x0)
 
-          originalBalance = await stakeContract.creditBalanceOf(creator)
+          originalBalance = await this.stakeContract.creditBalanceOf(creator)
         })
 
         payableFunctions.forEach((payableFunction) => {
-          it(`${payableFunction.name} should spend credits for transactions`, async function () {
+          it(`${payableFunction.name} should spend 1 credit`, async function () {
             await this.token[payableFunction.name](...payableFunction.args)
 
-            const tokenFee = await this.token[`${payableFunction.fee}Fee`]()
-            const currentBalance = await stakeContract.creditBalanceOf(creator)
-
-            currentBalance.should.be.bignumber.equal(originalBalance.minus(tokenFee))
+            const currentBalance = await this.stakeContract.creditBalanceOf(creator)
+            currentBalance.should.be.bignumber.equal(originalBalance.minus(1))
           })
         })
       })
 
-      describe('and the user does not have enough credits', function () {
+      describe('and the user does not have any credits', function () {
         payableFunctions.forEach((payableFunction) => {
           it(`${payableFunction.name} should revert`, async function () {
             await assertRevert(this.token[payableFunction.name](...payableFunction.args))
@@ -107,9 +103,61 @@ export default function shouldBehaveLikeCodexRecordWithFeesExtended(accounts, in
     })
 
     describe('and CodexRecord is approved to withdraw CODX', function () {
-      it('should spend credits for transactions')
-      it('should spend CODX if there are not enough credits')
-      it('should revert if there are not enough credits or CODX')
+      beforeEach(async function () {
+        await this.codexCoin.approve(this.token.address, web3.toWei(100, 'ether'))
+      })
+
+      describe('should spend credits for transactions', function () {
+        let originalBalance
+
+        beforeEach(async function () {
+          await this.stakeContract.stake(web3.toWei(1, 'ether'), 0x0)
+
+          originalBalance = await this.stakeContract.creditBalanceOf(creator)
+        })
+
+        payableFunctions.forEach((payableFunction) => {
+          it(`${payableFunction.name} should spend 1 credit`, async function () {
+            await this.token[payableFunction.name](...payableFunction.args)
+
+            const currentBalance = await this.stakeContract.creditBalanceOf(creator)
+            currentBalance.should.be.bignumber.equal(originalBalance.minus(1))
+          })
+        })
+      })
+
+      describe('should spend CODX if there are not enough credits', function () {
+        let originalBalance
+
+        beforeEach(async function () {
+          originalBalance = await this.codexCoin.balanceOf(creator)
+        })
+
+        payableFunctions.forEach((payableFunction) => {
+          it(`${payableFunction.name} should spend CODX`, async function () {
+            await this.token[payableFunction.name](...payableFunction.args)
+
+            const currentBalance = await this.codexCoin.balanceOf(creator)
+            currentBalance.should.be.bignumber.lt(originalBalance)
+          })
+        })
+      })
+
+      describe('should revert if there are not enough credits or CODX', function () {
+        beforeEach(async function () {
+          // Transfer all CODX out of the creator account
+          const balance = await this.codexCoin.balanceOf(creator)
+          await this.codexCoin.transfer(communityFund, balance)
+        })
+
+        payableFunctions.forEach((payableFunction) => {
+          it(`${payableFunction.name} should revert`, async function () {
+            await assertRevert(
+              this.token[payableFunction.name](...payableFunction.args)
+            )
+          })
+        })
+      })
     })
   })
 }

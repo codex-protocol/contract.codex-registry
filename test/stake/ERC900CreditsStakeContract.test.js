@@ -22,5 +22,5 @@ contract('ERC900CreditsStakeContract', function (accounts) {
   })
 
   shouldBehaveLikeBasicStakeContract(accounts, lockInDuration)
-  shouldBehaveLikeCreditsStakeContract(accounts)
+  shouldBehaveLikeCreditsStakeContract(accounts, lockInDuration)
 })

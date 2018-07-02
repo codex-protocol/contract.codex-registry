@@ -18,6 +18,8 @@ import "../library/Ownable.sol";
  */
 contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
 
+  // NOTE: Credits do not have decimal places
+  // Users cannot own fractional credits
   mapping (address => uint256) public creditBalances;
 
   function creditBalanceOf(
@@ -38,7 +40,7 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
     onlyOwner
   {
     require(
-      creditBalances[_user] > _amount,
+      creditBalances[_user] >= _amount,
       "Insufficient balance");
 
     creditBalances[_user] = creditBalances[_user].sub(_amount);
@@ -86,6 +88,10 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
   )
     public
   {
+    require(
+      _lockInDuration >= defaultLockInDuration,
+      "Insufficient stake duration");
+
     super.createStake(
       _user,
       _amount,
@@ -111,9 +117,19 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
     internal
     returns (uint256)
   {
-    // @TODO: Obviously not final, but insert math here.
-    uint256 creditsAwarded = _amount * _lockInDuration;
+    uint256 divisor = 1 ether;
 
+    require(
+      _amount >= divisor,
+      "Insufficient amount");
+
+    // NOTE: Truncation is intentional here
+    // If a user stakes for less than the minimum duration, they are awarded with 0 credits
+    // If they stake 2x the minimum duration, they are awarded with 2x credits
+    // etc.
+    uint256 rewardMultiplier = _lockInDuration / defaultLockInDuration;
+
+    uint256 creditsAwarded = _amount.mul(rewardMultiplier).div(divisor);
     creditBalances[_user] = creditBalances[_user].add(creditsAwarded);
   }
 }

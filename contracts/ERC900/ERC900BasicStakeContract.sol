@@ -18,7 +18,7 @@ contract ERC900BasicStakeContract is ERC900 {
   // Token used for staking
   ERC20 stakingToken;
 
-  // The duration of stake lock-in (in seconds)
+  // The default duration of stake lock-in (in seconds)
   uint256 public defaultLockInDuration;
 
   // To save on gas, rather than create a separate mapping for totalStakedFor & personalStakes,

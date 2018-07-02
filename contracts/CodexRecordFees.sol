@@ -35,17 +35,22 @@ contract CodexRecordFees is CodexRecordMetadata, DelayedPausable {
 
   modifier canPayFees(uint256 _baseFee) {
     if (feeRecipient != address(0) && _baseFee > 0) {
+      bool feePaid = false;
 
       if (codexStakeContract != address(0)) {
-
         uint256 discountCredits = codexStakeContract.creditBalanceOf(msg.sender);
-        if (discountCredits >= _baseFee) {
-          codexStakeContract.spendCredits(msg.sender, _baseFee);
-        } else {
-          require(
-            codexCoin.transferFrom(msg.sender, feeRecipient, _baseFee),
-            "Fee in CODX required");
+
+        // Regardless of what the baseFee is, all transactions can be paid by using exactly one credit
+        if (discountCredits > 0) {
+          codexStakeContract.spendCredits(msg.sender, 1);
+          feePaid = true;
         }
+      }
+
+      if (!feePaid) {
+        require(
+          codexCoin.transferFrom(msg.sender, feeRecipient, _baseFee),
+          "Insufficient funds");
       }
     }
 
