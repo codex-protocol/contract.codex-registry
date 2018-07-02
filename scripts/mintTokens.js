@@ -17,9 +17,9 @@ const ganachePrivateKeys = [
   'ae6ae8e5ccbfb04590405997ee2d52d2b330726137b875053c36d94e974d162f',
 ]
 
-const providerDataDelimeter = '::'
-const encodeProviderData = (providerData) => {
-  return `0x${Buffer.from(providerData.join(providerDataDelimeter)).toString('hex')}`
+const additionalDataDelimeter = '::'
+const encodeProviderData = (additionalData) => {
+  return `0x${Buffer.from(additionalData.join(additionalDataDelimeter)).toString('hex')}`
 }
 
 // Not perfect, but good enough for testing purposes
