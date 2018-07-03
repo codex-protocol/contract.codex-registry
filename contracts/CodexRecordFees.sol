@@ -1,8 +1,8 @@
 pragma solidity 0.4.24;
 
 import "./CodexRecordMetadata.sol";
+import "./CodexStakeContractInterface.sol";
 import "./ERC20/ERC20.sol";
-import "./ERC900/ERC900.sol";
 
 import "./library/DelayedPausable.sol";
 
@@ -19,7 +19,7 @@ contract CodexRecordFees is CodexRecordMetadata, DelayedPausable {
 
   // Implementation of the ERC900 Codex Protocol Stake Container,
   //  used to calculate discounts on fees
-  ERC900 public codexStakeContainer;
+  CodexStakeContractInterface public codexStakeContract;
 
   // Address where all contract fees are sent, i.e., the Community Fund
   address public feeRecipient;
@@ -33,36 +33,24 @@ contract CodexRecordFees is CodexRecordMetadata, DelayedPausable {
   // Fee to modify tokens. 10^18 = 1 token
   uint256 public modificationFee = 0;
 
-  // To receive a full discount on the protocol fees, stake this number of tokens
-  uint256 public tokensNeededForFullDiscount;
+  modifier canPayFees(uint256 _baseFee) {
+    if (feeRecipient != address(0) && _baseFee > 0) {
+      bool feePaid = false;
 
-  modifier canPayFees(uint256 baseFee) {
-    if (feeRecipient != address(0)) {
-      uint256 calculatedFee = baseFee;
+      if (codexStakeContract != address(0)) {
+        uint256 discountCredits = codexStakeContract.creditBalanceOf(msg.sender);
 
-      if (codexStakeContainer != address(0) && tokensNeededForFullDiscount > 0) {
-        uint256 totalStakedFor = codexStakeContainer.totalStakedFor(msg.sender);
-
-        // Discounts are capped at 100% :)
-        if (totalStakedFor > tokensNeededForFullDiscount) {
-          calculatedFee = 0;
-        } else if (totalStakedFor > 0) {
-          // Since floating point operations aren't supported in the EVM, we need to use a divisor to simulate fractions
-          uint256 divisor = 1 ether;
-
-          // The calculated discount is a % of tokens staked against the tokens needed to be staked
-          // e.g., if tokensNeededForFullDiscount is 100, and totalStakedFor is 50, the calculated discount is 50%
-          uint256 calculatedDiscount = totalStakedFor.mul(divisor).div(tokensNeededForFullDiscount);
-
-          // Update the fee based on the calculated discount, using the divisor again to convert back to the appropriate units
-          calculatedFee = baseFee.mul(divisor.sub(calculatedDiscount)).div(divisor);
+        // Regardless of what the baseFee is, all transactions can be paid by using exactly one credit
+        if (discountCredits > 0) {
+          codexStakeContract.spendCredits(msg.sender, 1);
+          feePaid = true;
         }
       }
 
-      if (calculatedFee > 0) {
+      if (!feePaid) {
         require(
-          codexCoin.transferFrom(msg.sender, feeRecipient, calculatedFee),
-          "Fee in CODX required");
+          codexCoin.transferFrom(msg.sender, feeRecipient, _baseFee),
+          "Insufficient funds");
       }
     }
 
@@ -95,21 +83,7 @@ contract CodexRecordFees is CodexRecordMetadata, DelayedPausable {
     modificationFee = _modificationFee;
   }
 
-  function setStakeContainer(ERC900 _codexStakeContainer) external onlyOwner {
-    codexStakeContainer = _codexStakeContainer;
-  }
-
-  /**
-   * @dev Sets the number of tokens needed to be staked in order to
-   * receive a 100% discount on the contract fees. 10^18 is 1 token.
-   * @param _tokensNeededForFullDiscount uint256 The number of tokens needed
-   */
-  function setTokensNeededForFullDiscount(
-    uint256 _tokensNeededForFullDiscount
-  )
-    external
-    onlyOwner
-  {
-    tokensNeededForFullDiscount = _tokensNeededForFullDiscount;
+  function setStakeContract(CodexStakeContractInterface _codexStakeContract) external onlyOwner {
+    codexStakeContract = _codexStakeContract;
   }
 }

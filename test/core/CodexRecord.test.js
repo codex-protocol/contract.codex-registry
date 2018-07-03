@@ -1,6 +1,7 @@
 import shouldBehaveLikeERC165 from '../behaviors/ERC165.behavior'
 import shouldBehaveLikeCodexRecord from '../behaviors/CodexRecord.behavior'
 import shouldBehaveLikeCodexRecordWithFees from '../behaviors/CodexRecordFees.behavior'
+import shouldBehaveLikeCodexRecordWithFeesExtended from '../behaviors/CodexRecordFees.extended.behavior'
 
 const { BigNumber } = web3
 const CodexRecord = artifacts.require('CodexRecord.sol')
@@ -35,4 +36,7 @@ contract('CodexRecord', function (accounts) {
 
   // Extended functionality & base behavior with fees enabled
   shouldBehaveLikeCodexRecordWithFees(accounts, inputs)
+
+  // Extended functionality & base behavior with fees & staking enabled
+  shouldBehaveLikeCodexRecordWithFeesExtended(accounts, inputs)
 })

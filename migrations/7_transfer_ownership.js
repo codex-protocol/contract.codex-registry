@@ -1,6 +1,6 @@
 const CodexRecord = artifacts.require('./CodexRecord.sol')
 const CodexRecordProxy = artifacts.require('./CodexRecordProxy.sol')
-const CodexStakeContainer = artifacts.require('./CodexStakeContainer.sol')
+const CodexStakeContract = artifacts.require('./CodexStakeContract.sol')
 
 module.exports = async (deployer, network, accounts) => {
 
@@ -30,10 +30,6 @@ module.exports = async (deployer, network, accounts) => {
 
       console.log('Transferring ownership')
 
-      // Transfer ownership of CodexStakeContainer
-      const stakeContainer = await CodexStakeContainer.deployed()
-      stakeContainer.transferOwnership(newOwner)
-
       // Transfer ownership of CodexRecord from the perspective of CodexRecordProxy.
       // Initialization of this storage slot has already taken place earlier in migration
       //  because some operations (like setting the tokenURI) require owner permissions.
@@ -42,6 +38,12 @@ module.exports = async (deployer, network, accounts) => {
 
       console.log('Transferring proxiedCodexRecord ownership to', newOwner)
       await proxiedCodexRecord.transferOwnership(newOwner)
+
+      // Transfer ownership of CodexStakeContract to the proxy contract
+      const stakeContract = await CodexStakeContract.deployed()
+
+      console.log('Transferring stakeContract ownership to the proxy contract')
+      await stakeContract.transferOwnership(newOwner)
 
       // For security, let's initialize the ownership of CodexRecord to newOwner as well.
       // This is a defensive action because no one should ever be interacting with CodexRecord

@@ -1,15 +1,12 @@
 const CodexCoin = artifacts.require('./CodexCoin.sol')
-const CodexStakeContainer = artifacts.require('./CodexStakeContainer.sol')
+const CodexStakeContract = artifacts.require('./CodexStakeContract.sol')
 
 module.exports = (deployer, network) => {
   deployer.then(async () => {
     let codexCoinAddress
 
     // 90 days (in seconds)
-    const lockInDuration = 7776000
-
-    // 10% annually
-    const annualizedInterestRate = web3.toWei(0.1, 'ether')
+    const defaultLockInDuration = 7776000
 
     switch (network) {
       case 'ganache':
@@ -32,10 +29,9 @@ module.exports = (deployer, network) => {
     }
 
     await deployer.deploy(
-      CodexStakeContainer,
+      CodexStakeContract,
       codexCoinAddress,
-      lockInDuration,
-      annualizedInterestRate,
+      defaultLockInDuration,
     )
   })
 
