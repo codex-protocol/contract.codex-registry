@@ -3,7 +3,7 @@ import shouldBehaveLikeCompoundingStakeContract from '../behaviors/ERC900Compoun
 
 const { BigNumber } = web3
 
-const Erc20Token = artifacts.require('PausableTokenMock.sol')
+const Erc20Token = artifacts.require('CodexCoin.sol')
 const CompoundingStakeContract = artifacts.require('CompoundingStakeContract.sol')
 
 require('chai')
