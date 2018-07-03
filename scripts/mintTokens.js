@@ -17,9 +17,9 @@ const ganachePrivateKeys = [
   'ae6ae8e5ccbfb04590405997ee2d52d2b330726137b875053c36d94e974d162f',
 ]
 
-const providerDataDelimeter = '::'
-const encodeProviderData = (providerData) => {
-  return `0x${Buffer.from(providerData.join(providerDataDelimeter)).toString('hex')}`
+const additionalDataDelimeter = '::'
+const encodeAdditionalData = (additionalData) => {
+  return `0x${Buffer.from(additionalData.join(additionalDataDelimeter)).toString('hex')}`
 }
 
 // Not perfect, but good enough for testing purposes
@@ -120,7 +120,7 @@ const mintTokens = async (contract, authTokens, imageRecords) => {
           web3.sha3(result.name),
           web3.sha3(result.description),
           [result.mainImage.hash], // instead of downloading the file, reading it as binary data, and hashing that - we'll just use the hash created by the API since they should produce the same hash anyway
-          encodeProviderData(['1', result.id]),
+          encodeAdditionalData(['1', result.id]),
         )
 
       })
