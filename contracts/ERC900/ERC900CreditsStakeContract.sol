@@ -127,18 +127,13 @@ contract ERC900CreditsStakeContract is ERC900BasicStakeContract, Ownable {
     super.createStake(
       _user,
       _amount,
-      _lockInDuration);
+      _lockInDuration,
+      _data);
 
     updateCreditBalance(
       _user,
       _amount,
       _lockInDuration);
-
-    emit Staked(
-      _user,
-      _amount,
-      totalStakedFor(_user),
-      _data);
   }
 
   /**
