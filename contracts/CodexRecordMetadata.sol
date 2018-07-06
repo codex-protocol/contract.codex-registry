@@ -51,19 +51,22 @@ contract CodexRecordMetadata is ERC721Token {
   {
     // nameHash is only overridden if it's not a blank string, since name is a
     //  required value. Emptiness is determined if the first element is the null-byte
-    if (_newNameHash[0] != 0x0) {
-      tokenData[_tokenId].nameHash = _newNameHash;
-    }
+    require(_newNameHash[0] != 0x0);
+    tokenData[_tokenId].nameHash = _newNameHash;
 
     // descriptionHash can always be overridden since it's an optional value
     //  (e.g. you can "remove" a description by setting it to a blank string)
     tokenData[_tokenId].descriptionHash = _newDescriptionHash;
 
-    // fileHashes is only overridden if it has more than one value, since at
+    // fileHashes is only overridden if it has more than zero values, since at
     //  least one file (i.e. mainImage) is required
-    if (_newFileHashes.length > 0 && _newFileHashes[0][0] != 0x0) {
-      tokenData[_tokenId].fileHashes = _newFileHashes;
+    require(_newFileHashes.length > 0);
+    
+    // fileHashes is only overridden if all of the hashes are non-null
+    for (uint i = 0; i < _newFileHashes.length; i++) {
+      require(_newFileHashes[i][0] != 0x0);
     }
+    tokenData[_tokenId].fileHashes = _newFileHashes;
 
     emit Modified(
       msg.sender,
