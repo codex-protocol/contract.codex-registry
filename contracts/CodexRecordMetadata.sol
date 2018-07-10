@@ -63,7 +63,7 @@ contract CodexRecordMetadata is ERC721Token {
     //  least one file (i.e. mainImage) is required
     bool containsNullHash = false;
     for (uint i = 0; i < _newFileHashes.length; i++) {
-      if (byte32IsEmpty(_newFileHashes[i])) {
+      if (bytes32IsEmpty(_newFileHashes[i])) {
         containsNullHash = true;
         break;
       }
