@@ -59,7 +59,7 @@ contract CodexRecordMetadata is ERC721Token {
     //  (e.g. you can "remove" a description by setting it to a blank string)
     tokenData[_tokenId].descriptionHash = _newDescriptionHash;
 
-    // fileHashes is only overridden if it has more than one value, since at
+    // fileHashes is only overridden if it has one or more value, since at
     //  least one file (i.e. mainImage) is required
     bool containsNullHash = false;
     for (uint i = 0; i < _newFileHashes.length; i++) {
