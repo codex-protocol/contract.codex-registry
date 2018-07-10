@@ -12,4 +12,5 @@ contract Debuggable {
   event DebugUint256(uint256 value);
   event DebugString(string value);
   event DebugAddress(address value);
+  event DebugBytes32(bytes32 value);
 }

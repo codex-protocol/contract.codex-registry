@@ -51,7 +51,7 @@ contract CodexRecordMetadata is ERC721Token {
   {
     // nameHash is only overridden if it's not a blank string, since name is a
     //  required value. Emptiness is determined if the first element is the null-byte
-    if (_newNameHash[0] != 0x0) {
+    if (!bytes32IsEmpty(_newNameHash)) {
       tokenData[_tokenId].nameHash = _newNameHash;
     }
 
@@ -61,7 +61,7 @@ contract CodexRecordMetadata is ERC721Token {
 
     // fileHashes is only overridden if it has more than one value, since at
     //  least one file (i.e. mainImage) is required
-    if (_newFileHashes.length > 0 && _newFileHashes[0][0] != 0x0) {
+    if (_newFileHashes.length > 0 && !bytes32IsEmpty(_newFileHashes[0])) {
       tokenData[_tokenId].fileHashes = _newFileHashes;
     }
 
@@ -169,5 +169,20 @@ contract CodexRecordMetadata is ERC721Token {
     }
 
     return bstr;
+  }
+
+  /**
+   * @dev Returns whether or not a bytes32 array is empty (all null-bytes)
+   * @param _data bytes32 The array to check
+   * @return bool Whether or not the array is empty
+   */
+  function bytes32IsEmpty(bytes32 _data) internal pure returns (bool) {
+    for (uint256 i = 0; i < 32; i++) {
+      if (_data[i] != 0x0) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
