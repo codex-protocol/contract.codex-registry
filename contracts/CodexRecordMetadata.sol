@@ -61,7 +61,14 @@ contract CodexRecordMetadata is ERC721Token {
 
     // fileHashes is only overridden if it has more than one value, since at
     //  least one file (i.e. mainImage) is required
-    if (_newFileHashes.length > 0 && !bytes32IsEmpty(_newFileHashes[0])) {
+    bool containsNullHash = false;
+    for (uint i = 0; i < _newFileHashes.length; i++) {
+      if (byte32IsEmpty(_newFileHashes[i])) {
+        containsNullHash = true;
+        break;
+      }
+    }
+    if (_newFileHashes.length > 0 && !containsNullHash) {
       tokenData[_tokenId].fileHashes = _newFileHashes;
     }
 
