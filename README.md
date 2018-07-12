@@ -1,5 +1,5 @@
 # Codex Protocol | Codex Registry Contracts
-<img src="https://github.com/codex-protocol/contract.codex-registry/blob/master/audit/EmblemC.png" width="45px" />
+<a href="https://hosho.io/" target="_blank"><img src="https://github.com/codex-protocol/contract.codex-registry/blob/master/audit/EmblemC.png" width="45px" /></a>
 
 [![Build Status](https://travis-ci.org/codex-protocol/contract.codex-registry.svg?branch=master)](https://travis-ci.org/codex-protocol/contract.codex-registry)
 
