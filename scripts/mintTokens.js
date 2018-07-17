@@ -120,7 +120,7 @@ const mintTokens = async (contract, authTokens, imageRecords) => {
           web3.sha3(result.name),
           web3.sha3(result.description),
           [result.mainImage.hash], // instead of downloading the file, reading it as binary data, and hashing that - we'll just use the hash created by the API since they should produce the same hash anyway
-          encodeAdditionalData(['1', result.id]),
+          encodeAdditionalData([process.env.METADATA_PROVIDER_ID, result.id]),
         )
 
       })
