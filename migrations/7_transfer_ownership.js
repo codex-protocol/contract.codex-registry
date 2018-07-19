@@ -43,7 +43,7 @@ module.exports = async (deployer, network, accounts) => {
       const stakeContract = await CodexStakeContract.deployed()
 
       console.log('Transferring stakeContract ownership to the proxy contract')
-      await stakeContract.transferOwnership(newOwner)
+      await stakeContract.transferOwnership(proxiedCodexRecord.address)
 
       // For security, let's initialize the ownership of CodexRecord to newOwner as well.
       // This is a defensive action because no one should ever be interacting with CodexRecord
