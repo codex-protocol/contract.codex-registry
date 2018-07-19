@@ -37,12 +37,19 @@ module.exports = {
     ropsten: {
       provider: infuraProvider('ropsten'),
       network_id: '3', // eslint-disable-line camelcase
-      gasPrice: 5000000000, // 5 gwei
+      gas: 4612388,
+      gasPrice: 10000000000, // 10 gwei
     },
     rinkeby: {
       provider: infuraProvider('rinkeby'),
       network_id: '4', // eslint-disable-line camelcase
       gasPrice: 5000000000, // 5 gwei
+    },
+  },
+  solc: {
+    optimizer: {
+      enabled: true,
+      runs: 200,
     },
   },
 }
