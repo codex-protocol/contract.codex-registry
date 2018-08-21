@@ -52,9 +52,6 @@ module.exports = async (deployer, network, accounts) => {
         const codexCoin = await CodexCoin.deployed()
         const faucetAccount = accounts[2]
 
-        // So that the faucet account can mint tokens for giveaways
-        await codexCoin.approve(codexRecordAddress, web3.toWei(100000, 'ether'), { from: faucetAccount })
-
         /* eslint-disable no-await-in-loop */
         for (let i = 0; i < accounts.length; i++) {
 
