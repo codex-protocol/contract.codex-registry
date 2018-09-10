@@ -70,33 +70,43 @@ const fetchAuthTokens = () => {
   return Promise.all(authTokenRequests)
 }
 
-const fetchImageRecords = () => {
+const fetchImageRecord = (authToken) => {
   console.log('Grabbing images for minting')
 
+  const requestOptions = {
+    headers: {
+      Authorization: authToken,
+    },
+  }
+
   return axios
-    .post(`/test/create-images/${tokensToMint}`)
+    .post('/test/create-images', {}, requestOptions)
     .then((response) => {
-      return response.data.result
+      return response.data.result[0]
     })
 }
 
-const mintTokens = async (contract, authTokens, imageRecords) => {
+const mintTokens = async (contract, authTokens) => {
   console.log('Minting some tokens for testing purposes')
 
   for (let tokenIndex = 0; tokenIndex < tokensToMint; tokenIndex++) {
 
     const accountIndex = tokenIndex % ganachePrivateKeys.length
     const account = web3.eth.accounts[accountIndex]
+    const authToken = authTokens[accountIndex]
+
+    // eslint-disable-next-line no-await-in-loop
+    const imageRecord = await fetchImageRecord(authToken)
 
     const requestBody = {
       name: getTokenName(tokenIndex),
       description: `Description of ${getTokenName(tokenIndex)}`,
-      mainImage: imageRecords[tokenIndex],
+      mainImage: imageRecord,
     }
 
     const requestOptions = {
       headers: {
-        Authorization: authTokens[accountIndex],
+        Authorization: authToken,
       },
     }
 
@@ -142,9 +152,7 @@ module.exports = async (callback) => {
     authTokens.push(responses[i].data.result.token)
   }
 
-  const imageRecords = await fetchImageRecords()
-
-  await mintTokens(codexRecord, authTokens, imageRecords)
+  await mintTokens(codexRecord, authTokens)
 
   callback()
 }
