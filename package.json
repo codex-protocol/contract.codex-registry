@@ -62,7 +62,8 @@
     "ganache-cli": "^6.1.0",
     "solc": "0.4.24",
     "solidity-coverage": "0.5.4",
-    "solium": "1.1.7"
+    "solium": "1.1.7",
+    "webpack": "^4.19.1"
   },
   "dependencies": {
     "axios": "^0.18.0",
