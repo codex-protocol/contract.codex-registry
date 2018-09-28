@@ -9,7 +9,7 @@ dotenv.config()
 const infuraProvider = (network) => {
   return new HDWalletProvider(
     process.env.MNEMONIC,
-    `https://${network}.infura.io/${process.env.INFURA_API_KEY}`
+    `https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}`
   )
 }
 
