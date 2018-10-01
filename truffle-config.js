@@ -43,7 +43,7 @@ module.exports = {
     rinkeby: {
       provider: infuraProvider('rinkeby'),
       network_id: '4', // eslint-disable-line camelcase
-      gasPrice: 5000000000, // 5 gwei
+      gasPrice: 10000000000, // 10 gwei
     },
   },
   solc: {

@@ -17,11 +17,11 @@ module.exports = (deployer, network) => {
         break
 
       case 'ropsten':
-        codexCoinAddress = '0x2226895704448e5f579654d1d95e853e24a4c929'
+        codexCoinAddress = '0x2af5409438d2e6c241015f3130213f6a122b4064'
         break
 
       case 'rinkeby':
-        codexCoinAddress = '0xb7f7848507a6af9c6d7560da89d4778aa1043d69'
+        codexCoinAddress = '0x6a8c5db1495ffc4ef183dfccfdc4de5164b4e95c'
         break
 
       default:

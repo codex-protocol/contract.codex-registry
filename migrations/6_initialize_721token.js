@@ -22,12 +22,12 @@ module.exports = async (deployer, network, accounts) => {
 
         case 'ropsten':
           initialFees = 0
-          erc20TokenAddress = '0x2226895704448e5f579654d1d95e853e24a4c929'
+          erc20TokenAddress = '0x2af5409438d2e6c241015f3130213f6a122b4064'
           break
 
         case 'rinkeby':
           initialFees = 0
-          erc20TokenAddress = '0xb7f7848507a6af9c6d7560da89d4778aa1043d69'
+          erc20TokenAddress = '0x6a8c5db1495ffc4ef183dfccfdc4de5164b4e95c'
           break
 
         default:
@@ -77,12 +77,13 @@ module.exports = async (deployer, network, accounts) => {
           break
 
         case 'ropsten':
-        case 'rinkeby':
-          tokenURIPrefix = 'http://codex-registry-api.codexprotocol-staging.com/token-metadata'
+          tokenURIPrefix = `http://${network}-codex-registry-api.codexprotocol.com/token-metadata`
           break
 
+        case 'rinkeby':
         case 'mainnet':
-          tokenURIPrefix = 'http://codex-registry-api.codexprotocol.com/token-metadata'
+          // Notice HTTPS here (and not on Ropsten)
+          tokenURIPrefix = `https://${network}-codex-registry-api.codexprotocol.com/token-metadata`
           break
 
         default:
