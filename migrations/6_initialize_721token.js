@@ -16,7 +16,8 @@ module.exports = async (deployer, network, accounts) => {
         case 'ganache':
         case 'develop':
         case 'coverage':
-          initialFees = web3.toWei(1, 'ether')
+          // initialFees = web3.toWei(1, 'ether')
+          initialFees = 0
           erc20TokenAddress = CodexCoin.address
           break
 
