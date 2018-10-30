@@ -74,21 +74,21 @@ module.exports = async (deployer, network, accounts) => {
         case 'develop':
         case 'test':
         case 'coverage':
-          tokenURIPrefix = 'http://localhost:3001/token-metadata'
+          tokenURIPrefix = 'http://localhost:3001/token-metadata/'
           break
 
         case 'ropsten':
-          tokenURIPrefix = `http://${network}-api.codexprotocol.com/token-metadata`
+          tokenURIPrefix = `http://${network}-api.codexprotocol.com/token-metadata/`
           break
 
         case 'rinkeby':
           // Notice HTTPS here (and not on Ropsten)
-          tokenURIPrefix = `https://${network}-api.codexprotocol.com/token-metadata`
+          tokenURIPrefix = `https://${network}-api.codexprotocol.com/token-metadata/`
           break
 
         case 'mainnet':
           // Notice HTTPS here (and not on Ropsten)
-          tokenURIPrefix = 'https://api.codexprotocol.com/token-metadata'
+          tokenURIPrefix = 'https://api.codexprotocol.com/token-metadata/'
           break
 
         default:
