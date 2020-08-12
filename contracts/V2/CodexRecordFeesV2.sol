@@ -102,7 +102,6 @@ contract CodexRecordFeesV2 is CodexRecordMetadataV2, DelayedPausable {
   // NEW IN V2:
   function addFeeOperator(address _newFeeOperator) external onlyOwner {
     require(_newFeeOperator != address(0), "_newFeeOperator must not be the zero address");
-    require(feeOperators[_newFeeOperator] != true, "_newFeeOperator is already in feeOperators");
     feeOperators[_newFeeOperator] = true;
     emit FeeOperatorAdded(_newFeeOperator);
   }
