@@ -35,9 +35,9 @@ module.exports = (deployer, network, accounts) => {
         accounts[3],
       ]
 
-      creationFee = web3.toWei(20, 'ether')
+      creationFee = web3.toWei(150, 'ether')
       transferFee = web3.toWei(0, 'ether')
-      modificationFee = web3.toWei(10, 'ether')
+      modificationFee = web3.toWei(30, 'ether')
       feeRecipient = accounts[9]
       codexCoinAddress = CodexCoin.address
       // codexStakeContractAddress = CodexStakeContract.address
@@ -56,9 +56,9 @@ module.exports = (deployer, network, accounts) => {
         '0x218074BA02072731b163e04F7C36000b566eaEF9', // accounts[0] with "testnet identity v2 / bulk signer mnemonic"
       ]
 
-      // creationFee = web3.toWei(20, 'ether')
+      // creationFee = web3.toWei(150, 'ether')
       // transferFee = web3.toWei(0, 'ether')
-      // modificationFee = web3.toWei(10, 'ether')
+      // modificationFee = web3.toWei(30, 'ether')
       // feeRecipient = '0xE37465ab15fd77EeEa1db4a11c175f898eAbA396' // accounts[1] on Testnet Ledger
       // codexCoinAddress = '0xc50efb6572218614d743c9929bd93b0a1a3982a9'
       // codexStakeContractAddress = '0x0bb7d24b10768431b5b7bda9afde822ca2ff3ad6'
@@ -77,9 +77,9 @@ module.exports = (deployer, network, accounts) => {
         '0x218074BA02072731b163e04F7C36000b566eaEF9', // accounts[0] with "testnet identity v2 / bulk signer mnemonic"
       ]
 
-      // creationFee = web3.toWei(20, 'ether')
+      // creationFee = web3.toWei(150, 'ether')
       // transferFee = web3.toWei(0, 'ether')
-      // modificationFee = web3.toWei(10, 'ether')
+      // modificationFee = web3.toWei(30, 'ether')
       // feeRecipient = '0xE37465ab15fd77EeEa1db4a11c175f898eAbA396' // accounts[1] on Testnet Ledger
       // codexCoinAddress = '0xe33345607c3065578f11ea456834ff9e82739d56'
       // codexStakeContractAddress = '0x2bbcae1335a97e440c7d9f3f638db26abfad3207'
@@ -98,9 +98,9 @@ module.exports = (deployer, network, accounts) => {
         '0x4e57529d3630B4aD415BDedda508e40e4C632bAF', // accounts[0] with "mainnet identity v2 / bulk signer mnemonic"
       ]
 
-      // creationFee = web3.toWei(20, 'ether')
+      // creationFee = web3.toWei(150, 'ether')
       // transferFee = web3.toWei(0, 'ether')
-      // modificationFee = web3.toWei(10, 'ether')
+      // modificationFee = web3.toWei(30, 'ether')
       // feeRecipient = '0xBe25eE3619472545418Acb609B0CE6cA6F69bdfB' // accounts[9] on Mainnet Ledger
       // codexCoinAddress = '0xf226e38c3007b3d974fc79bcf5a77750035436ee'
       // codexStakeContractAddress = '0xdea454c9c4ad408f324cc0ea382b2b7aad99640c'
