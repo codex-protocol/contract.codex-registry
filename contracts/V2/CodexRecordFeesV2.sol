@@ -36,13 +36,17 @@ contract CodexRecordFeesV2 is CodexRecordMetadataV2, DelayedPausable {
   // Fee to modify tokens. 10^18 = 1 token
   uint256 public modificationFee = 0;
 
-  // NEW IN V2: 50% discount === .5 * 1 token (i.e. 500000000000000000)
+  // NEW IN V2: an address my have a "discount percent" set that will modify the
+  //  amount of CODX Tokens required for actions that require fees
+  //
+  // 50% discount === .5 * 1 token (i.e. 500000000000000000)
   mapping (address => uint256) internal _discountPercentages;
 
-  // NEW IN V2:
+  // NEW IN V2: feeOperators are addresses allowed to set a discountPercentage
+  //  for an address
   mapping (address => bool) public feeOperators;
 
-  // NEW IN V2:
+  // NEW IN V2: events related to feeOperators and discountPercentages
   event FeeOperatorAdded(address indexed _feeOperator);
   event FeeOperatorRemoved(address indexed _feeOperator);
   event DiscountPercentUpdated(
@@ -52,7 +56,7 @@ contract CodexRecordFeesV2 is CodexRecordMetadataV2, DelayedPausable {
     bytes _data
   );
 
-  // NEW IN V2:
+  // NEW IN V2: modifier for feeOperator-only methods
   modifier onlyFeeOperators() {
     require(
       isFeeOperator(msg.sender),
@@ -99,14 +103,14 @@ contract CodexRecordFeesV2 is CodexRecordMetadataV2, DelayedPausable {
     _;
   }
 
-  // NEW IN V2:
+  // NEW IN V2: add a new fee operator
   function addFeeOperator(address _newFeeOperator) external onlyOwner {
     require(_newFeeOperator != address(0), "_newFeeOperator must not be the zero address");
     feeOperators[_newFeeOperator] = true;
     emit FeeOperatorAdded(_newFeeOperator);
   }
 
-  // NEW IN V2:
+  // NEW IN V2: remove a fee operator
   function removeFeeOperator(address _feeOperator) external onlyOwner {
     require(_feeOperator != address(0), "_feeOperator must not be the zero address");
     require(feeOperators[_feeOperator] == true, "_feeOperator is not in feeOperators");
@@ -144,6 +148,8 @@ contract CodexRecordFeesV2 is CodexRecordMetadataV2, DelayedPausable {
     codexStakeContract = _codexStakeContract;
   }
 
+  // NEW IN V2: sets the discount percent for the specified address - this
+  //  mechanism allows for per-address CODX Fees
   function setDiscountPercent(address _address, uint256 _discountPercent, bytes _data) external onlyFeeOperators {
     require(_address != address(0), "Address must not be zero address.");
     require(_discountPercent <= 1000000000000000000, "Discount percent must not be greater than 1 token.");
@@ -156,11 +162,12 @@ contract CodexRecordFeesV2 is CodexRecordMetadataV2, DelayedPausable {
     );
   }
 
+  // NEW IN V2: get the current discountPercentage for an address
   function getDiscountPercent(address _address) public view returns (uint256) {
     return _discountPercentages[_address];
   }
 
-  // NEW IN V2:
+  // NEW IN V2: is the specified address a feeOperator?
   function isFeeOperator(address _who) public view returns (bool) {
     return feeOperators[_who] == true;
   }
