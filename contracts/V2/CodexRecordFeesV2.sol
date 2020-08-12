@@ -45,7 +45,12 @@ contract CodexRecordFeesV2 is CodexRecordMetadataV2, DelayedPausable {
   // NEW IN V2:
   event FeeOperatorAdded(address indexed _feeOperator);
   event FeeOperatorRemoved(address indexed _feeOperator);
-  event DiscountPercentUpdated(address indexed _address, uint256 indexed _discountPercent, address indexed _feeOperator);
+  event DiscountPercentUpdated(
+    address indexed _address,
+    uint256 indexed _discountPercent,
+    address indexed _feeOperator,
+    bytes _data
+  );
 
   // NEW IN V2:
   modifier onlyFeeOperators() {
@@ -140,11 +145,16 @@ contract CodexRecordFeesV2 is CodexRecordMetadataV2, DelayedPausable {
     codexStakeContract = _codexStakeContract;
   }
 
-  function setDiscountPercent(address _address, uint256 _discountPercent) external onlyFeeOperators {
+  function setDiscountPercent(address _address, uint256 _discountPercent, bytes _data) external onlyFeeOperators {
     require(_address != address(0), "Address must not be zero address.");
     require(_discountPercent <= 1000000000000000000, "Discount percent must not be greater than 1 token.");
     _discountPercentages[_address] = _discountPercent;
-    emit DiscountPercentUpdated(_address, _discountPercent, msg.sender);
+    emit DiscountPercentUpdated(
+      _address,
+      _discountPercent,
+      msg.sender,
+      _data
+    );
   }
 
   function getDiscountPercent(address _address) public view returns (uint256) {
