@@ -11,6 +11,7 @@ module.exports = (deployer, network, accounts) => {
   let codexRecordProxyAddress = null
 
   /* eslint-disable prefer-const */
+  let skipSetup = true
   let creationFee = null
   let transferFee = null
   let feeRecipient = null
@@ -24,6 +25,8 @@ module.exports = (deployer, network, accounts) => {
     case 'ganache':
     case 'develop':
     case 'coverage':
+
+      skipSetup = false
 
       owner = accounts[1]
       tokenURIPrefix = 'http://localhost:3001/token-metadata/'
@@ -112,7 +115,7 @@ module.exports = (deployer, network, accounts) => {
   }
 
   // Deploy CodexRecordV2
-  return deployer.deploy(CodexRecordV2, { from: owner })
+  return deployer.deploy(CodexRecordV2)
     .then((codexRecordV2) => {
 
       // update owner of CodexRecordV2 (note that we do not need to do this for
@@ -122,6 +125,9 @@ module.exports = (deployer, network, accounts) => {
 
         // upgrade the proxy implementation
         .then(() => {
+
+          if (skipSetup) return null
+
           const codexRecordProxy = CodexRecordProxy.at(codexRecordProxyAddress)
           return Promise.all([
             codexRecordProxy.version(),
@@ -136,6 +142,8 @@ module.exports = (deployer, network, accounts) => {
 
         // set fees and/or stake contract
         .then(() => {
+
+          if (skipSetup) return null
 
           const proxiedCodexRecordV2 = CodexRecordV2.at(codexRecordProxyAddress)
 
