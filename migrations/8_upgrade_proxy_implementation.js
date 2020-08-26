@@ -89,7 +89,7 @@ module.exports = (deployer, network, accounts) => {
 
       break
 
-    case 'DISABLED-mainnet-DISABLED':
+    case 'mainnet':
 
       owner = '0x20f3d6bd4da1dafa00fbc562081c005878e1a74b' // accounts[2] on Mainnet Ledger
       tokenURIPrefix = 'https://api.codexprotocol.com/token-metadata/'
