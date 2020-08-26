@@ -48,7 +48,7 @@ module.exports = {
     mainnet: {
       provider: infuraProvider('mainnet'),
       network_id: '1', // eslint-disable-line camelcase
-      gasPrice: 10000000000, // 10 gwei
+      gasPrice: 100000000000, // 100 gwei
     },
   },
   solc: {

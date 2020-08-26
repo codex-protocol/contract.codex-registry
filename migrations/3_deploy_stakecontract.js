@@ -25,7 +25,7 @@ module.exports = (deployer, network) => {
         break
 
       default:
-        throw new Error('No erc20TokenAddress & initialFees defined for this network')
+        throw new Error('No codexCoinAddress defined for this network')
     }
 
     await deployer.deploy(
