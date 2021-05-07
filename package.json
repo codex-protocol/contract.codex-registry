@@ -81,7 +81,7 @@
     "dotenv": "^5.0.1",
     "ethereumjs-util": "^5.2.0",
     "ethjs-abi": "^0.2.1",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.21",
     "truffle": "4.1.11",
     "truffle-hdwallet-provider": "0.0.3"
   }
